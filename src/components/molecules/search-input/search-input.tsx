@@ -117,12 +117,13 @@ export function SearchInput({
         </button>
       )}
       <input
-        type="text"
+        type="search"
         value={value}
         onChange={handleChange}
         onKeyDown={handleKeyDown}
         placeholder={placeholder}
         disabled={disabled}
+        aria-label={placeholder}
         // biome-ignore lint/a11y/noAutofocus: Controlled via prop for intentional UX
         autoFocus={autoFocus}
         className={cn(

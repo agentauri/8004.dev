@@ -20,69 +20,85 @@ export default function HomePage() {
   };
 
   return (
-    <main className="min-h-screen flex flex-col items-center justify-center p-8 bg-pixel-grid">
-      <div className="text-center space-y-8">
-        {/* Hero Title with Explorer */}
-        <div className="flex flex-col items-center gap-4">
-          <PixelExplorer size="lg" animation="float" />
-          <h1 className="text-pixel-display text-2xl md:text-4xl text-[var(--pixel-blue-sky)] text-glow-blue">
-            AGENT EXPLORER
-          </h1>
-        </div>
+    <div className="min-h-screen flex flex-col bg-pixel-grid">
+      {/* Header with navigation */}
+      <header className="flex items-center justify-between px-4 py-3 border-b border-[var(--pixel-gray-800)]">
+        <span className="text-pixel-body text-sm text-[var(--pixel-gray-400)]">8004.dev</span>
+        <nav>
+          <Link
+            href="/explore"
+            className="text-pixel-body text-sm text-[var(--pixel-blue-sky)] hover:text-glow-blue"
+          >
+            Explore
+          </Link>
+        </nav>
+      </header>
 
-        {/* Status Badge - derived from stats query */}
-        {statsLoading ? (
-          <div className="inline-flex items-center gap-2 badge-pixel text-[var(--pixel-gray-400)] border-[var(--pixel-gray-400)]">
-            <span className="w-2 h-2 bg-[var(--pixel-gray-400)] animate-pulse" />
-            <span>CHECKING...</span>
+      {/* Main content */}
+      <main className="flex-1 flex flex-col items-center justify-center p-8">
+        <div className="text-center space-y-8">
+          {/* Hero Title with Explorer */}
+          <div className="flex flex-col items-center gap-4">
+            <PixelExplorer size="lg" animation="float" />
+            <h1 className="text-pixel-display text-2xl md:text-4xl text-[var(--pixel-blue-sky)] text-glow-blue">
+              AGENT EXPLORER
+            </h1>
           </div>
-        ) : statsError ? (
-          <div className="inline-flex items-center gap-2 badge-pixel text-[var(--pixel-red-fire)] border-[var(--pixel-red-fire)] glow-red">
-            <span className="w-2 h-2 bg-[var(--pixel-red-fire)] animate-pulse" />
-            <span>SYSTEM OFFLINE</span>
-          </div>
-        ) : (
-          <div className="inline-flex items-center gap-2 badge-pixel text-[var(--pixel-green-pipe)] border-[var(--pixel-green-pipe)] glow-green">
-            <span className="w-2 h-2 bg-[var(--pixel-green-pipe)] animate-glow-pulse" />
-            <span>SYSTEM ONLINE</span>
-          </div>
-        )}
 
-        {/* Subtitle */}
-        <p className="text-pixel-body text-sm md:text-base text-[var(--pixel-gray-200)] max-w-xl mx-auto">
-          Discover and explore autonomous AI agents registered on the ERC-8004 standard
-        </p>
+          {/* Status Badge - derived from stats query */}
+          {statsLoading ? (
+            <div className="inline-flex items-center gap-2 badge-pixel text-[var(--pixel-gray-400)] border-[var(--pixel-gray-400)]">
+              <span className="w-2 h-2 bg-[var(--pixel-gray-400)] animate-pulse" />
+              <span>CHECKING...</span>
+            </div>
+          ) : statsError ? (
+            <div className="inline-flex items-center gap-2 badge-pixel text-[var(--pixel-red-fire)] border-[var(--pixel-red-fire)] glow-red">
+              <span className="w-2 h-2 bg-[var(--pixel-red-fire)] animate-pulse" />
+              <span>SYSTEM OFFLINE</span>
+            </div>
+          ) : (
+            <div className="inline-flex items-center gap-2 badge-pixel text-[var(--pixel-green-pipe)] border-[var(--pixel-green-pipe)] glow-green">
+              <span className="w-2 h-2 bg-[var(--pixel-green-pipe)] animate-glow-pulse" />
+              <span>SYSTEM ONLINE</span>
+            </div>
+          )}
 
-        {/* Search Input + Buttons grouped */}
-        <div className="pt-4 space-y-4">
-          <SearchInput
-            value={searchQuery}
-            onChange={setSearchQuery}
-            onSubmit={handleSearch}
-            placeholder="Search agents by name..."
-            className="max-w-md mx-auto"
-          />
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link href="/explore" className="btn-pixel-primary">
-              ADVANCED SEARCH
-            </Link>
-            <button type="button" className="btn-pixel-secondary">
-              LEARN MORE
-            </button>
-          </div>
-        </div>
-
-        {/* Platform Statistics */}
-        <div className="pt-12 space-y-4 w-full max-w-3xl mx-auto">
-          <p className="text-pixel-body text-xs text-[var(--pixel-gray-400)]">
-            PLATFORM STATISTICS
+          {/* Subtitle */}
+          <p className="text-pixel-body text-sm md:text-base text-[var(--pixel-gray-200)] max-w-xl mx-auto">
+            Discover and explore autonomous AI agents registered on the ERC-8004 standard
           </p>
-          <StatsGrid stats={stats} isLoading={statsLoading} error={statsError?.message} />
+
+          {/* Search Input + Buttons grouped */}
+          <div className="pt-4 space-y-4">
+            <SearchInput
+              value={searchQuery}
+              onChange={setSearchQuery}
+              onSubmit={handleSearch}
+              placeholder="Search agents by name..."
+              className="max-w-md mx-auto"
+            />
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <Link href="/explore" className="btn-pixel-primary">
+                ADVANCED SEARCH
+              </Link>
+              <button type="button" className="btn-pixel-secondary">
+                LEARN MORE
+              </button>
+            </div>
+          </div>
+
+          {/* Platform Statistics */}
+          <div className="pt-12 space-y-4 w-full max-w-3xl mx-auto">
+            <p className="text-pixel-body text-xs text-[var(--pixel-gray-400)]">
+              PLATFORM STATISTICS
+            </p>
+            <StatsGrid stats={stats} isLoading={statsLoading} error={statsError?.message} />
+          </div>
         </div>
-      </div>
+      </main>
 
       {/* Footer */}
-      <footer className="absolute bottom-8 text-center space-y-2">
+      <footer className="py-4 text-center space-y-2 border-t border-[var(--pixel-gray-800)]">
         <p className="text-pixel-body text-xs text-[var(--pixel-gray-400)]">
           Powered by{' '}
           <a
@@ -108,6 +124,6 @@ export default function HomePage() {
           open-source tools
         </p>
       </footer>
-    </main>
+    </div>
   );
 }

@@ -42,7 +42,7 @@ describe('SearchBar', () => {
       const onQueryChange = vi.fn();
       render(<SearchBar onQueryChange={onQueryChange} />);
 
-      const input = screen.getByRole('textbox');
+      const input = screen.getByRole('searchbox');
       fireEvent.change(input, { target: { value: 'new query' } });
 
       expect(onQueryChange).toHaveBeenCalledWith('new query');
@@ -52,7 +52,7 @@ describe('SearchBar', () => {
       const onSubmit = vi.fn();
       render(<SearchBar query="test" onSubmit={onSubmit} />);
 
-      const input = screen.getByRole('textbox');
+      const input = screen.getByRole('searchbox');
       fireEvent.keyDown(input, { key: 'Enter' });
 
       expect(onSubmit).toHaveBeenCalledWith('test');
@@ -85,19 +85,19 @@ describe('SearchBar', () => {
 
     it('disables input when loading', () => {
       render(<SearchBar isLoading />);
-      expect(screen.getByRole('textbox')).toBeDisabled();
+      expect(screen.getByRole('searchbox')).toBeDisabled();
     });
   });
 
   describe('auto focus', () => {
     it('does not auto-focus by default', () => {
       render(<SearchBar />);
-      expect(document.activeElement).not.toBe(screen.getByRole('textbox'));
+      expect(document.activeElement).not.toBe(screen.getByRole('searchbox'));
     });
 
     it('auto-focuses when autoFocus is true', () => {
       render(<SearchBar autoFocus />);
-      expect(document.activeElement).toBe(screen.getByRole('textbox'));
+      expect(document.activeElement).toBe(screen.getByRole('searchbox'));
     });
   });
 });

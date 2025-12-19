@@ -15,7 +15,7 @@ test.describe('Explore Page', () => {
 
   test('displays filter options', async ({ page }) => {
     // Check for chain selector or filter components
-    await expect(page.getByTestId('search-bar')).toBeVisible();
+    await expect(page.getByTestId('search-bar').first()).toBeVisible();
   });
 
   test('allows typing in search input', async ({ page }) => {

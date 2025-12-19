@@ -11,7 +11,7 @@ test.describe('Home Page', () => {
 
   test('displays header with logo', async ({ page }) => {
     await expect(page.getByRole('banner')).toBeVisible();
-    await expect(page.getByText('AGENT EXPLORER')).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'AGENT EXPLORER' })).toBeVisible();
   });
 
   test('displays footer', async ({ page }) => {

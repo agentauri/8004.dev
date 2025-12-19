@@ -166,7 +166,7 @@ export const COLOR_TOKENS: ColorToken[] = [
   {
     name: 'Glow Blue',
     cssVar: '--glow-blue',
-    value: 'rgba(92, 148, 252, 0.5)',
+    value: 'rgba(59, 113, 201, 0.5)',
     description: 'Blue CRT glow effect',
     category: 'glow',
   },

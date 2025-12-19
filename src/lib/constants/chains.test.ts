@@ -30,8 +30,8 @@ describe('chains constants', () => {
         name: 'Base Sepolia',
         shortName: 'Base',
         rpcEnvVar: 'BASE_SEPOLIA_RPC_URL',
-        color: '#5c94fc',
-        glowColor: 'rgba(92, 148, 252, 0.4)',
+        color: '#3b71c9',
+        glowColor: 'rgba(59, 113, 201, 0.4)',
         explorerUrl: 'https://sepolia.basescan.org',
       });
     });

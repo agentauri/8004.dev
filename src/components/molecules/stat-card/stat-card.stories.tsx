@@ -67,7 +67,7 @@ export const BaseChain: Story = {
   args: {
     label: 'Base',
     value: 705,
-    color: '#5c94fc',
+    color: '#3b71c9',
   },
 };
 

@@ -7,7 +7,8 @@
 @layer theme {
   :root {
     /* Primary Colors (NES/Sega Inspired) */
-    --pixel-blue-sky: #5c94fc;
+    /* Blue adjusted from #5c94fc to #3b71c9 for WCAG AA contrast (4.5:1 with white) */
+    --pixel-blue-sky: #3b71c9;
     --pixel-red-fire: #fc5454;
     --pixel-green-pipe: #00d800;
     --pixel-gold-coin: #fcc03c;
@@ -23,24 +24,25 @@
     --pixel-gray-800: #2a2a2a;
     --pixel-gray-700: #3a3a3a;
     --pixel-gray-600: #4a4a4a;
-    --pixel-gray-400: #888888;
+    /* Gray adjusted from #888888 to #9a9a9a for WCAG AA contrast (4.5:1 on dark bg) */
+    --pixel-gray-400: #9a9a9a;
     --pixel-gray-200: #cccccc;
     --pixel-white: #ffffff;
 
     /* CRT Glow Effects */
-    --glow-blue: rgba(92, 148, 252, 0.5);
+    --glow-blue: rgba(59, 113, 201, 0.5);
     --glow-green: rgba(0, 216, 0, 0.5);
     --glow-gold: rgba(252, 192, 60, 0.5);
     --glow-red: rgba(252, 84, 84, 0.5);
 
     /* Chain Colors */
     --chain-sepolia: #fc5454;
-    --chain-base: #5c94fc;
+    --chain-base: #3b71c9;
     --chain-polygon: #9c54fc;
 
     /* Chain Glow Effects */
     --chain-glow-sepolia: rgba(252, 84, 84, 0.4);
-    --chain-glow-base: rgba(92, 148, 252, 0.4);
+    --chain-glow-base: rgba(59, 113, 201, 0.4);
     --chain-glow-polygon: rgba(156, 84, 252, 0.4);
 
     /* Taxonomy Colors (OASF) */
@@ -412,7 +414,7 @@
     color: var(--pixel-white);
     cursor: pointer;
     box-shadow:
-      0 4px 0 0 #3a5fcc,
+      0 4px 0 0 #2a4d8f,
       0 0 0 2px var(--pixel-black),
       0 0 12px var(--glow-blue);
     transition: all 0.1s steps(2);
@@ -421,7 +423,7 @@
   .btn-pixel-primary:hover {
     transform: translateY(-2px);
     box-shadow:
-      0 6px 0 0 #3a5fcc,
+      0 6px 0 0 #2a4d8f,
       0 0 0 2px var(--pixel-black),
       0 0 20px var(--glow-blue);
   }
@@ -429,7 +431,7 @@
   .btn-pixel-primary:active {
     transform: translateY(2px);
     box-shadow:
-      0 2px 0 0 #3a5fcc,
+      0 2px 0 0 #2a4d8f,
       0 0 0 2px var(--pixel-black),
       0 0 8px var(--glow-blue);
   }
@@ -454,17 +456,17 @@
     color: var(--pixel-blue-sky);
     box-shadow:
       0 0 0 2px var(--pixel-black),
-      inset 0 0 20px rgba(92, 148, 252, 0.1);
+      inset 0 0 20px rgba(59, 113, 201, 0.1);
     transition: all 0.1s steps(2);
     cursor: pointer;
   }
 
   .btn-pixel-secondary:hover {
-    background: rgba(92, 148, 252, 0.2);
+    background: rgba(59, 113, 201, 0.2);
     box-shadow:
       0 0 0 2px var(--pixel-black),
       0 0 12px var(--glow-blue),
-      inset 0 0 30px rgba(92, 148, 252, 0.2);
+      inset 0 0 30px rgba(59, 113, 201, 0.2);
   }
 
   /* Card Components */
@@ -479,7 +481,7 @@
     border-color: var(--pixel-blue-sky);
     box-shadow:
       0 0 20px var(--glow-blue),
-      inset 0 0 40px rgba(92, 148, 252, 0.05);
+      inset 0 0 40px rgba(59, 113, 201, 0.05);
     transform: translateY(-4px);
   }
 
@@ -514,7 +516,7 @@
     box-shadow:
       0 0 0 2px var(--pixel-black),
       0 0 16px var(--glow-blue),
-      inset 0 0 20px rgba(92, 148, 252, 0.1);
+      inset 0 0 20px rgba(59, 113, 201, 0.1);
   }
 
   .input-pixel::placeholder {

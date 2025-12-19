@@ -68,7 +68,7 @@ export function SearchBar({
       />
       {isLoading && (
         <div
-          className="mt-3 text-[var(--pixel-gray-400)] font-[family-name:var(--font-pixel-body)] text-xs animate-pulse"
+          className="mt-3 text-[var(--pixel-gray-200)] font-[family-name:var(--font-pixel-body)] text-xs animate-pulse"
           data-testid="search-loading"
         >
           Searching...
