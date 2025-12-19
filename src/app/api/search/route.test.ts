@@ -249,10 +249,12 @@ describe('POST /api/search', () => {
 
       await POST(createRequest({ query: 'test', sort: 'createdAt' }));
 
-      const callBody = mockBackendFetch.mock.calls[0]?.[1]?.body as {
-        sort?: string;
-        order?: string;
-      } | undefined;
+      const callBody = mockBackendFetch.mock.calls[0]?.[1]?.body as
+        | {
+            sort?: string;
+            order?: string;
+          }
+        | undefined;
       expect(callBody?.sort).toBe('createdAt');
       expect(callBody?.order).toBeUndefined();
     });
@@ -266,10 +268,12 @@ describe('POST /api/search', () => {
 
       await POST(createRequest({ query: 'test' }));
 
-      const callBody = mockBackendFetch.mock.calls[0]?.[1]?.body as {
-        sort?: string;
-        order?: string;
-      } | undefined;
+      const callBody = mockBackendFetch.mock.calls[0]?.[1]?.body as
+        | {
+            sort?: string;
+            order?: string;
+          }
+        | undefined;
       expect(callBody?.sort).toBeUndefined();
       expect(callBody?.order).toBeUndefined();
     });

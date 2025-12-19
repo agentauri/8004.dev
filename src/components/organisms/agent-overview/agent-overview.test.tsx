@@ -17,9 +17,7 @@ const mockAgent: Agent = {
       { slug: 'natural_language_processing', confidence: 0.9 },
       { slug: 'code_generation', confidence: 0.85 },
     ],
-    domains: [
-      { slug: 'software_development', confidence: 0.95 },
-    ],
+    domains: [{ slug: 'software_development', confidence: 0.95 }],
   },
   endpoints: {
     mcp: { url: 'https://mcp.example.com', version: '1.0' },
@@ -119,7 +117,11 @@ describe('AgentOverview', () => {
       const agentWithWarnings = {
         ...mockAgent,
         warnings: [
-          { type: 'metadata' as const, message: 'Agent name is missing', severity: 'high' as const },
+          {
+            type: 'metadata' as const,
+            message: 'Agent name is missing',
+            severity: 'high' as const,
+          },
           { type: 'reputation' as const, message: 'No feedback yet', severity: 'low' as const },
         ],
       };
@@ -143,7 +145,11 @@ describe('AgentOverview', () => {
       const agentWithWarnings = {
         ...mockAgent,
         warnings: [
-          { type: 'metadata' as const, message: 'Critical metadata missing', severity: 'high' as const },
+          {
+            type: 'metadata' as const,
+            message: 'Critical metadata missing',
+            severity: 'high' as const,
+          },
         ],
       };
       render(<AgentOverview agent={agentWithWarnings} />);

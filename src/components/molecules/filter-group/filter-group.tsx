@@ -89,7 +89,6 @@ export function FilterGroup<T extends string = string>({
       </span>
       <div
         className="flex flex-wrap gap-2"
-        // biome-ignore lint/a11y/useSemanticElements: Using div with role for flexible layout styling
         role="group"
         aria-labelledby={`filter-group-${label.toLowerCase().replace(/\s+/g, '-')}`}
       >

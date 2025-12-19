@@ -3,6 +3,29 @@
   "version": "1.0.0",
   "private": true,
   "description": "Agent Explorer - ERC-8004 Agent Directory & Discovery Platform",
+  "author": "8004.dev Team",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/8004-dev/agent-explorer.git"
+  },
+  "homepage": "https://github.com/8004-dev/agent-explorer#readme",
+  "bugs": {
+    "url": "https://github.com/8004-dev/agent-explorer/issues"
+  },
+  "keywords": [
+    "erc-8004",
+    "agent",
+    "blockchain",
+    "ai-agents",
+    "ethereum",
+    "base",
+    "polygon",
+    "mcp",
+    "a2a",
+    "trustless-agents",
+    "discovery-platform"
+  ],
   "scripts": {
     "dev": "next dev",
     "build": "next build",

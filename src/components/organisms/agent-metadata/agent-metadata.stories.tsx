@@ -40,8 +40,16 @@ const fullAgent: Agent = {
   supportedTrust: ['reputation', 'tee', 'stake'],
   oasf: {
     skills: [
-      { slug: 'natural_language_processing', confidence: 0.95, reasoning: 'Agent processes natural language queries' },
-      { slug: 'code_generation', confidence: 0.92, reasoning: 'Agent generates code from specifications' },
+      {
+        slug: 'natural_language_processing',
+        confidence: 0.95,
+        reasoning: 'Agent processes natural language queries',
+      },
+      {
+        slug: 'code_generation',
+        confidence: 0.92,
+        reasoning: 'Agent generates code from specifications',
+      },
       { slug: 'debugging', confidence: 0.88, reasoning: 'Agent assists with debugging tasks' },
     ],
     domains: [

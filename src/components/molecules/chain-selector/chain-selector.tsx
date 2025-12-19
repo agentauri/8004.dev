@@ -145,7 +145,6 @@ export function ChainSelector({
             'shadow-[0_4px_12px_rgba(0,0,0,0.5)]',
           )}
           // biome-ignore lint/a11y/noNoninteractiveElementToInteractiveRole: Custom dropdown for consistent styling
-          // biome-ignore lint/a11y/useSemanticElements: Custom dropdown for consistent styling
           role="listbox"
           aria-multiselectable="true"
           tabIndex={-1}
@@ -163,7 +162,6 @@ export function ChainSelector({
                 'transition-colors duration-100',
                 isAllSelected && 'bg-[var(--pixel-gray-700)]',
               )}
-              // biome-ignore lint/a11y/useSemanticElements: Custom dropdown for consistent styling across browsers
               role="option"
               aria-selected={isAllSelected}
               data-testid="chain-option-all"
@@ -197,7 +195,6 @@ export function ChainSelector({
                     'transition-colors duration-100',
                     isSelected && 'bg-[var(--pixel-gray-700)]',
                   )}
-                  // biome-ignore lint/a11y/useSemanticElements: Custom dropdown for consistent styling across browsers
                   role="option"
                   aria-selected={isSelected}
                   data-testid={`chain-option-${chainId}`}

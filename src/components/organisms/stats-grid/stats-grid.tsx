@@ -66,11 +66,7 @@ export function StatsGrid({
 
   if (isLoading || !stats) {
     return (
-      <div
-        className={cn('space-y-4', className)}
-        data-testid="stats-grid"
-        data-state="loading"
-      >
+      <div className={cn('space-y-4', className)} data-testid="stats-grid" data-state="loading">
         <div className="flex justify-center">
           <PixelExplorer size="sm" animation="bounce" />
         </div>

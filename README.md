@@ -1,5 +1,10 @@
 # Agent Explorer
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.x-blue.svg)](https://www.typescriptlang.org/)
+[![Next.js](https://img.shields.io/badge/Next.js-16.x-black.svg)](https://nextjs.org/)
+[![Test Coverage](https://img.shields.io/badge/coverage-97%25-brightgreen.svg)](./docs/COMPREHENSIVE_TEST_REPORT.md)
+
 > ERC-8004 Agent Directory & Discovery Platform
 
 A web-based discovery platform for autonomous AI agents registered on the [ERC-8004 (Trustless Agents)](https://eips.ethereum.org/EIPS/eip-8004) standard. Search, filter, and explore agents across multiple blockchain networks with a retro 80s pixel art aesthetic.
@@ -23,7 +28,7 @@ A web-based discovery platform for autonomous AI agents registered on the [ERC-8
 
 ```bash
 # Clone the repository
-git clone https://github.com/your-org/agent-explorer.git
+git clone https://github.com/8004-dev/agent-explorer.git
 cd agent-explorer
 
 # Install dependencies
@@ -85,9 +90,10 @@ src/
 │   └── templates/         # Page layouts
 ├── hooks/                 # TanStack Query hooks
 ├── lib/
-│   ├── agent0/           # SDK wrapper layer
-│   ├── search/           # Search provider abstraction
-│   └── constants/        # Chain configs
+│   ├── api/              # Backend API helpers
+│   ├── constants/        # Chain configs
+│   ├── filters/          # Filter utilities
+│   └── url-params/       # URL state management
 └── types/                # TypeScript definitions
 ```
 
@@ -177,6 +183,16 @@ See [RETRO_DESIGN_SYSTEM.md](./docs/RETRO_DESIGN_SYSTEM.md) for complete specifi
 - [ERC-8004 Specification](https://eips.ethereum.org/EIPS/eip-8004)
 - [agent0-sdk Documentation](https://sdk.ag0.xyz/)
 - [OASF Documentation](https://docs.agntcy.org/oasf/open-agentic-schema-framework/)
+
+## Acknowledgements
+
+This project is built on top of the excellent work by the [Agent0 Lab](https://github.com/agent0lab) team. We extend our gratitude for the following open-source projects that power Agent Explorer:
+
+- **[agent0-ts](https://github.com/agent0lab/agent0-ts)** - TypeScript SDK for interacting with ERC-8004 agents
+- **[search-service](https://github.com/agent0lab/search-service)** - Semantic search service for agent discovery
+- **[subgraph](https://github.com/agent0lab/subgraph)** - The Graph subgraph for indexing ERC-8004 agent data
+
+Thank you to all contributors who make the ERC-8004 ecosystem possible!
 
 ## License
 

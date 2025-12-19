@@ -8,7 +8,6 @@ interface ErrorProps {
   reset: () => void;
 }
 
-// biome-ignore lint/suspicious/noShadowRestrictedNames: Next.js requires error boundary to be named "Error"
 export default function Error({ error, reset }: ErrorProps): React.JSX.Element {
   useEffect(() => {
     console.error('Application error:', error);

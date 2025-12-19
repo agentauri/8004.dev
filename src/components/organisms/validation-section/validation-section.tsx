@@ -230,10 +230,7 @@ export function ValidationSection({
                   )}
                   data-testid="validation-status-badge"
                 >
-                  <StatusIcon
-                    className="w-3 h-3"
-                    aria-hidden="true"
-                  />
+                  <StatusIcon className="w-3 h-3" aria-hidden="true" />
                   <span>{statusConfig.label}</span>
                 </div>
 

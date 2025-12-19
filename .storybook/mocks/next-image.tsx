@@ -47,6 +47,7 @@ function Image({
     : style || {};
 
   return (
+    // biome-ignore lint/performance/noImgElement: Mock component for Storybook - must use native img
     <img
       src={imgSrc}
       alt={alt}

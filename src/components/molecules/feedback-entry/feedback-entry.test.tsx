@@ -195,10 +195,7 @@ describe('FeedbackEntry', () => {
     it('links to correct explorer URL', () => {
       render(<FeedbackEntry feedback={feedbackWithTxHash} chainId={11155111} />);
       const link = screen.getByTestId('tx-explorer-link');
-      expect(link).toHaveAttribute(
-        'href',
-        'https://sepolia.etherscan.io/tx/0xabc123def456',
-      );
+      expect(link).toHaveAttribute('href', 'https://sepolia.etherscan.io/tx/0xabc123def456');
     });
 
     it('opens in new tab', () => {
@@ -226,10 +223,7 @@ describe('FeedbackEntry', () => {
     it('works with Base Sepolia chain', () => {
       render(<FeedbackEntry feedback={feedbackWithTxHash} chainId={84532} />);
       const link = screen.getByTestId('tx-explorer-link');
-      expect(link).toHaveAttribute(
-        'href',
-        'https://sepolia.basescan.org/tx/0xabc123def456',
-      );
+      expect(link).toHaveAttribute('href', 'https://sepolia.basescan.org/tx/0xabc123def456');
     });
 
     it('renders alongside feedback URI link', () => {

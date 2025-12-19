@@ -96,10 +96,13 @@ src/
 │
 ├── hooks/                      # TanStack Query hooks
 ├── lib/
-│   ├── agent0/                 # SDK wrapper layer
-│   ├── search/                 # Search provider abstraction
+│   ├── api/                    # Backend API helpers
 │   ├── constants/              # Chain configs, constants
-│   └── utils.ts                # Utility functions
+│   ├── filters/                # Filter utilities (toSearchParams, etc.)
+│   ├── url-params/             # URL parameter parsing/serialization
+│   ├── query-keys.ts           # TanStack Query key factories
+│   ├── sorting.ts              # Client-side sorting utilities
+│   └── utils.ts                # General utility functions
 └── types/                      # TypeScript type definitions
 ```
 

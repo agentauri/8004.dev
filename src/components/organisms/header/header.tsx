@@ -1,7 +1,7 @@
 import { Cpu } from 'lucide-react';
 import Link from 'next/link';
 import type React from 'react';
-import { PixelExplorer, type ChainId } from '@/components/atoms';
+import { type ChainId, PixelExplorer } from '@/components/atoms';
 import { ChainSelector } from '@/components/molecules';
 import { cn } from '@/lib/utils';
 

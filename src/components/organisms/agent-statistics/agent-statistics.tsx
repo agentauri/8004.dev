@@ -1,8 +1,21 @@
-import { Activity, BarChart3, CheckCircle, MessageSquare, Shield, Star, XCircle, AlertTriangle } from 'lucide-react';
+import {
+  Activity,
+  AlertTriangle,
+  BarChart3,
+  CheckCircle,
+  Shield,
+  Star,
+  XCircle,
+} from 'lucide-react';
 import type React from 'react';
 import { ReputationDistribution, StatCard } from '@/components/molecules';
 import { cn } from '@/lib/utils';
-import type { AgentHealthScore, AgentReputation, AgentValidation, HealthCheckStatus } from '@/types/agent';
+import type {
+  AgentHealthScore,
+  AgentReputation,
+  AgentValidation,
+  HealthCheckStatus,
+} from '@/types/agent';
 
 export interface AgentStatisticsProps {
   /** Agent reputation data */
@@ -30,7 +43,10 @@ const TRUST_MODEL_DESCRIPTIONS: Record<string, string> = {
 };
 
 /** Health check status styles */
-const HEALTH_STATUS_CONFIG: Record<HealthCheckStatus, { icon: React.ReactNode; colorClass: string; bgClass: string }> = {
+const HEALTH_STATUS_CONFIG: Record<
+  HealthCheckStatus,
+  { icon: React.ReactNode; colorClass: string; bgClass: string }
+> = {
   pass: {
     icon: <CheckCircle size={16} />,
     colorClass: 'text-[var(--pixel-green-pipe)]',
@@ -138,7 +154,7 @@ export function AgentStatistics({
       )}
 
       {/* Health Checks Breakdown */}
-      {healthScore && healthScore.checks && healthScore.checks.length > 0 && (
+      {healthScore?.checks && healthScore.checks.length > 0 && (
         <div
           className="p-4 bg-[var(--pixel-gray-800)] border-2 border-[var(--pixel-gray-700)]"
           data-testid="health-checks-section"
@@ -168,9 +184,7 @@ export function AgentStatistics({
                   data-category={check.category}
                   data-status={check.status}
                 >
-                  <div className={cn('shrink-0 mt-0.5', config.colorClass)}>
-                    {config.icon}
-                  </div>
+                  <div className={cn('shrink-0 mt-0.5', config.colorClass)}>{config.icon}</div>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center justify-between">
                       <span className="font-[family-name:var(--font-pixel-body)] text-[var(--pixel-gray-200)] text-sm uppercase">

@@ -255,7 +255,6 @@ export const AgentCard = memo(function AgentCard({
             onClick();
           }
         }}
-        // biome-ignore lint/a11y/useSemanticElements: Card requires div for complex internal layout; button semantics provided via role
         role="button"
         tabIndex={0}
         data-testid="agent-card"

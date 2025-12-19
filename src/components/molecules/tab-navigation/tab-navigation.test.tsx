@@ -1,7 +1,7 @@
 import { fireEvent, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it, vi } from 'vitest';
-import { TabNavigation, type TabItem } from './tab-navigation';
+import { type TabItem, TabNavigation } from './tab-navigation';
 
 const mockTabs: TabItem[] = [
   { id: 'overview', label: 'Overview' },

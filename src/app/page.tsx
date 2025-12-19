@@ -82,7 +82,7 @@ export default function HomePage() {
       </div>
 
       {/* Footer */}
-      <footer className="absolute bottom-8 text-center">
+      <footer className="absolute bottom-8 text-center space-y-2">
         <p className="text-pixel-body text-xs text-[var(--pixel-gray-400)]">
           Powered by{' '}
           <a
@@ -94,6 +94,18 @@ export default function HomePage() {
             ERC-8004
           </a>{' '}
           Trustless Agents
+        </p>
+        <p className="text-pixel-body text-xs text-[var(--pixel-gray-400)]">
+          Built with{' '}
+          <a
+            href="https://github.com/agent0lab"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-[var(--pixel-gold-coin)] hover:text-glow"
+          >
+            Agent0 Lab
+          </a>{' '}
+          open-source tools
         </p>
       </footer>
     </main>

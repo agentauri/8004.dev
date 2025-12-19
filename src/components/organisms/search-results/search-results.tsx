@@ -103,11 +103,7 @@ export function SearchResults({
 
   if (isLoading) {
     return (
-      <div
-        className={cn('space-y-6', className)}
-        data-testid="search-results"
-        data-state="loading"
-      >
+      <div className={cn('space-y-6', className)} data-testid="search-results" data-state="loading">
         <div className="flex justify-center">
           <PixelExplorer size="lg" animation="search" />
         </div>

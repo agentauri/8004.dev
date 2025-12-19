@@ -1,16 +1,14 @@
 'use client';
 
 import {
+  Check,
   ChevronDown,
   ChevronRight,
   Code2,
   Copy,
-  Check,
-  ExternalLink,
   FileJson,
   Key,
   Link2,
-  Users,
   Shield,
 } from 'lucide-react';
 import type React from 'react';
@@ -164,9 +162,7 @@ export function AgentMetadata({ agent, className }: AgentMetadataProps): React.J
             !agent.endpoints.agentWallet &&
             !agent.endpoints.mcp?.url &&
             !agent.endpoints.a2a?.url && (
-              <p className="text-[var(--pixel-gray-500)] text-sm py-2">
-                No endpoints configured
-              </p>
+              <p className="text-[var(--pixel-gray-500)] text-sm py-2">No endpoints configured</p>
             )}
         </div>
       </MetadataSection>
@@ -234,9 +230,7 @@ export function AgentMetadata({ agent, className }: AgentMetadataProps): React.J
       {/* Raw Agent Data */}
       <MetadataSection title="Raw Data" icon={Code2}>
         <div className="mt-3">
-          <p className="text-[var(--pixel-gray-500)] text-sm mb-2">
-            Complete agent data as JSON
-          </p>
+          <p className="text-[var(--pixel-gray-500)] text-sm mb-2">Complete agent data as JSON</p>
           <pre className="p-3 bg-[var(--pixel-gray-900)] border border-[var(--pixel-gray-700)] overflow-x-auto text-sm text-[var(--pixel-gray-300)] font-mono max-h-96 overflow-y-auto">
             {JSON.stringify(agent, null, 2)}
           </pre>

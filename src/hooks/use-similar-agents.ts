@@ -60,7 +60,10 @@ async function fetchSimilarAgents(agentId: string, limit: number): Promise<Simil
  * });
  * ```
  */
-export function useSimilarAgents(agentId: string | undefined, options: UseSimilarAgentsOptions = {}) {
+export function useSimilarAgents(
+  agentId: string | undefined,
+  options: UseSimilarAgentsOptions = {},
+) {
   const { limit = 4 } = options;
 
   return useQuery<SimilarAgent[], Error>({

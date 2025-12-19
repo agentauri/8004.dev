@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-webpack5';
-import { fn } from 'storybook/test';
 import { useState } from 'react';
+import { fn } from 'storybook/test';
 import { Switch } from './switch';
 
 const meta = {

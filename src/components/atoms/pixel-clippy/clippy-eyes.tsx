@@ -6,21 +6,32 @@ import styles from './clippy.module.css';
 import type { ClippyMood } from './clippy-config';
 import { COLORS, EYE_CONFIG } from './clippy-config';
 
-// Helper to safely access CSS module classes (handles undefined in some build environments)
-function getStyle(className: string | undefined): string | undefined {
-  return className;
-}
-
 // Safe style accessors
 const safeStyles = {
-  get happyEye() { return styles?.happyEye; },
-  get blush() { return styles?.blush; },
-  get pupilSurprised() { return styles?.pupilSurprised; },
-  get highlight() { return styles?.highlight; },
-  get pupilThinking() { return styles?.pupilThinking; },
-  get pupilWink() { return styles?.pupilWink; },
-  get pupilLeft() { return styles?.pupilLeft; },
-  get pupilRight() { return styles?.pupilRight; },
+  get happyEye() {
+    return styles?.happyEye;
+  },
+  get blush() {
+    return styles?.blush;
+  },
+  get pupilSurprised() {
+    return styles?.pupilSurprised;
+  },
+  get highlight() {
+    return styles?.highlight;
+  },
+  get pupilThinking() {
+    return styles?.pupilThinking;
+  },
+  get pupilWink() {
+    return styles?.pupilWink;
+  },
+  get pupilLeft() {
+    return styles?.pupilLeft;
+  },
+  get pupilRight() {
+    return styles?.pupilRight;
+  },
 };
 
 interface ClippyEyesProps {

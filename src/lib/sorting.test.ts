@@ -142,7 +142,7 @@ describe('sortAgents', () => {
     it('treats null reputation as 0', () => {
       const agents = [
         createMockAgent({ reputationScore: 50, name: 'Has Rep' }),
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        // biome-ignore lint/suspicious/noExplicitAny: Testing null handling requires bypassing type system
         createMockAgent({ reputationScore: null as any, name: 'Null Rep' }),
       ];
 

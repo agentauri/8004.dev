@@ -1,6 +1,6 @@
 'use client';
 
-import { MessageSquare, Loader2 } from 'lucide-react';
+import { Loader2, MessageSquare } from 'lucide-react';
 import type React from 'react';
 import { useState } from 'react';
 import { FeedbackEntry } from '@/components/molecules';
@@ -75,11 +75,7 @@ export function AgentFeedbacks({
   // Loading state
   if (isLoading && feedback.length === 0) {
     return (
-      <div
-        className={cn('space-y-4', className)}
-        data-testid="agent-feedbacks"
-        data-loading="true"
-      >
+      <div className={cn('space-y-4', className)} data-testid="agent-feedbacks" data-loading="true">
         <div className="flex items-center gap-2">
           <MessageSquare size={16} className="text-[var(--pixel-blue-sky)]" aria-hidden="true" />
           <h2 className="font-[family-name:var(--font-pixel-heading)] text-sm text-[var(--pixel-gray-100)]">
@@ -96,11 +92,7 @@ export function AgentFeedbacks({
   // Empty state
   if (feedback.length === 0) {
     return (
-      <div
-        className={cn('space-y-4', className)}
-        data-testid="agent-feedbacks"
-        data-empty="true"
-      >
+      <div className={cn('space-y-4', className)} data-testid="agent-feedbacks" data-empty="true">
         <div className="flex items-center gap-2">
           <MessageSquare size={16} className="text-[var(--pixel-blue-sky)]" aria-hidden="true" />
           <h2 className="font-[family-name:var(--font-pixel-heading)] text-sm text-[var(--pixel-gray-100)]">
@@ -117,8 +109,8 @@ export function AgentFeedbacks({
             No feedback yet
           </p>
           <p className="text-[var(--pixel-gray-500)] text-xs mt-2 max-w-md mx-auto">
-            This agent hasn&apos;t received any feedback from users yet.
-            Feedback helps the community understand agent quality and reliability.
+            This agent hasn&apos;t received any feedback from users yet. Feedback helps the
+            community understand agent quality and reliability.
           </p>
         </div>
       </div>

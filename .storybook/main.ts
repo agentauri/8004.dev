@@ -1,6 +1,7 @@
 // This file has been automatically migrated to valid ESM format by Storybook.
-import { fileURLToPath } from "node:url";
+
 import path, { dirname } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import type { StorybookConfig } from '@storybook/react-webpack5';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -13,7 +14,7 @@ const config: StorybookConfig = {
     '@storybook/addon-webpack5-compiler-babel',
     '@storybook/addon-links',
     '@storybook/addon-a11y',
-    '@storybook/addon-docs'
+    '@storybook/addon-docs',
   ],
 
   framework: {
@@ -107,7 +108,7 @@ const config: StorybookConfig = {
     }
 
     return config;
-  }
+  },
 };
 
 export default config;

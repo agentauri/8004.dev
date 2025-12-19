@@ -31,7 +31,7 @@ type Story = StoryObj<typeof meta>;
 
 const createMockFeedback = (id: number, options?: Partial<AgentFeedback>): AgentFeedback => ({
   id: `feedback-${id}`,
-  score: options?.score ?? (70 + Math.floor(Math.random() * 30)),
+  score: options?.score ?? 70 + Math.floor(Math.random() * 30),
   tags: options?.tags ?? ['reliable', 'responsive'],
   context: options?.context ?? `Great experience with this agent. Response #${id}`,
   submitter: `0x${id.toString(16).padStart(40, '0')}`,
@@ -42,12 +42,36 @@ const createMockFeedback = (id: number, options?: Partial<AgentFeedback>): Agent
 const manyFeedbacks = Array.from({ length: 25 }, (_, i) => createMockFeedback(i + 1));
 
 const mixedFeedbacks: AgentFeedback[] = [
-  createMockFeedback(1, { score: 95, tags: ['excellent', 'fast', 'accurate'], context: 'Outstanding performance! This agent consistently delivers high-quality results.' }),
-  createMockFeedback(2, { score: 88, tags: ['reliable', 'helpful'], context: 'Very reliable agent, always responds quickly.' }),
-  createMockFeedback(3, { score: 45, tags: ['slow', 'needs-improvement'], context: 'Response time could be better.' }),
-  createMockFeedback(4, { score: 92, tags: ['professional', 'accurate'], context: 'Highly accurate and professional.' }),
-  createMockFeedback(5, { score: 78, tags: ['good'], context: 'Good overall, meets expectations.' }),
-  createMockFeedback(6, { score: 25, tags: ['poor', 'failed'], context: 'Failed to complete the task.' }),
+  createMockFeedback(1, {
+    score: 95,
+    tags: ['excellent', 'fast', 'accurate'],
+    context: 'Outstanding performance! This agent consistently delivers high-quality results.',
+  }),
+  createMockFeedback(2, {
+    score: 88,
+    tags: ['reliable', 'helpful'],
+    context: 'Very reliable agent, always responds quickly.',
+  }),
+  createMockFeedback(3, {
+    score: 45,
+    tags: ['slow', 'needs-improvement'],
+    context: 'Response time could be better.',
+  }),
+  createMockFeedback(4, {
+    score: 92,
+    tags: ['professional', 'accurate'],
+    context: 'Highly accurate and professional.',
+  }),
+  createMockFeedback(5, {
+    score: 78,
+    tags: ['good'],
+    context: 'Good overall, meets expectations.',
+  }),
+  createMockFeedback(6, {
+    score: 25,
+    tags: ['poor', 'failed'],
+    context: 'Failed to complete the task.',
+  }),
 ];
 
 export const Default: Story = {
@@ -132,11 +156,13 @@ export const WithMoreToLoad: Story = {
 
 export const SingleFeedback: Story = {
   args: {
-    feedback: [createMockFeedback(1, {
-      score: 85,
-      tags: ['first-interaction', 'positive'],
-      context: 'First interaction with this agent was great!',
-    })],
+    feedback: [
+      createMockFeedback(1, {
+        score: 85,
+        tags: ['first-interaction', 'positive'],
+        context: 'First interaction with this agent was great!',
+      }),
+    ],
     totalCount: 1,
   },
 };

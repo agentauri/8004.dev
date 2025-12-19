@@ -66,7 +66,8 @@ export function TabNavigation({
     const activeButton = tabRefs.current.get(activeTab);
     if (activeButton && tabsRef.current) {
       const container = tabsRef.current;
-      const scrollLeft = activeButton.offsetLeft - container.offsetWidth / 2 + activeButton.offsetWidth / 2;
+      const scrollLeft =
+        activeButton.offsetLeft - container.offsetWidth / 2 + activeButton.offsetWidth / 2;
       // Check if scrollTo is available (not in JSDOM test environment)
       if (typeof container.scrollTo === 'function') {
         container.scrollTo({ left: scrollLeft, behavior: 'smooth' });
@@ -129,6 +130,7 @@ export function TabNavigation({
 
         return (
           <button
+            type="button"
             key={tab.id}
             ref={(el) => {
               if (el) {
@@ -159,17 +161,14 @@ export function TabNavigation({
                 'after:shadow-[0_0_8px_var(--pixel-blue-sky)]',
               ],
               // Inactive state
-              !isActive && !isDisabled && [
-                'text-[var(--pixel-gray-400)]',
-                'hover:text-[var(--pixel-gray-200)]',
-                'hover:bg-[var(--pixel-gray-800)]/50',
-              ],
+              !isActive &&
+                !isDisabled && [
+                  'text-[var(--pixel-gray-400)]',
+                  'hover:text-[var(--pixel-gray-200)]',
+                  'hover:bg-[var(--pixel-gray-800)]/50',
+                ],
               // Disabled state
-              isDisabled && [
-                'text-[var(--pixel-gray-600)]',
-                'cursor-not-allowed',
-                'opacity-50',
-              ],
+              isDisabled && ['text-[var(--pixel-gray-600)]', 'cursor-not-allowed', 'opacity-50'],
             )}
             data-testid={`tab-${tab.id}`}
             data-active={isActive}

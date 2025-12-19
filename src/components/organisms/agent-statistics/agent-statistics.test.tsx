@@ -227,9 +227,15 @@ describe('AgentStatistics', () => {
       render(<AgentStatistics healthScore={mockHealthScore} />);
       const checkItems = screen.getAllByTestId('health-check-item');
 
-      const metadataCheck = checkItems.find((item) => item.getAttribute('data-category') === 'metadata');
-      const endpointsCheck = checkItems.find((item) => item.getAttribute('data-category') === 'endpoints');
-      const reputationCheck = checkItems.find((item) => item.getAttribute('data-category') === 'reputation');
+      const metadataCheck = checkItems.find(
+        (item) => item.getAttribute('data-category') === 'metadata',
+      );
+      const endpointsCheck = checkItems.find(
+        (item) => item.getAttribute('data-category') === 'endpoints',
+      );
+      const reputationCheck = checkItems.find(
+        (item) => item.getAttribute('data-category') === 'reputation',
+      );
 
       expect(metadataCheck).toHaveAttribute('data-status', 'fail');
       expect(endpointsCheck).toHaveAttribute('data-status', 'pass');

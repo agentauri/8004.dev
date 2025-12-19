@@ -13,12 +13,8 @@ const mockAgent: Agent = {
   x402support: true,
   supportedTrust: ['reputation', 'stake'],
   oasf: {
-    skills: [
-      { slug: 'natural_language_processing', confidence: 0.9, reasoning: 'Test' },
-    ],
-    domains: [
-      { slug: 'software_development', confidence: 0.95 },
-    ],
+    skills: [{ slug: 'natural_language_processing', confidence: 0.9, reasoning: 'Test' }],
+    domains: [{ slug: 'software_development', confidence: 0.95 }],
   },
   endpoints: {
     mcp: { url: 'https://mcp.example.com', version: '1.0' },
@@ -114,9 +110,7 @@ describe('AgentMetadata', () => {
 
     it('shows agent wallet', () => {
       render(<AgentMetadata agent={mockAgent} />);
-      expect(
-        screen.getByText('0x1234567890abcdef1234567890abcdef12345678'),
-      ).toBeInTheDocument();
+      expect(screen.getByText('0x1234567890abcdef1234567890abcdef12345678')).toBeInTheDocument();
     });
 
     it('shows MCP and A2A endpoints', () => {
@@ -157,17 +151,13 @@ describe('AgentMetadata', () => {
     it('shows registration information', () => {
       render(<AgentMetadata agent={mockAgent} />);
       fireEvent.click(screen.getByText('Registration'));
-      expect(
-        screen.getByText('0x9876543210fedcba9876543210fedcba98765432'),
-      ).toBeInTheDocument();
+      expect(screen.getByText('0x9876543210fedcba9876543210fedcba98765432')).toBeInTheDocument();
     });
 
     it('shows contract address when available', () => {
       render(<AgentMetadata agent={mockAgent} />);
       fireEvent.click(screen.getByText('Registration'));
-      expect(
-        screen.getByText('0xabcdef1234567890abcdef1234567890abcdef12'),
-      ).toBeInTheDocument();
+      expect(screen.getByText('0xabcdef1234567890abcdef1234567890abcdef12')).toBeInTheDocument();
     });
 
     it('shows active status', () => {

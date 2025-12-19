@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-webpack5';
 import { useState } from 'react';
-import { TabNavigation, type TabItem } from './tab-navigation';
+import { type TabItem, TabNavigation } from './tab-navigation';
 
 const meta = {
   title: 'Molecules/TabNavigation',
@@ -171,7 +171,8 @@ export const InAgentDetail: Story = {
                 Agent Overview
               </h3>
               <p className="text-[var(--pixel-gray-400)] text-sm">
-                This is the overview section showing agent details, endpoints, and registration info.
+                This is the overview section showing agent details, endpoints, and registration
+                info.
               </p>
             </div>
           );
@@ -226,7 +227,11 @@ export const InAgentDetail: Story = {
                 Metadata
               </h3>
               <pre className="p-4 bg-[var(--pixel-gray-700)] text-xs text-[var(--pixel-gray-300)] overflow-auto">
-                {JSON.stringify({ agentUri: 'data:application/json,...', did: 'did:example:123' }, null, 2)}
+                {JSON.stringify(
+                  { agentUri: 'data:application/json,...', did: 'did:example:123' },
+                  null,
+                  2,
+                )}
               </pre>
             </div>
           );

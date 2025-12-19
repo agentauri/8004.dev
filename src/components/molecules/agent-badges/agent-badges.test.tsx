@@ -72,7 +72,9 @@ describe('AgentBadges', () => {
     });
 
     it('shows reputation count with trust score', () => {
-      render(<AgentBadges chainId={11155111} isActive={true} trustScore={85} reputationCount={23} />);
+      render(
+        <AgentBadges chainId={11155111} isActive={true} trustScore={85} reputationCount={23} />,
+      );
       expect(screen.getByTestId('trust-score')).toHaveTextContent('(23)');
     });
 

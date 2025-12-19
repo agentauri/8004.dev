@@ -1,9 +1,9 @@
 'use client';
 
 import dynamic from 'next/dynamic';
-import { useEffect, useState, type JSX } from 'react';
-import { PixelExplorer, type ChainId } from '@/components/atoms';
-import { TabNavigation, type TabItem } from '@/components/molecules';
+import { type JSX, useEffect, useState } from 'react';
+import { type ChainId, PixelExplorer } from '@/components/atoms';
+import { type TabItem, TabNavigation } from '@/components/molecules';
 import {
   AgentFeedbacks,
   AgentHeader,
@@ -13,7 +13,13 @@ import {
   ValidationSection,
 } from '@/components/organisms';
 import { cn } from '@/lib/utils';
-import type { Agent, AgentFeedback, AgentReputation, AgentSummary, AgentValidation } from '@/types/agent';
+import type {
+  Agent,
+  AgentFeedback,
+  AgentReputation,
+  AgentSummary,
+  AgentValidation,
+} from '@/types/agent';
 
 // Lazy load RelatedAgents for better initial page load
 const RelatedAgents = dynamic(
@@ -184,20 +190,10 @@ export function AgentDetailTemplate({
         );
 
       case 'feedbacks':
-        return (
-          <AgentFeedbacks
-            feedback={recentFeedback}
-            totalCount={reputation?.count}
-          />
-        );
+        return <AgentFeedbacks feedback={recentFeedback} totalCount={reputation?.count} />;
 
       case 'validations':
-        return (
-          <ValidationSection
-            validations={validations}
-            agentId={agent.id}
-          />
-        );
+        return <ValidationSection validations={validations} agentId={agent.id} />;
 
       case 'metadata':
         return <AgentMetadata agent={agent} />;
@@ -228,11 +224,7 @@ export function AgentDetailTemplate({
         />
 
         {/* Tab Navigation */}
-        <TabNavigation
-          tabs={tabs}
-          activeTab={activeTab}
-          onTabChange={handleTabChange}
-        />
+        <TabNavigation tabs={tabs} activeTab={activeTab} onTabChange={handleTabChange} />
 
         {/* Tab Content */}
         <div

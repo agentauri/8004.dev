@@ -24,26 +24,24 @@ export function getHealthLevel(score: number): HealthLevel {
   return 'poor';
 }
 
-const HEALTH_CONFIG: Record<
-  HealthLevel,
-  { label: string; colorClass: string; glowClass: string }
-> = {
-  poor: {
-    label: 'POOR',
-    colorClass: 'text-[var(--pixel-red-fire)] border-[var(--pixel-red-fire)]',
-    glowClass: 'shadow-[0_0_8px_var(--glow-red)]',
-  },
-  fair: {
-    label: 'FAIR',
-    colorClass: 'text-[var(--pixel-gold-coin)] border-[var(--pixel-gold-coin)]',
-    glowClass: 'shadow-[0_0_8px_var(--glow-gold)]',
-  },
-  good: {
-    label: 'GOOD',
-    colorClass: 'text-[var(--pixel-green-pipe)] border-[var(--pixel-green-pipe)]',
-    glowClass: 'shadow-[0_0_8px_var(--glow-green)]',
-  },
-};
+const HEALTH_CONFIG: Record<HealthLevel, { label: string; colorClass: string; glowClass: string }> =
+  {
+    poor: {
+      label: 'POOR',
+      colorClass: 'text-[var(--pixel-red-fire)] border-[var(--pixel-red-fire)]',
+      glowClass: 'shadow-[0_0_8px_var(--glow-red)]',
+    },
+    fair: {
+      label: 'FAIR',
+      colorClass: 'text-[var(--pixel-gold-coin)] border-[var(--pixel-gold-coin)]',
+      glowClass: 'shadow-[0_0_8px_var(--glow-gold)]',
+    },
+    good: {
+      label: 'GOOD',
+      colorClass: 'text-[var(--pixel-green-pipe)] border-[var(--pixel-green-pipe)]',
+      glowClass: 'shadow-[0_0_8px_var(--glow-green)]',
+    },
+  };
 
 /**
  * HealthBadge displays an agent's health score with color-coded level indicator.
@@ -67,12 +65,7 @@ export function HealthBadge({
 
   return (
     <span
-      className={cn(
-        'badge-pixel font-bold',
-        config.colorClass,
-        config.glowClass,
-        className,
-      )}
+      className={cn('badge-pixel font-bold', config.colorClass, config.glowClass, className)}
       data-testid="health-badge"
       data-level={level}
       data-score={clampedScore}

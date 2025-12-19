@@ -60,23 +60,17 @@ describe('HealthBadge', () => {
 
     it('applies red color for poor health', () => {
       render(<HealthBadge score={30} />);
-      expect(screen.getByTestId('health-badge')).toHaveClass(
-        'text-[var(--pixel-red-fire)]',
-      );
+      expect(screen.getByTestId('health-badge')).toHaveClass('text-[var(--pixel-red-fire)]');
     });
 
     it('applies gold color for fair health', () => {
       render(<HealthBadge score={60} />);
-      expect(screen.getByTestId('health-badge')).toHaveClass(
-        'text-[var(--pixel-gold-coin)]',
-      );
+      expect(screen.getByTestId('health-badge')).toHaveClass('text-[var(--pixel-gold-coin)]');
     });
 
     it('applies green color for good health', () => {
       render(<HealthBadge score={90} />);
-      expect(screen.getByTestId('health-badge')).toHaveClass(
-        'text-[var(--pixel-green-pipe)]',
-      );
+      expect(screen.getByTestId('health-badge')).toHaveClass('text-[var(--pixel-green-pipe)]');
     });
 
     it('applies additional class names', () => {
@@ -88,10 +82,7 @@ describe('HealthBadge', () => {
   describe('tooltip', () => {
     it('has title attribute with full score', () => {
       render(<HealthBadge score={75} />);
-      expect(screen.getByTestId('health-badge')).toHaveAttribute(
-        'title',
-        'Health Score: 75/100',
-      );
+      expect(screen.getByTestId('health-badge')).toHaveAttribute('title', 'Health Score: 75/100');
     });
   });
 

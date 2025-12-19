@@ -57,7 +57,7 @@ export function mapOASF(oasf?: BackendOASFClassification): AgentOASF | undefined
  * Returns the agent name if available, otherwise "Agent #{tokenId}"
  */
 function getDisplayName(name: string | undefined, tokenId: string): string {
-  if (name && name.trim()) return name;
+  if (name?.trim()) return name;
   return `Agent #${tokenId}`;
 }
 
@@ -241,9 +241,7 @@ export function mapReputation(rep: BackendReputation): AgentReputation {
  */
 export function mapValidations(validations?: BackendValidation[]): AgentValidation[] {
   if (!validations) return [];
-  return validations
-    .map(mapValidation)
-    .filter((v): v is AgentValidation => v !== undefined);
+  return validations.map(mapValidation).filter((v): v is AgentValidation => v !== undefined);
 }
 
 /**

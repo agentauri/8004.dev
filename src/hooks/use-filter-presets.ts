@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import type { FilterMode } from '@/components/molecules/filter-mode-toggle';
 import type { FilterPreset } from '@/types/filter-preset';
 
@@ -111,7 +111,7 @@ export function useFilterPresets(): UseFilterPresetsResult {
   }, [customPresets, isInitialized]);
 
   // Combine built-in and custom presets
-  const presets = [...BUILT_IN_PRESETS, ...customPresets];
+  const presets = useMemo(() => [...BUILT_IN_PRESETS, ...customPresets], [customPresets]);
 
   const savePreset = useCallback((name: string, filters: FilterState): FilterPreset => {
     const newPreset: FilterPreset = {

@@ -5,8 +5,8 @@
  * semantic search endpoint doesn't support server-side sorting.
  */
 
-import type { AgentSummary } from '@/types/agent';
 import type { SortField, SortOrder } from '@/components/molecules/sort-selector';
+import type { AgentSummary } from '@/types/agent';
 
 /**
  * Sort agents by the specified field and order
@@ -51,7 +51,6 @@ export function sortAgents(
         comparison = (a.reputationScore ?? 0) - (b.reputationScore ?? 0);
         break;
 
-      case 'relevance':
       default:
         // Sort by relevance score from semantic search (null/undefined treated as 0)
         // For relevance, we want highest scores first by default

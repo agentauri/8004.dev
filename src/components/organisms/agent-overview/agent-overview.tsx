@@ -1,6 +1,5 @@
 import { AlertTriangle } from 'lucide-react';
 import type React from 'react';
-import type { ChainId } from '@/components/atoms';
 import {
   AgentEndpoints,
   AgentRegistration,
@@ -53,11 +52,7 @@ function WarningsList({ warnings }: { warnings: AgentWarning[] }): React.JSX.Ele
           return (
             <div
               key={`${warning.type}-${index}`}
-              className={cn(
-                'p-3 border-2',
-                styles.border,
-                styles.bg,
-              )}
+              className={cn('p-3 border-2', styles.border, styles.bg)}
               data-testid="warning-item"
               data-severity={warning.severity}
             >
@@ -115,10 +110,7 @@ export function AgentOverview({
   className,
 }: AgentOverviewProps): React.JSX.Element {
   return (
-    <div
-      className={cn('space-y-6', className)}
-      data-testid="agent-overview"
-    >
+    <div className={cn('space-y-6', className)} data-testid="agent-overview">
       {/* Description */}
       {agent.description && (
         <div className="p-4 bg-[var(--pixel-gray-800)] border-2 border-[var(--pixel-gray-700)]">
@@ -138,9 +130,7 @@ export function AgentOverview({
       />
 
       {/* Warnings Section */}
-      {agent.warnings && agent.warnings.length > 0 && (
-        <WarningsList warnings={agent.warnings} />
-      )}
+      {agent.warnings && agent.warnings.length > 0 && <WarningsList warnings={agent.warnings} />}
 
       {/* Two-column layout for endpoints and registration */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

@@ -92,13 +92,13 @@ describe('TrendIndicator', () => {
     });
 
     it('applies correct color to change text for up', () => {
-      const { container } = render(<TrendIndicator direction="up" change={5} />);
+      render(<TrendIndicator direction="up" change={5} />);
       const changeText = screen.getByText('+5%');
       expect(changeText).toHaveClass('text-[#00D800]');
     });
 
     it('applies correct color to change text for down', () => {
-      const { container } = render(<TrendIndicator direction="down" change={-5} />);
+      render(<TrendIndicator direction="down" change={-5} />);
       const changeText = screen.getByText('-5%');
       expect(changeText).toHaveClass('text-[#FC5454]');
     });

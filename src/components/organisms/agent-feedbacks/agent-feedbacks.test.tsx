@@ -49,9 +49,7 @@ describe('AgentFeedbacks', () => {
 
     it('shows descriptive empty message', () => {
       render(<AgentFeedbacks feedback={[]} />);
-      expect(
-        screen.getByText(/This agent hasn't received any feedback/),
-      ).toBeInTheDocument();
+      expect(screen.getByText(/This agent hasn't received any feedback/)).toBeInTheDocument();
     });
   });
 
@@ -95,11 +93,7 @@ describe('AgentFeedbacks', () => {
     it('calls onLoadMore when all local feedbacks are shown and hasMore is true', () => {
       const onLoadMore = vi.fn();
       render(
-        <AgentFeedbacks
-          feedback={mockFeedbacks.slice(0, 10)}
-          hasMore
-          onLoadMore={onLoadMore}
-        />,
+        <AgentFeedbacks feedback={mockFeedbacks.slice(0, 10)} hasMore onLoadMore={onLoadMore} />,
       );
 
       const button = screen.getByTestId('load-more-button');

@@ -1,6 +1,6 @@
 import { Users } from 'lucide-react';
 import type React from 'react';
-import { PixelExplorer, type ChainId } from '@/components/atoms';
+import { type ChainId, PixelExplorer } from '@/components/atoms';
 import type { CapabilityType } from '@/components/molecules';
 import { AgentCard, type AgentCardAgent } from '@/components/organisms/agent-card';
 import { cn } from '@/lib/utils';
@@ -71,9 +71,7 @@ export function RelatedAgents({
         )}
         <div className="flex flex-col items-center justify-center py-8 gap-2">
           <PixelExplorer size="md" animation="walk" />
-          <span className="text-[var(--pixel-gray-400)] text-sm">
-            Finding similar agents...
-          </span>
+          <span className="text-[var(--pixel-gray-400)] text-sm">Finding similar agents...</span>
         </div>
       </section>
     );

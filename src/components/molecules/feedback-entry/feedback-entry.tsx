@@ -60,8 +60,7 @@ export function FeedbackEntry({
   compact = false,
   className,
 }: FeedbackEntryProps): React.JSX.Element {
-  const { id, score, tags, context, feedbackUri, submitter, timestamp, transactionHash } =
-    feedback;
+  const { id, score, tags, context, feedbackUri, submitter, timestamp, transactionHash } = feedback;
 
   // Build transaction explorer URL if available
   const txExplorerUrl =

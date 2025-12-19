@@ -37,11 +37,11 @@ export type { SortField, SortOption, SortOrder, SortSelectorProps } from './sort
 export { SortSelector } from './sort-selector';
 export type { StatCardProps } from './stat-card';
 export { StatCard } from './stat-card';
+export type { TabItem, TabNavigationProps } from './tab-navigation';
+export { TabNavigation } from './tab-navigation';
 export type { TaxonomyFilterProps } from './taxonomy-filter';
 export { TaxonomyFilter } from './taxonomy-filter';
 export type { TaxonomyTagProps } from './taxonomy-tag';
 export { TaxonomyTag } from './taxonomy-tag';
 export type { TaxonomyTreeNodeProps } from './taxonomy-tree-node';
 export { TaxonomyTreeNode } from './taxonomy-tree-node';
-export type { TabItem, TabNavigationProps } from './tab-navigation';
-export { TabNavigation } from './tab-navigation';

@@ -373,7 +373,7 @@ export const OnLightBackground: Story = {
   ),
   globals: {
     backgrounds: {
-      value: "light"
-    }
+      value: 'light',
+    },
   },
 };

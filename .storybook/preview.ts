@@ -11,10 +11,10 @@ const preview: Preview = {
     },
     backgrounds: {
       options: {
-        "pixel-black": { name: 'pixel-black', value: '#000000' },
-        "pixel-gray-dark": { name: 'pixel-gray-dark', value: '#1a1a1a' },
-        "pixel-gray-800": { name: 'pixel-gray-800', value: '#2a2a2a' }
-      }
+        'pixel-black': { name: 'pixel-black', value: '#000000' },
+        'pixel-gray-dark': { name: 'pixel-gray-dark', value: '#1a1a1a' },
+        'pixel-gray-800': { name: 'pixel-gray-800', value: '#2a2a2a' },
+      },
     },
     viewport: {
       options: {
@@ -65,9 +65,9 @@ const preview: Preview = {
 
   initialGlobals: {
     backgrounds: {
-      value: 'pixel-black'
-    }
-  }
+      value: 'pixel-black',
+    },
+  },
 };
 
 export default preview;
