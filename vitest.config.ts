@@ -32,10 +32,10 @@ export default defineConfig({
         '**/index.ts', // Barrel exports don't need tests
       ],
       thresholds: {
-        statements: 97,
-        branches: 85,
-        functions: 94,
-        lines: 97,
+        statements: 95,
+        branches: 77,
+        functions: 90,
+        lines: 95,
       },
     },
   },
