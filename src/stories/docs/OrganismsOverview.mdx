@@ -1,0 +1,82 @@
+import { Meta } from '@storybook/addon-docs/blocks';
+
+<Meta title="Documentation/Components/Organisms Overview" />
+
+# Organisms
+
+Organisms are **complex UI sections** that represent distinct areas of an interface. They're composed of molecules and atoms, may have local state, and handle user interactions.
+
+## Available Organisms
+
+| Component | Description | Key Features |
+|-----------|-------------|--------------|
+| **Header** | Site navigation header | Logo, nav links, responsive menu |
+| **AgentCard** | Agent preview card | Name, badges, score, capabilities |
+| **SearchBar** | Complete search interface | Input, chain selector, suggestions |
+| **SearchFilters** | Filter panel | Status, protocols, reputation, presets |
+| **AgentHeader** | Agent detail page header | Name, address, status, chains |
+| **CapabilitiesGrid** | Grid of agent capabilities | MCP tools, A2A endpoints |
+| **MetadataPanel** | Agent metadata display | Links, description, timestamps |
+| **ReputationSection** | Full reputation display | Score, distribution, breakdown |
+| **FeedbackTimeline** | Chronological feedback list | Entries, pagination |
+| **RelatedAgents** | Similar agents section | Agent cards, "see more" |
+
+## Organism Characteristics
+
+| Characteristic | Description |
+|---------------|-------------|
+| **Feature-Specific** | Represents a complete feature section |
+| **Stateful** | May have local UI state (not data state) |
+| **Interactive** | Handles user interactions and callbacks |
+| **Composed** | Built from molecules and atoms |
+
+## Example: SearchFilters
+
+The SearchFilters organism integrates multiple molecules:
+
+```tsx
+<SearchFilters
+  filters={{
+    status: ['active'],
+    protocols: ['mcp'],
+    filterMode: 'AND',
+    minReputation: 0,
+    maxReputation: 100,
+  }}
+  onFiltersChange={handleFilterChange}
+  presets={presets}
+  selectedPresetId={currentPreset}
+  onPresetSelect={handlePresetSelect}
+/>
+```
+
+Components used:
+- `FilterGroup` molecule (status filters)
+- `CapabilityTag` molecule (protocol filters)
+- `FilterModeToggle` molecule (AND/OR toggle)
+- `ReputationRangeFilter` molecule (reputation slider)
+- `PresetSelector` molecule (saved presets)
+
+## Local State Guidelines
+
+Organisms may use local state for:
+- Toggle states (collapsed/expanded)
+- Hover/focus states
+- Form input values before submission
+
+But NOT for:
+- Data fetching (use page-level hooks)
+- Global application state
+- Cross-component communication
+
+## Creating New Organisms
+
+```
+organism-name/
+├── organism-name.tsx          # Component implementation
+├── organism-name.stories.tsx  # Storybook stories
+├── organism-name.test.tsx     # Unit tests
+└── index.ts                   # Barrel export
+```
+
+See individual organism stories for detailed API documentation.

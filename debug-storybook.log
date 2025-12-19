@@ -1,0 +1,25 @@
+[17:33:52.037] [INFO] storybook v10.1.7
+[17:33:52.340] [DEBUG] Getting package.json info for /Users/matteoscurati/work/8004.dev/8004.dev/package.json...
+[17:33:52.585] [DEBUG] Serving static files from [36mpublic[39m at [36m/[39m
+[17:33:52.588] [INFO] Starting...
+[17:33:52.833] [DEBUG] Starting preview..
+[17:33:52.839] [INFO] Addon-docs: using MDX3
+[17:33:52.848] [INFO] Using implicit CSS loaders
+[17:33:52.850] [INFO] Using default Webpack5 setup
+[17:33:53.091] [DEBUG] Using tsconfig paths for react-docgen
+[17:33:56.263] [ERROR] Failed to build the preview
+[17:33:56.266] [WARN] Force closed preview build
+[17:33:56.267] [ERROR] [38;2;241;97;97mSB_BUILDER-WEBPACK5_0003 (WebpackCompilationError): There were problems when compiling your code with Webpack.
+Run Storybook with --debug-webpack for more information.[39m
+    at starter (file://./node_modules/.pnpm/@storybook+builder-webpack5@10.1.7_esbuild@0.27.1_storybook@10.1.7_@testing-library+dom_3152a9c5298d586c81c6e5bdf32113be/node_modules/@storybook/builder-webpack5/dist/index.js:799:11)
+    at starter.next (<anonymous>)
+    at Module.start (file://./node_modules/.pnpm/@storybook+builder-webpack5@10.1.7_esbuild@0.27.1_storybook@10.1.7_@testing-library+dom_3152a9c5298d586c81c6e5bdf32113be/node_modules/@storybook/builder-webpack5/dist/index.js:857:34)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async storybookDevServer (file://./node_modules/.pnpm/storybook@10.1.7_@testing-library+dom@10.4.0_react-dom@19.2.3_react@19.2.3__react@19.2.3/node_modules/storybook/dist/core-server/index.js:6806:82)
+    at async buildOrThrow (file://./node_modules/.pnpm/storybook@10.1.7_@testing-library+dom@10.4.0_react-dom@19.2.3_react@19.2.3__react@19.2.3/node_modules/storybook/dist/core-server/index.js:5555:12)
+    at async buildDevStandalone (file://./node_modules/.pnpm/storybook@10.1.7_@testing-library+dom@10.4.0_react-dom@19.2.3_react@19.2.3__react@19.2.3/node_modules/storybook/dist/core-server/index.js:7208:66)
+    at async withTelemetry (file://./node_modules/.pnpm/storybook@10.1.7_@testing-library+dom@10.4.0_react-dom@19.2.3_react@19.2.3__react@19.2.3/node_modules/storybook/dist/_node-chunks/chunk-H5UMVQS5.js:209:12)
+    at async dev (file://./node_modules/.pnpm/storybook@10.1.7_@testing-library+dom@10.4.0_react-dom@19.2.3_react@19.2.3__react@19.2.3/node_modules/storybook/dist/bin/core.js:2734:3)
+    at async _Command.<anonymous> (file://./node_modules/.pnpm/storybook@10.1.7_@testing-library+dom@10.4.0_react-dom@19.2.3_react@19.2.3__react@19.2.3/node_modules/storybook/dist/bin/core.js:2801:92)
+[17:33:56.267] [WARN] Broken build, fix the error above.
+You may need to refresh the browser.

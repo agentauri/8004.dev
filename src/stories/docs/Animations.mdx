@@ -1,0 +1,104 @@
+import { Meta } from '@storybook/addon-docs/blocks';
+import { AnimationGrid } from '../components';
+import { ANIMATION_TOKENS } from '../utils/design-tokens';
+
+<Meta title="Documentation/Design Tokens/Animations" />
+
+# Animations
+
+Animations in Agent Explorer follow **8-bit design principles** - using stepped timing functions and subtle movements that feel authentic to the retro aesthetic.
+
+## Animation Tokens
+
+<AnimationGrid animations={ANIMATION_TOKENS} />
+
+## Animation Principles
+
+### 1. Use `steps()` for Pixel-Perfect Motion
+
+For authentic 8-bit feel, use stepped timing functions:
+
+```css
+/* Instead of smooth easing */
+animation: pulse 1s ease-in-out infinite;
+
+/* Use stepped animation */
+animation: blink 1s steps(2, start) infinite;
+```
+
+### 2. Keep Durations Short
+
+- Micro-interactions: 100-150ms
+- Transitions: 150-200ms
+- Attention animations: 1-2s
+
+### 3. Respect User Preferences
+
+Always honor `prefers-reduced-motion`:
+
+```css
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+```
+
+## Common Patterns
+
+### Hover Glow
+
+```tsx
+<button className="transition-shadow hover:shadow-[0_0_20px_var(--glow-blue)]">
+  Hover me
+</button>
+```
+
+### Loading State
+
+```tsx
+<div className="animate-pulse">
+  Loading...
+</div>
+```
+
+### Fade In
+
+```tsx
+<div className="animate-fade-in">
+  {/* modal content */}
+</div>
+```
+
+## Tailwind Config
+
+Custom animations are defined in `tailwind.config.ts`:
+
+```ts
+animation: {
+  'pulse-glow': 'pulse-glow 2s ease-in-out infinite',
+  'blink': 'blink 1s steps(2, start) infinite',
+  'fade-in': 'fade-in 150ms ease-out',
+  'slide-up': 'slide-up 200ms ease-out',
+},
+keyframes: {
+  'pulse-glow': {
+    '0%, 100%': { opacity: '1' },
+    '50%': { opacity: '0.5' },
+  },
+  'blink': {
+    '0%, 100%': { opacity: '1' },
+    '50%': { opacity: '0' },
+  },
+  'fade-in': {
+    from: { opacity: '0' },
+    to: { opacity: '1' },
+  },
+  'slide-up': {
+    from: { transform: 'translateY(10px)', opacity: '0' },
+    to: { transform: 'translateY(0)', opacity: '1' },
+  },
+}
+```

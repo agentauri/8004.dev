@@ -1,0 +1,302 @@
+/**
+ * AgentMascot CSS Animations
+ */
+
+/* Float - gentle up/down movement */
+@keyframes mascot-float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-2px);
+  }
+}
+
+.animateFloat {
+  animation: mascot-float 2s ease-in-out infinite;
+}
+
+/* Blink - visor flicker effect */
+@keyframes mascot-blink {
+  0%,
+  90%,
+  100% {
+    opacity: 1;
+  }
+  95% {
+    opacity: 0.3;
+  }
+}
+
+.animateBlink :global(.mascot-visor) {
+  animation: mascot-blink 3s steps(2) infinite;
+}
+
+/* Bounce - 8-bit jump */
+@keyframes mascot-bounce {
+  0%,
+  100% {
+    transform: translateY(0) scaleY(1);
+  }
+  25% {
+    transform: translateY(-3px) scaleY(1.02);
+  }
+  50% {
+    transform: translateY(0) scaleY(0.98);
+  }
+  75% {
+    transform: translateY(-1px) scaleY(1);
+  }
+}
+
+.animateBounce {
+  animation: mascot-bounce 0.8s steps(4) infinite;
+  transform-origin: bottom center;
+}
+
+/* Pulse - badge glow */
+@keyframes mascot-pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+.animatePulse :global(.mascot-badge) {
+  animation: mascot-pulse 1.5s steps(2) infinite;
+}
+
+/* Walk - alternating leg movement */
+@keyframes mascot-walk-left {
+  0%,
+  50%,
+  100% {
+    transform: translateY(0);
+  }
+  25% {
+    transform: translateY(-1px);
+  }
+}
+
+@keyframes mascot-walk-right {
+  0%,
+  50%,
+  100% {
+    transform: translateY(0);
+  }
+  75% {
+    transform: translateY(-1px);
+  }
+}
+
+.animateWalk :global(.mascot-leg-left) {
+  animation: mascot-walk-left 0.6s steps(4) infinite;
+}
+
+.animateWalk :global(.mascot-leg-right) {
+  animation: mascot-walk-right 0.6s steps(4) infinite;
+}
+
+/* Wave - arm greeting */
+@keyframes mascot-wave {
+  0%,
+  100% {
+    transform: rotate(0deg);
+  }
+  25% {
+    transform: rotate(-15deg);
+  }
+  75% {
+    transform: rotate(15deg);
+  }
+}
+
+.animateWave :global(.mascot-arm-right) {
+  animation: mascot-wave 0.8s steps(3) infinite;
+  transform-origin: 25px 16px;
+}
+
+/* Dance - arcade victory dance */
+@keyframes mascot-dance {
+  0%,
+  100% {
+    transform: translateX(0) rotate(0deg);
+  }
+  25% {
+    transform: translateX(-2px) rotate(-5deg);
+  }
+  50% {
+    transform: translateX(0) rotate(0deg);
+  }
+  75% {
+    transform: translateX(2px) rotate(5deg);
+  }
+}
+
+@keyframes mascot-dance-arms {
+  0%,
+  50%,
+  100% {
+    transform: rotate(0deg);
+  }
+  25% {
+    transform: rotate(-20deg);
+  }
+  75% {
+    transform: rotate(20deg);
+  }
+}
+
+.animateDance {
+  animation: mascot-dance 0.5s steps(4) infinite;
+  transform-origin: bottom center;
+}
+
+.animateDance :global(.mascot-arm-left) {
+  animation: mascot-dance-arms 0.5s steps(4) infinite;
+  transform-origin: 5px 16px;
+}
+
+.animateDance :global(.mascot-arm-right) {
+  animation: mascot-dance-arms 0.5s steps(4) infinite reverse;
+  transform-origin: 27px 16px;
+}
+
+/* Glitch - retro distortion effect */
+@keyframes mascot-glitch {
+  0%,
+  100% {
+    transform: translate(0, 0);
+    filter: none;
+  }
+  10% {
+    transform: translate(-2px, 0);
+  }
+  20% {
+    transform: translate(2px, -1px);
+  }
+  30% {
+    transform: translate(-1px, 1px);
+    filter: hue-rotate(90deg);
+  }
+  40% {
+    transform: translate(1px, 0);
+    filter: none;
+  }
+  50% {
+    transform: translate(-2px, 1px);
+  }
+  60% {
+    transform: translate(0, -1px);
+    filter: hue-rotate(-90deg);
+  }
+  70% {
+    transform: translate(2px, 0);
+    filter: none;
+  }
+  80% {
+    transform: translate(-1px, -1px);
+  }
+  90% {
+    transform: translate(1px, 1px);
+    filter: saturate(2);
+  }
+}
+
+.animateGlitch {
+  animation: mascot-glitch 0.3s steps(1) infinite;
+}
+
+/* Spin - power-up rotation */
+@keyframes mascot-spin {
+  0% {
+    transform: rotateY(0deg);
+  }
+  100% {
+    transform: rotateY(360deg);
+  }
+}
+
+.animateSpin {
+  animation: mascot-spin 1s steps(8) infinite;
+  transform-style: preserve-3d;
+}
+
+/* Celebrate - victory jump with confetti */
+@keyframes mascot-celebrate-jump {
+  0%,
+  100% {
+    transform: translateY(0) scale(1);
+  }
+  50% {
+    transform: translateY(-4px) scale(1.05);
+  }
+}
+
+@keyframes confetti-fall-1 {
+  0% {
+    transform: translateY(-8px) rotate(0deg);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(12px) rotate(180deg);
+    opacity: 0;
+  }
+}
+
+@keyframes confetti-fall-2 {
+  0% {
+    transform: translateY(-6px) rotate(0deg);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(14px) rotate(-180deg);
+    opacity: 0;
+  }
+}
+
+@keyframes confetti-fall-3 {
+  0% {
+    transform: translateY(-10px) rotate(0deg);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(10px) rotate(270deg);
+    opacity: 0;
+  }
+}
+
+@keyframes confetti-fall-4 {
+  0% {
+    transform: translateY(-4px) rotate(0deg);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(16px) rotate(-270deg);
+    opacity: 0;
+  }
+}
+
+.animateCelebrate {
+  animation: mascot-celebrate-jump 0.6s steps(2) infinite;
+}
+
+.animateCelebrate :global(.confetti-1) {
+  animation: confetti-fall-1 0.8s steps(4) infinite;
+}
+
+.animateCelebrate :global(.confetti-2) {
+  animation: confetti-fall-2 0.9s steps(4) infinite 0.1s;
+}
+
+.animateCelebrate :global(.confetti-3) {
+  animation: confetti-fall-3 0.7s steps(4) infinite 0.2s;
+}
+
+.animateCelebrate :global(.confetti-4) {
+  animation: confetti-fall-4 1s steps(4) infinite 0.15s;
+}

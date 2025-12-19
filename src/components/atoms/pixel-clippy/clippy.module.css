@@ -1,0 +1,253 @@
+/**
+ * PixelClippy CSS Animations
+ * All animations for the Clippy character
+ */
+
+/* Float - gentle hovering */
+@keyframes clippy-float-anim {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-4px);
+  }
+}
+
+.animateFloat {
+  animation: clippy-float-anim 2s ease-in-out infinite;
+}
+
+/* Bounce - excited jump */
+@keyframes clippy-bounce-anim {
+  0%,
+  100% {
+    transform: scaleY(1) translateY(0);
+  }
+  30% {
+    transform: scaleY(0.95) translateY(2px);
+  }
+  50% {
+    transform: scaleY(1.05) translateY(-6px);
+  }
+  70% {
+    transform: scaleY(0.98) translateY(0);
+  }
+}
+
+.animateBounce {
+  animation: clippy-bounce-anim 0.6s steps(4) infinite;
+  transform-origin: bottom center;
+}
+
+/* Wiggle - attention grab */
+@keyframes clippy-wiggle-anim {
+  0%,
+  100% {
+    transform: rotate(0deg);
+  }
+  20% {
+    transform: rotate(-8deg);
+  }
+  40% {
+    transform: rotate(8deg);
+  }
+  60% {
+    transform: rotate(-4deg);
+  }
+  80% {
+    transform: rotate(4deg);
+  }
+}
+
+.animateWiggle {
+  animation: clippy-wiggle-anim 0.5s steps(5) infinite;
+  transform-origin: bottom center;
+}
+
+/* Wave - greeting */
+@keyframes clippy-wave-anim {
+  0%,
+  100% {
+    transform: rotate(0deg) translateX(0);
+  }
+  25% {
+    transform: rotate(-10deg) translateX(-2px);
+  }
+  75% {
+    transform: rotate(10deg) translateX(2px);
+  }
+}
+
+.animateWave {
+  animation: clippy-wave-anim 1s ease-in-out infinite;
+  transform-origin: bottom center;
+}
+
+/* IDLE - Gentle curious look around */
+@keyframes clippy-idle-look {
+  0%,
+  100% {
+    transform: translate(0, 0);
+  }
+  20% {
+    transform: translate(1.5px, -0.5px);
+  }
+  40% {
+    transform: translate(-1px, 0.5px);
+  }
+  60% {
+    transform: translate(0.5px, 1px);
+  }
+  80% {
+    transform: translate(-0.5px, -0.5px);
+  }
+}
+
+.pupilLeft,
+.pupilRight {
+  animation: clippy-idle-look 5s ease-in-out infinite;
+}
+
+.pupilRight {
+  animation-delay: 0.15s;
+}
+
+/* THINKING - Look up and to the side, pondering */
+@keyframes clippy-thinking-look {
+  0%,
+  100% {
+    transform: translate(2px, -2px);
+  }
+  30% {
+    transform: translate(3px, -3px);
+  }
+  60% {
+    transform: translate(1px, -2.5px);
+  }
+  80% {
+    transform: translate(2.5px, -1.5px);
+  }
+}
+
+.pupilThinking {
+  animation: clippy-thinking-look 2.5s ease-in-out infinite;
+}
+
+/* SURPRISED - Quick nervous shake */
+@keyframes clippy-surprised-shake {
+  0%,
+  100% {
+    transform: translate(0, 0);
+  }
+  10% {
+    transform: translate(-1px, 0);
+  }
+  20% {
+    transform: translate(1px, -0.5px);
+  }
+  30% {
+    transform: translate(-0.5px, 0.5px);
+  }
+  40% {
+    transform: translate(0.5px, 0);
+  }
+  50% {
+    transform: translate(0, -0.5px);
+  }
+  60% {
+    transform: translate(-0.5px, 0);
+  }
+  70% {
+    transform: translate(0.5px, 0.5px);
+  }
+  80% {
+    transform: translate(0, -0.5px);
+  }
+  90% {
+    transform: translate(-0.5px, 0);
+  }
+}
+
+.pupilSurprised {
+  animation: clippy-surprised-shake 0.8s ease-in-out infinite;
+}
+
+/* WINK - Knowing side glance */
+@keyframes clippy-wink-glance {
+  0%,
+  100% {
+    transform: translate(-1px, 0);
+  }
+  50% {
+    transform: translate(-1.5px, 0.5px);
+  }
+}
+
+.pupilWink {
+  animation: clippy-wink-glance 1.5s ease-in-out infinite;
+}
+
+/* HAPPY - Eye arcs bounce joyfully */
+@keyframes clippy-happy-bounce {
+  0%,
+  100% {
+    transform: translateY(0) scaleY(1);
+  }
+  50% {
+    transform: translateY(-1px) scaleY(1.1);
+  }
+}
+
+.happyEye {
+  animation: clippy-happy-bounce 0.8s ease-in-out infinite;
+  transform-origin: center;
+}
+
+/* HAPPY - Blush glow (opacity only) */
+@keyframes clippy-blush-glow {
+  0%,
+  100% {
+    opacity: 0.5;
+  }
+  50% {
+    opacity: 0.95;
+  }
+}
+
+.blush {
+  animation: clippy-blush-glow 1.5s ease-in-out infinite;
+}
+
+/* Eye highlight sparkle */
+@keyframes clippy-sparkle {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.4;
+  }
+}
+
+.highlight {
+  animation: clippy-sparkle 1.2s ease-in-out infinite;
+}
+
+/* Reduce motion for accessibility */
+@media (prefers-reduced-motion: reduce) {
+  .animateFloat,
+  .animateBounce,
+  .animateWiggle,
+  .animateWave,
+  .pupilLeft,
+  .pupilRight,
+  .pupilThinking,
+  .pupilSurprised,
+  .pupilWink,
+  .happyEye,
+  .blush,
+  .highlight {
+    animation: none;
+  }
+}

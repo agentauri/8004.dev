@@ -1,0 +1,126 @@
+import { Meta } from '@storybook/addon-docs/blocks';
+import { Badge, ChainBadge, TrustScore, CopyButton, StatusBadge, DistributionBar, FeedbackTags, ToggleSwitch, RangeSlider } from '../../components/atoms';
+import { ComponentCard, ComponentGrid } from '../components';
+
+<Meta title="Documentation/Components/Atoms Overview" />
+
+# Atoms
+
+Atoms are the **smallest indivisible UI elements** in the design system. They have no custom dependencies and are highly reusable across the application.
+
+## Available Atoms
+
+<ComponentGrid columns={2}>
+  <ComponentCard
+    title="Badge"
+    description="Generic badge for labels and status indicators"
+  >
+    <div className="flex gap-2">
+      <Badge>Default</Badge>
+      <Badge variant="success">Success</Badge>
+      <Badge variant="warning">Warning</Badge>
+    </div>
+  </ComponentCard>
+
+  <ComponentCard
+    title="ChainBadge"
+    description="Blockchain network identifier with chain-specific colors"
+  >
+    <div className="flex gap-2">
+      <ChainBadge chainId={11155111} />
+      <ChainBadge chainId={84532} />
+      <ChainBadge chainId={80002} />
+    </div>
+  </ComponentCard>
+
+  <ComponentCard
+    title="TrustScore"
+    description="Visual reputation score display with color coding"
+  >
+    <div className="flex gap-4">
+      <TrustScore score={92} />
+      <TrustScore score={65} />
+      <TrustScore score={28} />
+    </div>
+  </ComponentCard>
+
+  <ComponentCard
+    title="StatusBadge"
+    description="Agent status indicator (active/inactive)"
+  >
+    <div className="flex gap-2">
+      <StatusBadge status="active" />
+      <StatusBadge status="inactive" />
+    </div>
+  </ComponentCard>
+
+  <ComponentCard
+    title="CopyButton"
+    description="Click to copy text with visual feedback"
+  >
+    <CopyButton text="0x1234...5678" />
+  </ComponentCard>
+
+  <ComponentCard
+    title="DistributionBar"
+    description="Horizontal bar showing low/medium/high distribution"
+  >
+    <DistributionBar low={20} medium={50} high={30} />
+  </ComponentCard>
+
+  <ComponentCard
+    title="FeedbackTags"
+    description="Tag list for feedback categories"
+  >
+    <FeedbackTags tags={['reliable', 'fast', 'accurate']} />
+  </ComponentCard>
+
+  <ComponentCard
+    title="ToggleSwitch"
+    description="Binary toggle between two options"
+  >
+    <ToggleSwitch
+      leftLabel="AND"
+      rightLabel="OR"
+      value={false}
+      onChange={() => {}}
+    />
+  </ComponentCard>
+
+  <ComponentCard
+    title="RangeSlider"
+    description="Dual-handle slider for range selection"
+  >
+    <RangeSlider
+      min={0}
+      max={100}
+      minValue={20}
+      maxValue={80}
+      onChange={() => {}}
+    />
+  </ComponentCard>
+</ComponentGrid>
+
+## Atom Characteristics
+
+| Characteristic | Description |
+|---------------|-------------|
+| **Independence** | No dependencies on other custom components |
+| **Pure** | Presentational only, no business logic |
+| **Reusable** | Used across multiple molecules and organisms |
+| **Accessible** | Full keyboard and screen reader support |
+| **Tested** | 100% test coverage required |
+
+## Creating New Atoms
+
+Each atom must have:
+
+```
+component-name/
+├── component-name.tsx          # Component implementation
+├── component-name.stories.tsx  # Storybook stories
+├── component-name.test.tsx     # Unit tests
+└── index.ts                    # Barrel export
+```
+
+See individual atom stories for detailed API documentation.

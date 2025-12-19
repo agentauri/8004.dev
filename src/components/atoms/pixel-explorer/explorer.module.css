@@ -1,0 +1,156 @@
+/**
+ * PixelExplorer CSS Animations
+ */
+
+/* Float - gentle up/down movement */
+@keyframes explorer-float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-6px);
+  }
+}
+
+.animateFloat {
+  animation: explorer-float 1.5s ease-in-out infinite;
+}
+
+/* Bounce - 8-bit jump */
+@keyframes explorer-bounce {
+  0%,
+  100% {
+    transform: translateY(0) scaleY(1);
+  }
+  25% {
+    transform: translateY(-8px) scaleY(1.05);
+  }
+  50% {
+    transform: translateY(0) scaleY(0.95);
+  }
+  75% {
+    transform: translateY(-4px) scaleY(1);
+  }
+}
+
+.animateBounce {
+  animation: explorer-bounce 0.6s steps(4) infinite;
+  transform-origin: bottom center;
+}
+
+/* Walk - alternating leg movement with body bob */
+@keyframes explorer-walk-body {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-1px);
+  }
+}
+
+@keyframes explorer-walk-left {
+  0%,
+  50%,
+  100% {
+    transform: translateY(0);
+  }
+  25% {
+    transform: translateY(-1px);
+  }
+}
+
+@keyframes explorer-walk-right {
+  0%,
+  50%,
+  100% {
+    transform: translateY(0);
+  }
+  75% {
+    transform: translateY(-1px);
+  }
+}
+
+.animateWalk {
+  animation: explorer-walk-body 0.6s steps(4) infinite;
+}
+
+.animateWalk :global(.explorer-boots) {
+  animation: explorer-walk-left 0.6s steps(4) infinite;
+}
+
+/* Search - Hat opens like a lid hinged on the right side */
+@keyframes explorer-search-hat {
+  0%,
+  100% {
+    transform: rotate(0deg);
+  }
+  50% {
+    transform: rotate(25deg);
+  }
+}
+
+.animateSearch svg {
+  overflow: visible;
+}
+
+.animateSearch :global(.explorer-hat) {
+  animation: explorer-search-hat 1.5s steps(4) infinite;
+  transform-origin: 27px 7px; /* pivot on right side of hat */
+}
+
+/* Discover - excitement with sparkles */
+@keyframes explorer-discover-jump {
+  0%,
+  100% {
+    transform: translateY(0) scale(1);
+  }
+  50% {
+    transform: translateY(-10px) scale(1.1);
+  }
+}
+
+@keyframes sparkle-twinkle-1 {
+  0%,
+  100% {
+    transform: scale(0);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.5);
+    opacity: 1;
+  }
+}
+
+@keyframes sparkle-twinkle-2 {
+  0%,
+  100% {
+    transform: scale(0);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(2);
+    opacity: 1;
+  }
+}
+
+.animateDiscover {
+  animation: explorer-discover-jump 0.5s ease-in-out infinite;
+}
+
+.animateDiscover :global(.sparkle-1) {
+  animation: sparkle-twinkle-1 0.5s steps(2) infinite;
+}
+
+.animateDiscover :global(.sparkle-2) {
+  animation: sparkle-twinkle-2 0.6s steps(2) infinite 0.1s;
+}
+
+.animateDiscover :global(.sparkle-3) {
+  animation: sparkle-twinkle-1 0.4s steps(2) infinite 0.2s;
+}
+
+.animateDiscover :global(.sparkle-4) {
+  animation: sparkle-twinkle-2 0.7s steps(2) infinite 0.15s;
+}

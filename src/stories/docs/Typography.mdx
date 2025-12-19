@@ -1,0 +1,85 @@
+import { Meta } from '@storybook/addon-docs/blocks';
+import { FontGrid } from '../components';
+import { TYPOGRAPHY_TOKENS } from '../utils/design-tokens';
+
+<Meta title="Documentation/Design Tokens/Typography" />
+
+# Typography
+
+Agent Explorer uses a carefully curated set of fonts that balance **retro pixel art aesthetics** with modern readability.
+
+## Font Stack
+
+<FontGrid fonts={TYPOGRAPHY_TOKENS} />
+
+## Font Hierarchy
+
+| Level | Font | Size | Use Case |
+|-------|------|------|----------|
+| Display | Press Start 2P | 1.25rem+ | Page titles, hero text |
+| Heading | Silkscreen | 0.875rem-1rem | Section headers, badges |
+| Body | JetBrains Mono | 0.625rem-0.875rem | Descriptions, addresses |
+| UI | Inter | 0.875rem | Form inputs, long text |
+
+## Usage Guidelines
+
+### Display Text (Press Start 2P)
+Use sparingly for maximum impact. Best for:
+- Page titles
+- Hero sections
+- Major announcements
+
+```tsx
+<h1 className="font-[family-name:var(--font-pixel-display)] text-xl">
+  AGENT EXPLORER
+</h1>
+```
+
+### Headings (Silkscreen)
+The workhorse pixel font for UI elements:
+- Card titles
+- Section headers
+- Badges and labels
+- Navigation items
+
+```tsx
+<h2 className="font-[family-name:var(--font-pixel-heading)] text-sm uppercase">
+  Search Results
+</h2>
+```
+
+### Body Text (JetBrains Mono)
+Excellent readability for:
+- Descriptions
+- Blockchain addresses
+- Technical content
+- Metadata
+
+```tsx
+<p className="font-[family-name:var(--font-pixel-body)] text-xs">
+  0x1234...5678
+</p>
+```
+
+### UI Text (Inter)
+For maximum readability:
+- Form inputs
+- Long descriptions
+- Error messages
+- Tooltips
+
+```tsx
+<input className="font-sans" placeholder="Search agents..." />
+```
+
+## Size Scale
+
+All fonts use a constrained size scale for visual consistency:
+
+- `text-[0.5rem]` - 8px (tiny labels, scale markers)
+- `text-[0.625rem]` - 10px (body text, badges)
+- `text-xs` - 12px (descriptions)
+- `text-sm` - 14px (headings)
+- `text-base` - 16px (large body)
+- `text-lg` - 18px (section titles)
+- `text-xl` - 20px (page titles)

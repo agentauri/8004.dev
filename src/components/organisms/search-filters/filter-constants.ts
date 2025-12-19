@@ -1,0 +1,40 @@
+/**
+ * SearchFilters configuration constants
+ */
+
+import type React from 'react';
+import type { ChainId } from '@/components/atoms';
+import type { CapabilityType } from '@/components/molecules';
+import { CHAINS } from '@/lib/constants/chains';
+
+export const SUPPORTED_CHAINS: ChainId[] = [11155111, 84532, 80002];
+
+export const STATUS_OPTIONS = [
+  { value: 'active', label: 'Active' },
+  { value: 'inactive', label: 'Inactive' },
+] as const;
+
+export const PROTOCOLS: CapabilityType[] = ['mcp', 'a2a', 'x402'];
+
+// Pre-computed chain styles to avoid creating new objects on each render
+export const CHAIN_SELECTED_STYLES: Record<ChainId, React.CSSProperties> = SUPPORTED_CHAINS.reduce(
+  (acc, chainId) => {
+    const chain = CHAINS[chainId];
+    acc[chainId] = { backgroundColor: chain.color, borderColor: chain.color, color: '#fff' };
+    return acc;
+  },
+  {} as Record<ChainId, React.CSSProperties>,
+);
+
+// Default empty filter state
+export const EMPTY_FILTERS = {
+  status: [],
+  protocols: [],
+  chains: [],
+  filterMode: 'AND' as const,
+  minReputation: 0,
+  maxReputation: 100,
+  skills: [],
+  domains: [],
+  showAllAgents: false,
+};

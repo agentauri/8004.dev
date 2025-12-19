@@ -1,0 +1,68 @@
+import { Meta } from '@storybook/addon-docs/blocks';
+
+<Meta title="Documentation/Components/Molecules Overview" />
+
+# Molecules
+
+Molecules are **simple groups of atoms** that work together as a unit. They combine 2-3 atoms and maintain a single responsibility without business logic.
+
+## Available Molecules
+
+| Component | Description | Atoms Used |
+|-----------|-------------|------------|
+| **SearchInput** | Text input with search icon and clear button | Input, Button |
+| **ChainSelector** | Multi-select dropdown for blockchain networks | ChainBadge, Checkbox |
+| **AgentBadges** | Group of badges showing agent capabilities | Badge, ChainBadge |
+| **CapabilityTag** | Clickable capability indicator | Badge |
+| **FilterGroup** | Group of filter options with labels | Checkbox, Badge |
+| **EndpointItem** | Displays an endpoint URL with copy button | CopyButton, Badge |
+| **ReputationDistribution** | Distribution bar with labels and count | DistributionBar, TrustScore |
+| **FeedbackEntry** | Single feedback item display | FeedbackTags, TrustScore |
+| **FilterModeToggle** | AND/OR toggle with tooltip | ToggleSwitch |
+| **ReputationRangeFilter** | Range slider with labels | RangeSlider |
+| **PresetSelector** | Preset buttons with save/delete | Button |
+
+## Molecule Characteristics
+
+| Characteristic | Description |
+|---------------|-------------|
+| **Composition** | Combines 2-3 atoms into a functional unit |
+| **Single Responsibility** | Does one thing well |
+| **No Business Logic** | Pure presentational component |
+| **Prop Forwarding** | Passes props to child atoms as needed |
+
+## Example: FeedbackEntry
+
+A feedback entry combines multiple atoms:
+
+```tsx
+<FeedbackEntry
+  score={85}
+  tags={['reliable', 'fast']}
+  context="Great response time"
+  timestamp={new Date()}
+/>
+```
+
+Internally composed of:
+- `TrustScore` atom (displays the score)
+- `FeedbackTags` atom (displays the tags)
+- Text elements for context and timestamp
+
+## Creating New Molecules
+
+```
+molecule-name/
+├── molecule-name.tsx          # Component implementation
+├── molecule-name.stories.tsx  # Storybook stories
+├── molecule-name.test.tsx     # Unit tests
+└── index.ts                   # Barrel export
+```
+
+Guidelines:
+1. Keep it simple - if it grows beyond 3 atoms, consider an organism
+2. No fetch calls or side effects
+3. Use atoms via the `@/components/atoms` barrel export
+4. Test all atom combinations
+
+See individual molecule stories for detailed API documentation.
