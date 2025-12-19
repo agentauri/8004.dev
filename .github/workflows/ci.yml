@@ -122,12 +122,16 @@ jobs:
           BASE_SEPOLIA_RPC_URL: ${{ secrets.BASE_SEPOLIA_RPC_URL || 'https://sepolia.base.org' }}
           POLYGON_AMOY_RPC_URL: ${{ secrets.POLYGON_AMOY_RPC_URL || 'https://rpc-amoy.polygon.technology' }}
 
+      - name: Debug - List build output
+        run: ls -la && ls -la .next || echo ".next directory not found"
+
       - name: Upload build artifact
         uses: actions/upload-artifact@v4
         with:
           name: build
           path: .next
           retention-days: 7
+          include-hidden-files: true
 
   e2e:
     name: E2E Tests
