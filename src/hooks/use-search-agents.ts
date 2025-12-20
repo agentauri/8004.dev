@@ -216,7 +216,8 @@ export function useSearchAgents(
     queryFn: () => fetchAgents(params),
     enabled,
     // Stale-while-revalidate: show cached data immediately, refetch in background
-    staleTime: 30 * 1000, // 30 seconds - consider stale quickly for fresher data
+    // Reduced from 30s to 10s to minimize stale empty results
+    staleTime: 10 * 1000, // 10 seconds - consider stale quickly for fresher data
     gcTime: 5 * 60 * 1000, // 5 minutes - keep in cache for background refetch
     refetchOnMount: true, // Always check for updates on mount
     refetchOnWindowFocus: true, // Refetch when tab regains focus

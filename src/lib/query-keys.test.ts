@@ -15,14 +15,19 @@ describe('queryKeys', () => {
   });
 
   describe('list', () => {
-    it('returns list key with params', () => {
+    it('returns list key with serialized params', () => {
       const params = { q: 'test', chains: [11155111] };
-      expect(queryKeys.list(params)).toEqual(['agents', 'list', params]);
+      const result = queryKeys.list(params);
+      expect(result[0]).toBe('agents');
+      expect(result[1]).toBe('list');
+      expect(typeof result[2]).toBe('string');
+      expect(JSON.parse(result[2] as string)).toEqual(params);
     });
 
     it('returns list key with empty params', () => {
       const params = {};
-      expect(queryKeys.list(params)).toEqual(['agents', 'list', params]);
+      const result = queryKeys.list(params);
+      expect(result).toEqual(['agents', 'list', '{}']);
     });
 
     it('returns list key with all filter params', () => {
@@ -38,7 +43,39 @@ describe('queryKeys', () => {
         limit: 20,
         cursor: '10',
       };
-      expect(queryKeys.list(params)).toEqual(['agents', 'list', params]);
+      const result = queryKeys.list(params);
+      expect(result[0]).toBe('agents');
+      expect(result[1]).toBe('list');
+      expect(typeof result[2]).toBe('string');
+      // Parse and verify all properties are present
+      const parsed = JSON.parse(result[2] as string);
+      expect(parsed.q).toBe('trading');
+      expect(parsed.chains).toEqual([11155111, 84532]);
+      expect(parsed.mcp).toBe(true);
+    });
+
+    it('produces same key for params with different property order', () => {
+      const params1 = { q: 'test', mcp: true, chains: [11155111] };
+      const params2 = { chains: [11155111], q: 'test', mcp: true };
+      const params3 = { mcp: true, chains: [11155111], q: 'test' };
+
+      const key1 = queryKeys.list(params1);
+      const key2 = queryKeys.list(params2);
+      const key3 = queryKeys.list(params3);
+
+      // All should produce identical serialized keys
+      expect(key1[2]).toBe(key2[2]);
+      expect(key2[2]).toBe(key3[2]);
+    });
+
+    it('produces different keys for different params', () => {
+      const params1 = { q: 'test' };
+      const params2 = { q: 'other' };
+
+      const key1 = queryKeys.list(params1);
+      const key2 = queryKeys.list(params2);
+
+      expect(key1[2]).not.toBe(key2[2]);
     });
   });
 
@@ -101,40 +138,57 @@ describe('queryKeys', () => {
   });
 
   describe('related', () => {
-    it('returns related key with agent ID', () => {
-      expect(queryKeys.related('11155111:1')).toEqual([
-        'agents',
-        'related',
-        '11155111:1',
-        { limit: undefined, crossChain: undefined },
-      ]);
+    it('returns related key with agent ID and serialized options', () => {
+      const result = queryKeys.related('11155111:1');
+      expect(result[0]).toBe('agents');
+      expect(result[1]).toBe('related');
+      expect(result[2]).toBe('11155111:1');
+      expect(typeof result[3]).toBe('string');
     });
 
     it('returns related key with different agent ID', () => {
-      expect(queryKeys.related('84532:42')).toEqual([
-        'agents',
-        'related',
-        '84532:42',
-        { limit: undefined, crossChain: undefined },
-      ]);
+      const result = queryKeys.related('84532:42');
+      expect(result[0]).toBe('agents');
+      expect(result[1]).toBe('related');
+      expect(result[2]).toBe('84532:42');
     });
 
     it('returns related key with limit and crossChain options', () => {
-      expect(queryKeys.related('11155111:1', 5, true)).toEqual([
-        'agents',
-        'related',
-        '11155111:1',
-        { limit: 5, crossChain: true },
-      ]);
+      const result = queryKeys.related('11155111:1', 5, true);
+      expect(result[0]).toBe('agents');
+      expect(result[1]).toBe('related');
+      expect(result[2]).toBe('11155111:1');
+      const options = JSON.parse(result[3] as string);
+      expect(options.limit).toBe(5);
+      expect(options.crossChain).toBe(true);
     });
 
     it('returns related key with only limit option', () => {
-      expect(queryKeys.related('84532:42', 10)).toEqual([
-        'agents',
-        'related',
-        '84532:42',
-        { limit: 10, crossChain: undefined },
-      ]);
+      const result = queryKeys.related('84532:42', 10);
+      const options = JSON.parse(result[3] as string);
+      expect(options.limit).toBe(10);
+    });
+  });
+
+  describe('similarAgents', () => {
+    it('returns similarAgents key extending all', () => {
+      expect(queryKeys.similarAgents()).toEqual(['agents', 'similar']);
+    });
+  });
+
+  describe('similar', () => {
+    it('returns similar key with agent ID and serialized options', () => {
+      const result = queryKeys.similar('11155111:1');
+      expect(result[0]).toBe('agents');
+      expect(result[1]).toBe('similar');
+      expect(result[2]).toBe('11155111:1');
+      expect(typeof result[3]).toBe('string');
+    });
+
+    it('returns similar key with limit option', () => {
+      const result = queryKeys.similar('11155111:1', 5);
+      const options = JSON.parse(result[3] as string);
+      expect(options.limit).toBe(5);
     });
   });
 });
