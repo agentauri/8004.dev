@@ -120,7 +120,7 @@ export function ToggleSwitch({
         className={cn(
           'relative z-10 flex-1 flex items-center justify-center transition-colors',
           sizeConfig.label,
-          !value ? 'text-[var(--pixel-black)]' : 'text-[var(--pixel-gray-400)]',
+          !value ? 'text-white' : 'text-[var(--pixel-gray-400)]',
         )}
         data-testid="left-label"
       >
@@ -132,7 +132,7 @@ export function ToggleSwitch({
         className={cn(
           'relative z-10 flex-1 flex items-center justify-center transition-colors',
           sizeConfig.label,
-          value ? 'text-[var(--pixel-black)]' : 'text-[var(--pixel-gray-400)]',
+          value ? 'text-white' : 'text-[var(--pixel-gray-400)]',
         )}
         data-testid="right-label"
       >

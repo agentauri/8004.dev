@@ -1,7 +1,9 @@
 import { expect, test } from '@playwright/test';
+import { setupApiMocks } from './fixtures/api-mocks';
 
 test.describe('Home Page', () => {
   test.beforeEach(async ({ page }) => {
+    await setupApiMocks(page);
     await page.goto('/');
   });
 

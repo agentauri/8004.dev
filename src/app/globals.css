@@ -43,6 +43,11 @@
     --chain-base: #3b71c9;
     --chain-polygon: #9c54fc;
 
+    /* Chain Text Colors (brighter for WCAG AA contrast on dark backgrounds) */
+    --chain-sepolia-text: #ff8a8a;
+    --chain-base-text: #6ba3ff;
+    --chain-polygon-text: #b58aff;
+
     /* Chain Glow Effects */
     --chain-glow-sepolia: rgba(252, 84, 84, 0.4);
     --chain-glow-base: rgba(59, 113, 201, 0.4);

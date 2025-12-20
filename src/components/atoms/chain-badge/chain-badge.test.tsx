@@ -22,7 +22,7 @@ describe('ChainBadge', () => {
     it('applies sepolia color classes', () => {
       render(<ChainBadge chainId={11155111} />);
       const badge = screen.getByTestId('chain-badge');
-      expect(badge).toHaveClass('text-[var(--chain-sepolia)]');
+      expect(badge).toHaveClass('text-[var(--chain-sepolia-text)]');
       expect(badge).toHaveClass('border-[var(--chain-sepolia)]');
     });
   });
@@ -46,7 +46,7 @@ describe('ChainBadge', () => {
     it('applies base color classes', () => {
       render(<ChainBadge chainId={84532} />);
       const badge = screen.getByTestId('chain-badge');
-      expect(badge).toHaveClass('text-[var(--chain-base)]');
+      expect(badge).toHaveClass('text-[var(--chain-base-text)]');
       expect(badge).toHaveClass('border-[var(--chain-base)]');
     });
   });
@@ -70,7 +70,7 @@ describe('ChainBadge', () => {
     it('applies polygon color classes', () => {
       render(<ChainBadge chainId={80002} />);
       const badge = screen.getByTestId('chain-badge');
-      expect(badge).toHaveClass('text-[var(--chain-polygon)]');
+      expect(badge).toHaveClass('text-[var(--chain-polygon-text)]');
       expect(badge).toHaveClass('border-[var(--chain-polygon)]');
     });
   });

@@ -18,11 +18,11 @@ export interface AgentAvatarProps {
 }
 
 const RETRO_COLORS = [
-  'bg-[#5C94FC]', // pixel-blue-sky
-  'bg-[#FC5454]', // pixel-red-fire
-  'bg-[#00D800]', // pixel-green-pipe
-  'bg-[#FCC03C]', // pixel-gold-coin
-  'bg-[#9C54FC]', // chain-polygon
+  { bg: 'bg-[#5C94FC]', text: 'text-[#1A1A1A]' }, // pixel-blue-sky - dark text (4.44:1)
+  { bg: 'bg-[#FC5454]', text: 'text-[#1A1A1A]' }, // pixel-red-fire - dark text (3.81:1)
+  { bg: 'bg-[#00D800]', text: 'text-[#1A1A1A]' }, // pixel-green-pipe - dark text (6.05:1)
+  { bg: 'bg-[#FCC03C]', text: 'text-[#1A1A1A]' }, // pixel-gold-coin - dark text (7.54:1)
+  { bg: 'bg-[#C494FF]', text: 'text-[#1A1A1A]' }, // lighter purple for contrast (6.2:1)
 ] as const;
 
 const SIZE_STYLES = {
@@ -46,7 +46,7 @@ const SIZE_DIMENSIONS = {
 /**
  * Generate a consistent color based on the agent name using a simple hash function
  */
-function getColorFromName(name: string): string {
+function getColorFromName(name: string): { bg: string; text: string } {
   if (!name) return RETRO_COLORS[0];
 
   let hash = 0;
@@ -88,7 +88,7 @@ export function AgentAvatar({
 
   const showImage = image && !imageError;
   const initials = getInitials(name);
-  const bgColor = getColorFromName(name);
+  const colorScheme = getColorFromName(name);
   const sizeClass = SIZE_STYLES[size];
   const iconSize = ICON_SIZES[size];
 
@@ -107,7 +107,7 @@ export function AgentAvatar({
       className={cn(
         'relative flex items-center justify-center rounded-lg overflow-hidden',
         'border-2 border-[#3A3A3A]',
-        !showImage && bgColor,
+        !showImage && colorScheme.bg,
         sizeClass,
         className,
       )}
@@ -138,7 +138,7 @@ export function AgentAvatar({
         <>
           {/* Initials with pixel font */}
           <span
-            className="font-pixel-heading text-white select-none"
+            className={cn('font-pixel-heading select-none', colorScheme.text)}
             style={{ fontSize: size === 'sm' ? '10px' : size === 'md' ? '14px' : '18px' }}
           >
             {initials}

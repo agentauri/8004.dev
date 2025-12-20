@@ -19,19 +19,19 @@ const CHAIN_CONFIG: Record<
   11155111: {
     name: 'Ethereum Sepolia',
     shortName: 'SEPOLIA',
-    colorClass: 'text-[var(--chain-sepolia)] border-[var(--chain-sepolia)]',
+    colorClass: 'text-[var(--chain-sepolia-text)] border-[var(--chain-sepolia)]',
     glowClass: 'shadow-[0_0_8px_var(--chain-glow-sepolia)]',
   },
   84532: {
     name: 'Base Sepolia',
     shortName: 'BASE',
-    colorClass: 'text-[var(--chain-base)] border-[var(--chain-base)]',
+    colorClass: 'text-[var(--chain-base-text)] border-[var(--chain-base)]',
     glowClass: 'shadow-[0_0_8px_var(--chain-glow-base)]',
   },
   80002: {
     name: 'Polygon Amoy',
     shortName: 'POLYGON',
-    colorClass: 'text-[var(--chain-polygon)] border-[var(--chain-polygon)]',
+    colorClass: 'text-[var(--chain-polygon-text)] border-[var(--chain-polygon)]',
     glowClass: 'shadow-[0_0_8px_var(--chain-glow-polygon)]',
   },
 };

@@ -1,7 +1,9 @@
 import { expect, test } from '@playwright/test';
+import { setupApiMocks } from './fixtures/api-mocks';
 
 test.describe('Explore Page', () => {
   test.beforeEach(async ({ page }) => {
+    await setupApiMocks(page);
     await page.goto('/explore');
   });
 
@@ -14,7 +16,6 @@ test.describe('Explore Page', () => {
   });
 
   test('displays filter options', async ({ page }) => {
-    // Check for chain selector or filter components
     await expect(page.getByTestId('search-bar').first()).toBeVisible();
   });
 
@@ -25,17 +26,12 @@ test.describe('Explore Page', () => {
   });
 
   test('displays agent cards when results available', async ({ page }) => {
-    // Wait for initial load
     await page.waitForTimeout(1000);
 
-    // Check if either agent cards or "no results" message is displayed
     const agentCards = page.getByTestId('agent-card');
     const noResults = page.getByText(/no agents found/i);
 
-    const hasCards = await agentCards
-      .first()
-      .isVisible()
-      .catch(() => false);
+    const hasCards = await agentCards.first().isVisible().catch(() => false);
     const hasNoResults = await noResults.isVisible().catch(() => false);
 
     expect(hasCards || hasNoResults).toBeTruthy();
@@ -44,14 +40,13 @@ test.describe('Explore Page', () => {
   test('shows loading state during search', async ({ page }) => {
     const searchInput = page.getByRole('searchbox');
     await searchInput.fill('test search query');
-
-    // Loading states are fast, just verify the interaction doesn't crash
     await expect(searchInput).toHaveValue('test search query');
   });
 });
 
 test.describe('Explore Page Filters', () => {
   test.beforeEach(async ({ page }) => {
+    await setupApiMocks(page);
     await page.goto('/explore');
   });
 
@@ -59,7 +54,6 @@ test.describe('Explore Page Filters', () => {
     const chainButton = page.locator('[data-testid="chain-badge"]').first();
     if (await chainButton.isVisible()) {
       await chainButton.click();
-      // Verify the interaction occurred
       await expect(chainButton).toBeVisible();
     }
   });
