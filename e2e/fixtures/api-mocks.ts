@@ -7,6 +7,7 @@ import type { Page } from '@playwright/test';
 import {
   buildAgentDetailResponse,
   buildSearchResponse,
+  buildSimilarAgentsResponse,
   buildStatsResponse,
   buildTaxonomyResponse,
   mockAgents,
@@ -113,6 +114,16 @@ export async function setupApiMocks(page: Page): Promise<void> {
       status: 200,
       contentType: 'application/json',
       body: JSON.stringify(buildSearchResponse(result, '')),
+    });
+  });
+
+  // Mock similar agents endpoint (GET /api/agents/:id/similar)
+  // Must be registered before agent detail to match more specific path first
+  await page.route(/\/api\/agents\/\d+:\d+\/similar/, async (route) => {
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify(buildSimilarAgentsResponse()),
     });
   });
 

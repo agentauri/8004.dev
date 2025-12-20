@@ -3,7 +3,7 @@
  * These fixtures provide consistent test data matching the exact API response format
  */
 
-import type { AgentSummary } from '@/types/agent';
+import type { AgentSummary, SimilarAgent } from '@/types/agent';
 
 /**
  * Mock agents matching AgentSummary interface
@@ -185,6 +185,25 @@ export const mockAgentDetail = {
   ],
 };
 
+/**
+ * Mock similar agents data
+ * SimilarAgent extends AgentSummary with similarity fields
+ */
+export const mockSimilarAgents: SimilarAgent[] = [
+  {
+    ...mockAgents[1], // Code Review Agent
+    similarityScore: 85,
+    matchedSkills: ['code_review'],
+    matchedDomains: ['technology'],
+  },
+  {
+    ...mockAgents[2], // Data Analysis Agent
+    similarityScore: 72,
+    matchedSkills: ['data_analysis'],
+    matchedDomains: ['technology'],
+  },
+];
+
 // API response builders
 export function buildSearchResponse(agents = mockAgents, _query = '') {
   return {
@@ -215,5 +234,19 @@ export function buildAgentDetailResponse() {
   return {
     success: true,
     data: mockAgentDetail,
+  };
+}
+
+export function buildSimilarAgentsResponse(agents = mockSimilarAgents) {
+  return {
+    success: true,
+    data: {
+      agents,
+      meta: {
+        total: agents.length,
+        limit: 4,
+        targetAgent: '11155111:1',
+      },
+    },
   };
 }
