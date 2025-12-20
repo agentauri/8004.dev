@@ -186,7 +186,7 @@ export const mockAgentDetail = {
 };
 
 // API response builders
-export function buildSearchResponse(agents = mockAgents, query = '') {
+export function buildSearchResponse(agents = mockAgents, _query = '') {
   return {
     success: true,
     data: agents,

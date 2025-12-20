@@ -31,7 +31,10 @@ test.describe('Explore Page', () => {
     const agentCards = page.getByTestId('agent-card');
     const noResults = page.getByText(/no agents found/i);
 
-    const hasCards = await agentCards.first().isVisible().catch(() => false);
+    const hasCards = await agentCards
+      .first()
+      .isVisible()
+      .catch(() => false);
     const hasNoResults = await noResults.isVisible().catch(() => false);
 
     expect(hasCards || hasNoResults).toBeTruthy();
