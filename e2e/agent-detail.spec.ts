@@ -10,7 +10,7 @@ test.describe('Agent Detail Page', () => {
 
   test('displays agent header', async ({ page }) => {
     await page.goto(`/agent/${testAgentId}`);
-    await page.waitForTimeout(1000);
+    await page.waitForLoadState('networkidle');
 
     const header = page.getByTestId('agent-header');
     const notFound = page.getByText(/not found/i);
