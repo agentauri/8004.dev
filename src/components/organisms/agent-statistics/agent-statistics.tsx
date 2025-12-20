@@ -139,7 +139,7 @@ export function AgentStatistics({
       {reputation && reputation.count > 0 && (
         <div className="p-4 bg-[var(--pixel-gray-800)] border-2 border-[var(--pixel-gray-700)]">
           <div className="flex items-center gap-2 mb-4">
-            <BarChart3 className="w-4 h-4 text-[var(--pixel-blue-sky)]" aria-hidden="true" />
+            <BarChart3 className="w-4 h-4 text-[var(--pixel-blue-text)]" aria-hidden="true" />
             <h3 className="font-[family-name:var(--font-pixel-heading)] text-[var(--pixel-gray-200)] text-sm uppercase tracking-wider">
               Score Distribution
             </h3>
@@ -161,7 +161,7 @@ export function AgentStatistics({
         >
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-2">
-              <Activity className="w-4 h-4 text-[var(--pixel-blue-sky)]" aria-hidden="true" />
+              <Activity className="w-4 h-4 text-[var(--pixel-blue-text)]" aria-hidden="true" />
               <h3 className="font-[family-name:var(--font-pixel-heading)] text-[var(--pixel-gray-200)] text-sm uppercase tracking-wider">
                 Health Checks
               </h3>

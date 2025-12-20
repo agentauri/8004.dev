@@ -72,7 +72,7 @@ export function PresetSelector({
               'px-2 py-1 border border-[var(--pixel-gray-600)]',
               'transition-colors',
               canSave && !disabled
-                ? 'text-[var(--pixel-blue-sky)] hover:bg-[var(--pixel-gray-700)] cursor-pointer'
+                ? 'text-[var(--pixel-blue-text)] hover:bg-[var(--pixel-gray-700)] cursor-pointer'
                 : 'text-[var(--pixel-gray-600)] cursor-not-allowed',
             )}
             data-testid="save-preset-button"

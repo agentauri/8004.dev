@@ -27,7 +27,7 @@ export default function HomePage() {
         <nav>
           <Link
             href="/explore"
-            className="text-pixel-body text-sm text-[var(--pixel-blue-sky)] hover:text-glow-blue"
+            className="text-pixel-body text-sm text-[var(--pixel-blue-text)] hover:text-glow-blue"
           >
             Explore
           </Link>
@@ -40,7 +40,7 @@ export default function HomePage() {
           {/* Hero Title with Explorer */}
           <div className="flex flex-col items-center gap-4">
             <PixelExplorer size="lg" animation="float" />
-            <h1 className="text-pixel-display text-2xl md:text-4xl text-[var(--pixel-blue-sky)] text-glow-blue">
+            <h1 className="text-pixel-display text-2xl md:text-4xl text-[var(--pixel-blue-text)] text-glow-blue">
               AGENT EXPLORER
             </h1>
           </div>
@@ -105,7 +105,7 @@ export default function HomePage() {
             href="https://eips.ethereum.org/EIPS/eip-8004"
             target="_blank"
             rel="noopener noreferrer"
-            className="text-[var(--pixel-blue-sky)] hover:text-glow"
+            className="text-[var(--pixel-blue-text)] hover:text-glow"
           >
             ERC-8004
           </a>{' '}

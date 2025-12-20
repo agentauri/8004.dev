@@ -10,7 +10,7 @@ export default function NotFound(): React.JSX.Element {
       <div className="text-center space-y-8 max-w-lg">
         {/* 404 Display */}
         <div className="space-y-2">
-          <h1 className="text-pixel-display text-4xl md:text-6xl text-[var(--pixel-blue-sky)] text-glow-blue">
+          <h1 className="text-pixel-display text-4xl md:text-6xl text-[var(--pixel-blue-text)] text-glow-blue">
             404
           </h1>
           <p className="text-pixel-display text-lg md:text-xl text-[var(--pixel-gray-200)]">

@@ -108,7 +108,7 @@ export function Pagination({
             'bg-[var(--pixel-gray-800)] text-[var(--pixel-gray-200)]',
             'transition-all duration-100',
             canGoPrevious && !isDisabled
-              ? 'hover:border-[var(--pixel-blue-sky)] hover:text-[var(--pixel-blue-sky)] hover:shadow-[0_0_8px_var(--glow-blue)]'
+              ? 'hover:border-[var(--pixel-blue-text)] hover:text-[var(--pixel-blue-text)] hover:shadow-[0_0_8px_var(--glow-blue-text)]'
               : 'opacity-50 cursor-not-allowed',
           )}
           aria-label="Go to first page"
@@ -128,7 +128,7 @@ export function Pagination({
             'bg-[var(--pixel-gray-800)] text-[var(--pixel-gray-200)]',
             'transition-all duration-100',
             canGoPrevious && !isDisabled
-              ? 'hover:border-[var(--pixel-blue-sky)] hover:text-[var(--pixel-blue-sky)] hover:shadow-[0_0_8px_var(--glow-blue)]'
+              ? 'hover:border-[var(--pixel-blue-text)] hover:text-[var(--pixel-blue-text)] hover:shadow-[0_0_8px_var(--glow-blue-text)]'
               : 'opacity-50 cursor-not-allowed',
           )}
           aria-label="Go to previous page"
@@ -149,7 +149,7 @@ export function Pagination({
           )}
           data-testid="pagination-info"
         >
-          <span className="text-[var(--pixel-blue-sky)]">{currentPage}</span>
+          <span className="text-[var(--pixel-blue-text)]">{currentPage}</span>
           <span className="text-[var(--pixel-gray-500)]"> / </span>
           <span>{totalPages}</span>
         </div>
@@ -165,7 +165,7 @@ export function Pagination({
             'bg-[var(--pixel-gray-800)] text-[var(--pixel-gray-200)]',
             'transition-all duration-100',
             canGoNext && !isDisabled
-              ? 'hover:border-[var(--pixel-blue-sky)] hover:text-[var(--pixel-blue-sky)] hover:shadow-[0_0_8px_var(--glow-blue)]'
+              ? 'hover:border-[var(--pixel-blue-text)] hover:text-[var(--pixel-blue-text)] hover:shadow-[0_0_8px_var(--glow-blue-text)]'
               : 'opacity-50 cursor-not-allowed',
           )}
           aria-label="Go to next page"
@@ -185,7 +185,7 @@ export function Pagination({
             'bg-[var(--pixel-gray-800)] text-[var(--pixel-gray-200)]',
             'transition-all duration-100',
             canGoNext && !isDisabled
-              ? 'hover:border-[var(--pixel-blue-sky)] hover:text-[var(--pixel-blue-sky)] hover:shadow-[0_0_8px_var(--glow-blue)]'
+              ? 'hover:border-[var(--pixel-blue-text)] hover:text-[var(--pixel-blue-text)] hover:shadow-[0_0_8px_var(--glow-blue-text)]'
               : 'opacity-50 cursor-not-allowed',
           )}
           aria-label="Go to last page"

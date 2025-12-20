@@ -132,7 +132,7 @@ export function FeedbackEntry({
               href={feedbackUri}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-1 text-[0.625rem] text-[var(--pixel-blue-sky)] hover:underline font-[family-name:var(--font-pixel-body)]"
+              className="inline-flex items-center gap-1 text-[0.625rem] text-[var(--pixel-blue-text)] hover:underline font-[family-name:var(--font-pixel-body)]"
               data-testid="feedback-uri-link"
             >
               <ExternalLink size={12} aria-hidden="true" />

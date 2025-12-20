@@ -52,7 +52,7 @@ function MetadataSection({
         aria-expanded={isOpen}
       >
         <div className="flex items-center gap-2">
-          <Icon className="w-4 h-4 text-[var(--pixel-blue-sky)]" aria-hidden="true" />
+          <Icon className="w-4 h-4 text-[var(--pixel-blue-text)]" aria-hidden="true" />
           <span className="font-[family-name:var(--font-pixel-heading)] text-sm text-[var(--pixel-gray-100)] uppercase tracking-wider">
             {title}
           </span>

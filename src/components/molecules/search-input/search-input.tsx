@@ -106,7 +106,7 @@ export function SearchInput({
           className={cn(
             'absolute left-1 p-2 min-w-[40px] min-h-[40px] flex items-center justify-center',
             'text-[var(--pixel-gray-500)] hover:text-[var(--pixel-gray-200)]',
-            'focus:outline-none focus:text-[var(--pixel-blue-sky)]',
+            'focus:outline-none focus:text-[var(--pixel-blue-text)]',
             'transition-colors duration-100',
             disabled && 'cursor-not-allowed',
           )}

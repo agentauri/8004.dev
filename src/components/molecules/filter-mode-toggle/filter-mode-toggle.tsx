@@ -60,7 +60,7 @@ export function FilterModeToggle({
         className={cn(
           'w-4 h-4 flex items-center justify-center',
           'text-[0.625rem] font-[family-name:var(--font-pixel-body)]',
-          'text-[var(--pixel-gray-400)] hover:text-[var(--pixel-blue-sky)]',
+          'text-[var(--pixel-gray-400)] hover:text-[var(--pixel-blue-text)]',
           'border border-[var(--pixel-gray-600)] hover:border-[var(--pixel-blue-sky)]',
           'rounded-full transition-colors',
           disabled && 'opacity-50 cursor-not-allowed',
@@ -90,11 +90,11 @@ export function FilterModeToggle({
         >
           <div className="text-[0.625rem] font-[family-name:var(--font-pixel-body)] text-[var(--pixel-gray-200)]">
             <p className="mb-1">
-              <span className="text-[var(--pixel-blue-sky)]">AND</span>: Results match <em>all</em>{' '}
+              <span className="text-[var(--pixel-blue-text)]">AND</span>: Results match <em>all</em>{' '}
               selected filters
             </p>
             <p>
-              <span className="text-[var(--pixel-blue-sky)]">OR</span>: Results match <em>any</em>{' '}
+              <span className="text-[var(--pixel-blue-text)]">OR</span>: Results match <em>any</em>{' '}
               selected filter
             </p>
           </div>

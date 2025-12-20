@@ -34,9 +34,9 @@ const STATUS_CONFIG: Record<
   },
   mcp: {
     label: 'MCP',
-    colorClass: 'text-[var(--pixel-blue-sky)]',
-    glowClass: 'shadow-[0_0_6px_var(--glow-blue)]',
-    bgClass: 'bg-[rgba(92,148,252,0.1)]',
+    colorClass: 'text-[var(--pixel-blue-text)]',
+    glowClass: 'shadow-[0_0_6px_var(--glow-blue-text)]',
+    bgClass: 'bg-[rgba(107,163,255,0.1)]',
   },
   a2a: {
     label: 'A2A',

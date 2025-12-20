@@ -94,7 +94,7 @@ export function AgentHeader({
         href="/explore"
         className={cn(
           'inline-flex items-center gap-2 text-sm',
-          'text-[var(--pixel-gray-400)] hover:text-[var(--pixel-blue-sky)]',
+          'text-[var(--pixel-gray-400)] hover:text-[var(--pixel-blue-text)]',
           'transition-colors',
         )}
         data-testid="back-link"
@@ -120,7 +120,7 @@ export function AgentHeader({
               onClick={handleShare}
               className={cn(
                 'p-1.5 rounded transition-colors',
-                'text-[var(--pixel-gray-400)] hover:text-[var(--pixel-blue-sky)]',
+                'text-[var(--pixel-gray-400)] hover:text-[var(--pixel-blue-text)]',
                 'hover:bg-[var(--pixel-gray-700)]',
                 'focus:outline-none focus:ring-2 focus:ring-[var(--pixel-blue-sky)]',
               )}

@@ -134,7 +134,7 @@ export function SortSelector({
           'flex items-center justify-center px-2 py-2',
           'bg-[var(--pixel-gray-800)] border-2 border-[var(--pixel-gray-600)]',
           'hover:bg-[var(--pixel-gray-700)] transition-colors',
-          'text-[var(--pixel-blue-sky)]',
+          'text-[var(--pixel-blue-text)]',
           disabled && 'opacity-50 cursor-not-allowed',
         )}
         aria-label={`Sort ${order === 'asc' ? 'ascending' : 'descending'}, click to toggle`}

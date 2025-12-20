@@ -120,7 +120,7 @@ export const Interactive: Story = {
       <div className="space-y-4">
         <Pagination currentPage={page} totalPages={totalPages} onPageChange={setPage} />
         <div className="text-center text-sm text-[var(--pixel-gray-400)]">
-          Showing page <span className="text-[var(--pixel-blue-sky)]">{page}</span> of {totalPages}
+          Showing page <span className="text-[var(--pixel-blue-text)]">{page}</span> of {totalPages}
         </div>
       </div>
     );

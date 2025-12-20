@@ -57,7 +57,7 @@ export function ReputationRangeFilter({
         <span
           className={cn(
             'text-[0.625rem] font-[family-name:var(--font-pixel-body)]',
-            'text-[var(--pixel-blue-sky)]',
+            'text-[var(--pixel-blue-text)]',
           )}
           data-testid="reputation-range-value"
         >

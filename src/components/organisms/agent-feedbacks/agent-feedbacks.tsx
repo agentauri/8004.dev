@@ -77,13 +77,13 @@ export function AgentFeedbacks({
     return (
       <div className={cn('space-y-4', className)} data-testid="agent-feedbacks" data-loading="true">
         <div className="flex items-center gap-2">
-          <MessageSquare size={16} className="text-[var(--pixel-blue-sky)]" aria-hidden="true" />
+          <MessageSquare size={16} className="text-[var(--pixel-blue-text)]" aria-hidden="true" />
           <h2 className="font-[family-name:var(--font-pixel-heading)] text-sm text-[var(--pixel-gray-100)]">
             FEEDBACKS
           </h2>
         </div>
         <div className="flex items-center justify-center py-12">
-          <Loader2 className="w-6 h-6 text-[var(--pixel-blue-sky)] animate-spin" />
+          <Loader2 className="w-6 h-6 text-[var(--pixel-blue-text)] animate-spin" />
         </div>
       </div>
     );
@@ -94,7 +94,7 @@ export function AgentFeedbacks({
     return (
       <div className={cn('space-y-4', className)} data-testid="agent-feedbacks" data-empty="true">
         <div className="flex items-center gap-2">
-          <MessageSquare size={16} className="text-[var(--pixel-blue-sky)]" aria-hidden="true" />
+          <MessageSquare size={16} className="text-[var(--pixel-blue-text)]" aria-hidden="true" />
           <h2 className="font-[family-name:var(--font-pixel-heading)] text-sm text-[var(--pixel-gray-100)]">
             FEEDBACKS
           </h2>
@@ -126,7 +126,7 @@ export function AgentFeedbacks({
       {/* Header with count */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <MessageSquare size={16} className="text-[var(--pixel-blue-sky)]" aria-hidden="true" />
+          <MessageSquare size={16} className="text-[var(--pixel-blue-text)]" aria-hidden="true" />
           <h2 className="font-[family-name:var(--font-pixel-heading)] text-sm text-[var(--pixel-gray-100)]">
             FEEDBACKS
           </h2>
@@ -148,7 +148,7 @@ export function AgentFeedbacks({
         <div className="text-center pt-4">
           {isLoading ? (
             <div className="flex items-center justify-center gap-2 py-2">
-              <Loader2 className="w-4 h-4 text-[var(--pixel-blue-sky)] animate-spin" />
+              <Loader2 className="w-4 h-4 text-[var(--pixel-blue-text)] animate-spin" />
               <span className="text-[var(--pixel-gray-400)] text-xs font-[family-name:var(--font-pixel-body)]">
                 Loading more...
               </span>
@@ -159,8 +159,8 @@ export function AgentFeedbacks({
               onClick={handleShowMore}
               className={cn(
                 'px-6 py-2.5 text-xs font-[family-name:var(--font-pixel-body)] uppercase tracking-wider',
-                'text-[var(--pixel-blue-sky)] bg-transparent border-2 border-[var(--pixel-blue-sky)]',
-                'hover:bg-[var(--pixel-blue-sky)] hover:text-[var(--pixel-black)]',
+                'text-[var(--pixel-blue-text)] bg-transparent border-2 border-[var(--pixel-blue-text)]',
+                'hover:bg-[var(--pixel-blue-text)] hover:text-[var(--pixel-black)]',
                 'transition-colors focus:outline-none focus:ring-2 focus:ring-[var(--pixel-blue-sky)] focus:ring-offset-2 focus:ring-offset-[var(--pixel-black)]',
               )}
               data-testid="load-more-button"

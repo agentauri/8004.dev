@@ -75,7 +75,7 @@ export function CopyButton({
         'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--pixel-blue-sky)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--pixel-black)]',
         copied
           ? 'border-[var(--pixel-green-pipe)] text-[var(--pixel-green-pipe)] shadow-[0_0_8px_var(--glow-green)]'
-          : 'border-[var(--pixel-gray-600)] text-[var(--pixel-gray-400)] hover:border-[var(--pixel-blue-sky)] hover:text-[var(--pixel-blue-sky)] hover:shadow-[0_0_8px_var(--glow-blue)]',
+          : 'border-[var(--pixel-gray-600)] text-[var(--pixel-gray-400)] hover:border-[var(--pixel-blue-text)] hover:text-[var(--pixel-blue-text)] hover:shadow-[0_0_8px_var(--glow-blue-text)]',
         sizeConfig.button,
         className,
       )}

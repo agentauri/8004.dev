@@ -155,10 +155,10 @@ export function TabNavigation({
               'focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--pixel-blue-sky)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--pixel-black)]',
               // Active state
               isActive && [
-                'text-[var(--pixel-blue-sky)]',
+                'text-[var(--pixel-blue-text)]',
                 'after:absolute after:bottom-0 after:left-0 after:right-0',
-                'after:h-[2px] after:bg-[var(--pixel-blue-sky)]',
-                'after:shadow-[0_0_8px_var(--pixel-blue-sky)]',
+                'after:h-[2px] after:bg-[var(--pixel-blue-text)]',
+                'after:shadow-[0_0_8px_var(--pixel-blue-text)]',
               ],
               // Inactive state
               !isActive &&
@@ -178,7 +178,7 @@ export function TabNavigation({
               <span
                 className={cn(
                   'ml-1.5 text-xs',
-                  isActive ? 'text-[var(--pixel-blue-sky)]' : 'text-[var(--pixel-gray-500)]',
+                  isActive ? 'text-[var(--pixel-blue-text)]' : 'text-[var(--pixel-gray-500)]',
                 )}
                 data-testid={`tab-${tab.id}-count`}
               >

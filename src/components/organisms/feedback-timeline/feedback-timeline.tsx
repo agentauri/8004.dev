@@ -52,7 +52,7 @@ export function FeedbackTimeline({
       <section className={cn('', className)} data-testid="feedback-timeline" data-state="empty">
         {showHeader && (
           <h2 className="flex items-center gap-2 font-[family-name:var(--font-pixel-heading)] text-sm text-[var(--pixel-gray-100)] mb-4">
-            <MessageSquare size={16} className="text-[var(--pixel-blue-sky)]" aria-hidden="true" />
+            <MessageSquare size={16} className="text-[var(--pixel-blue-text)]" aria-hidden="true" />
             RECENT FEEDBACK
           </h2>
         )}
@@ -82,7 +82,7 @@ export function FeedbackTimeline({
     >
       {showHeader && (
         <h2 className="flex items-center gap-2 font-[family-name:var(--font-pixel-heading)] text-sm text-[var(--pixel-gray-100)] mb-4">
-          <MessageSquare size={16} className="text-[var(--pixel-blue-sky)]" aria-hidden="true" />
+          <MessageSquare size={16} className="text-[var(--pixel-blue-text)]" aria-hidden="true" />
           RECENT FEEDBACK
           <span className="text-[var(--pixel-gray-500)] text-[0.625rem] font-[family-name:var(--font-pixel-body)]">
             ({feedback.length})
@@ -103,8 +103,8 @@ export function FeedbackTimeline({
               type="button"
               onClick={onShowMore}
               className="px-4 py-2 text-[0.75rem] font-[family-name:var(--font-pixel-body)] uppercase
-                text-[var(--pixel-blue-sky)] bg-transparent border-2 border-[var(--pixel-blue-sky)]
-                hover:bg-[var(--pixel-blue-sky)] hover:text-[var(--pixel-black)] transition-colors"
+                text-[var(--pixel-blue-text)] bg-transparent border-2 border-[var(--pixel-blue-text)]
+                hover:bg-[var(--pixel-blue-text)] hover:text-[var(--pixel-black)] transition-colors"
               data-testid="show-more-button"
             >
               Show {remainingCount} more

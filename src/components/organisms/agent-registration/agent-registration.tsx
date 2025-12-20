@@ -97,7 +97,7 @@ function RegistrationRow({
               href={explorerUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-[var(--pixel-blue-sky)] hover:text-[var(--pixel-gray-100)] transition-colors"
+              className="text-[var(--pixel-blue-text)] hover:text-[var(--pixel-gray-100)] transition-colors"
               aria-label={`View ${label} on block explorer`}
             >
               <ExternalLink size={14} aria-hidden="true" />
@@ -108,7 +108,7 @@ function RegistrationRow({
               href={value}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-[var(--pixel-blue-sky)] hover:text-[var(--pixel-gray-100)] transition-colors"
+              className="text-[var(--pixel-blue-text)] hover:text-[var(--pixel-gray-100)] transition-colors"
               aria-label={`Open ${label} in new tab`}
             >
               <ExternalLink size={14} aria-hidden="true" />

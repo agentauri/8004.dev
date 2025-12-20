@@ -133,7 +133,7 @@ export const AgentCard = memo(function AgentCard({
           {agent.oasfSkills?.slice(0, 3).map((skill) => (
             <span
               key={skill.slug}
-              className="px-2 py-0.5 text-[0.625rem] bg-[var(--pixel-blue-sky)]/20 text-[var(--pixel-blue-sky)] rounded font-[family-name:var(--font-pixel-body)] uppercase"
+              className="px-2 py-0.5 text-[0.625rem] bg-[var(--pixel-blue-sky)]/20 text-[var(--pixel-blue-text)] rounded font-[family-name:var(--font-pixel-body)] uppercase"
               title={`${skill.slug} (${Math.round(skill.confidence * 100)}% confidence)`}
             >
               {skill.slug.split('/').pop()}

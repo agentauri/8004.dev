@@ -9,6 +9,8 @@
     /* Primary Colors (NES/Sega Inspired) */
     /* Blue adjusted from #5c94fc to #3b71c9 for WCAG AA contrast (4.5:1 with white) */
     --pixel-blue-sky: #3b71c9;
+    /* Lighter blue for text on dark backgrounds - 5.2:1 contrast on black */
+    --pixel-blue-text: #6ba3ff;
     --pixel-red-fire: #fc5454;
     --pixel-green-pipe: #00d800;
     --pixel-gold-coin: #fcc03c;
@@ -31,6 +33,7 @@
 
     /* CRT Glow Effects */
     --glow-blue: rgba(59, 113, 201, 0.5);
+    --glow-blue-text: rgba(107, 163, 255, 0.5);
     --glow-green: rgba(0, 216, 0, 0.5);
     --glow-gold: rgba(252, 192, 60, 0.5);
     --glow-red: rgba(252, 84, 84, 0.5);
@@ -154,13 +157,13 @@
 
   /* Links */
   a {
-    color: var(--pixel-blue-sky);
+    color: var(--pixel-blue-text);
     text-decoration: none;
     transition: all 0.2s;
   }
 
   a:hover {
-    text-shadow: 0 0 8px var(--glow-blue);
+    text-shadow: 0 0 8px var(--glow-blue-text);
   }
 
   /* Focus states - WCAG compliant */

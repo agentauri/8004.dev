@@ -32,10 +32,7 @@ test.describe('Accessibility - WCAG 2.1 AA', () => {
   });
 
   test.describe('Explore Page', () => {
-    // TODO: Fix color contrast issues (blue text on dark backgrounds)
-    test.skip('should not have any automatically detectable WCAG A/AA violations', async ({
-      page,
-    }) => {
+    test('should not have any automatically detectable WCAG A/AA violations', async ({ page }) => {
       await page.goto('/explore');
       await page.waitForLoadState('networkidle');
       await page.waitForTimeout(1000); // Wait for initial data load
@@ -119,10 +116,7 @@ test.describe('Accessibility - WCAG 2.1 AA', () => {
       expect(accessibilityScanResults.violations).toEqual([]);
     });
 
-    // TODO: Fix color contrast for blue text on dark backgrounds
-    // The explore page uses blue for both button backgrounds (with white text)
-    // and as text on dark backgrounds - these have conflicting contrast requirements
-    test.skip('explore page should have sufficient color contrast', async ({ page }) => {
+    test('explore page should have sufficient color contrast', async ({ page }) => {
       await page.goto('/explore');
       await page.waitForLoadState('networkidle');
 

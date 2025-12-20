@@ -75,7 +75,7 @@ describe('StatusBadge', () => {
 
     it('applies blue color class', () => {
       render(<StatusBadge status="mcp" />);
-      expect(screen.getByTestId('status-badge')).toHaveClass('text-[var(--pixel-blue-sky)]');
+      expect(screen.getByTestId('status-badge')).toHaveClass('text-[var(--pixel-blue-text)]');
     });
   });
 

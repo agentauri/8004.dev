@@ -204,7 +204,10 @@ export function ValidationSection({
               <div className="flex items-start justify-between mb-3">
                 <div className="flex items-center gap-3">
                   <div className="p-2 bg-[var(--pixel-gray-700)] rounded">
-                    <TypeIcon className="w-5 h-5 text-[var(--pixel-blue-sky)]" aria-hidden="true" />
+                    <TypeIcon
+                      className="w-5 h-5 text-[var(--pixel-blue-text)]"
+                      aria-hidden="true"
+                    />
                   </div>
                   <div>
                     <h4 className="font-[family-name:var(--font-pixel-body)] text-[var(--pixel-gray-200)] text-sm">
@@ -281,7 +284,7 @@ export function ValidationSection({
                   target="_blank"
                   rel="noopener noreferrer"
                   className={cn(
-                    'mt-3 flex items-center gap-1.5 text-xs text-[var(--pixel-blue-sky)]',
+                    'mt-3 flex items-center gap-1.5 text-xs text-[var(--pixel-blue-text)]',
                     'hover:text-[var(--pixel-gray-200)] transition-colors',
                   )}
                   data-testid="validation-explorer-link"
