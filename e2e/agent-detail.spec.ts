@@ -10,11 +10,21 @@ test.describe('Agent Detail Page', () => {
 
   test('displays agent header', async ({ page }) => {
     await page.goto(`/agent/${testAgentId}`);
-    await page.waitForLoadState('networkidle');
 
+    // Wait for page to fully load - either show content or error state
+    // Use .or() pattern to wait for any of these elements
     const header = page.getByTestId('agent-header');
     const notFound = page.getByText(/not found/i);
     const error = page.getByText(/error/i);
+    const loading = page.getByText(/loading/i);
+
+    // Wait for loading to disappear or content to appear (max 10s)
+    await Promise.race([
+      header.waitFor({ state: 'visible', timeout: 10000 }).catch(() => null),
+      notFound.waitFor({ state: 'visible', timeout: 10000 }).catch(() => null),
+      error.waitFor({ state: 'visible', timeout: 10000 }).catch(() => null),
+      loading.waitFor({ state: 'hidden', timeout: 10000 }).catch(() => null),
+    ]);
 
     const hasHeader = await header.isVisible().catch(() => false);
     const hasNotFound = await notFound.isVisible().catch(() => false);
