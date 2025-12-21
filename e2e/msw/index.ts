@@ -6,15 +6,15 @@
  * the backend API in E2E tests.
  */
 
-export { handlers, errorHandlers, allHandlers } from './handlers';
-export { server, startMswServer, stopMswServer, resetMswHandlers, useMswHandlers } from './server';
 export {
-  mockBackendAgents,
-  mockBackendStats,
-  mockBackendTaxonomy,
+  filterBackendAgents,
   getBackendAgent,
   getMockBackendReputation,
   getMockBackendSimilarAgents,
   getMockBackendValidations,
-  filterBackendAgents,
+  mockBackendAgents,
+  mockBackendStats,
+  mockBackendTaxonomy,
 } from './backend-mock-data';
+export { allHandlers, errorHandlers, handlers } from './handlers';
+export { resetMswHandlers, server, startMswServer, stopMswServer, useMswHandlers } from './server';

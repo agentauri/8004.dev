@@ -9,7 +9,6 @@
 import { expect, test } from '@playwright/test';
 
 test.describe('Explore Page Single Filter Tests', () => {
-
   test.describe('Protocol Filters', () => {
     test('MCP filter shows only MCP agents', async ({ page }) => {
       await page.goto('/explore?mcp=true');

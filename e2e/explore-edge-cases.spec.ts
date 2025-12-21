@@ -9,7 +9,6 @@
 import { expect, test } from '@playwright/test';
 
 test.describe('Explore Page Edge Cases', () => {
-
   test.describe('Empty and Default States', () => {
     test('No filters shows default results', async ({ page }) => {
       await page.goto('/explore');

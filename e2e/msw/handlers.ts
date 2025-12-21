@@ -6,14 +6,13 @@
  * requiring a real backend connection.
  */
 
-import { http, HttpResponse } from 'msw';
+import { HttpResponse, http } from 'msw';
 import {
   filterBackendAgents,
   getBackendAgent,
   getMockBackendReputation,
   getMockBackendSimilarAgents,
   getMockBackendValidations,
-  mockBackendAgents,
   mockBackendStats,
   mockBackendTaxonomy,
 } from './backend-mock-data';
