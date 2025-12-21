@@ -1,15 +1,14 @@
 /**
  * E2E tests for explore page single filters
  * Verifies each filter works correctly in isolation
+ *
+ * Note: MSW handles all backend API mocking at the Node.js level
+ * No browser-level mocks needed - see e2e/msw/handlers.ts
  */
 
 import { expect, test } from '@playwright/test';
-import { setupSmartApiMocks } from './fixtures/smart-api-mocks';
 
 test.describe('Explore Page Single Filter Tests', () => {
-  test.beforeEach(async ({ page }) => {
-    await setupSmartApiMocks(page);
-  });
 
   test.describe('Protocol Filters', () => {
     test('MCP filter shows only MCP agents', async ({ page }) => {
@@ -191,10 +190,6 @@ test.describe('Explore Page Single Filter Tests', () => {
 });
 
 test.describe('Explore Page Sorting', () => {
-  test.beforeEach(async ({ page }) => {
-    await setupSmartApiMocks(page);
-  });
-
   test('Sort by name ascending', async ({ page }) => {
     await page.goto('/explore?sort=name&order=asc');
     await page.waitForSelector('[data-testid="agent-card"]', { timeout: 5000 });

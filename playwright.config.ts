@@ -3,6 +3,10 @@ import { defineConfig, devices } from '@playwright/test';
 /**
  * Playwright E2E testing configuration
  * @see https://playwright.dev/docs/test-configuration
+ *
+ * MSW Integration:
+ * - E2E_MSW_ENABLED=true enables MSW in Next.js instrumentation
+ * - BACKEND_API_KEY/URL are set to dummy values (MSW intercepts all backend calls)
  */
 export default defineConfig({
   testDir: './e2e',
@@ -42,5 +46,12 @@ export default defineConfig({
     url: 'http://localhost:3000',
     reuseExistingServer: !process.env.CI,
     timeout: 120000,
+    // Enable MSW for E2E tests - intercepts all backend API calls
+    env: {
+      E2E_MSW_ENABLED: 'true',
+      // Dummy values - MSW intercepts before these are used
+      BACKEND_API_KEY: 'e2e-test-key',
+      BACKEND_API_URL: 'https://api.8004.dev',
+    },
   },
 });

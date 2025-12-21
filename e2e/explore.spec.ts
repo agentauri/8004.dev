@@ -1,9 +1,8 @@
 import { expect, test } from '@playwright/test';
-import { setupApiMocks } from './fixtures/api-mocks';
 
 test.describe('Explore Page', () => {
   test.beforeEach(async ({ page }) => {
-    await setupApiMocks(page);
+    // MSW handles all backend API mocking at the Node.js level
     await page.goto('/explore');
   });
 
@@ -49,7 +48,7 @@ test.describe('Explore Page', () => {
 
 test.describe('Explore Page Filters', () => {
   test.beforeEach(async ({ page }) => {
-    await setupApiMocks(page);
+    // MSW handles all backend API mocking at the Node.js level
     await page.goto('/explore');
   });
 

@@ -1,10 +1,12 @@
 /**
  * E2E tests for explore page filter combinations
  * Uses pairwise testing to cover all parameter pair combinations efficiently
+ *
+ * Note: MSW handles all backend API mocking at the Node.js level
+ * No browser-level mocks needed - see e2e/msw/handlers.ts
  */
 
 import { expect, test } from '@playwright/test';
-import { setupSmartApiMocks } from './fixtures/smart-api-mocks';
 
 /**
  * Generate pairwise filter combinations for E2E testing
@@ -105,10 +107,6 @@ const PAIRWISE_COMBINATIONS: FilterCombination[] = [
 ];
 
 test.describe('Explore Page Filter Combinations', () => {
-  test.beforeEach(async ({ page }) => {
-    await setupSmartApiMocks(page);
-  });
-
   for (const combo of PAIRWISE_COMBINATIONS) {
     test(`${combo.name} (${combo.id})`, async ({ page }) => {
       await page.goto(`/explore?${combo.params}`);
@@ -132,10 +130,6 @@ test.describe('Explore Page Filter Combinations', () => {
 });
 
 test.describe('Explore Page Filter Persistence', () => {
-  test.beforeEach(async ({ page }) => {
-    await setupSmartApiMocks(page);
-  });
-
   test('Filters persist after page reload', async ({ page }) => {
     const params = 'mcp=true&chains=11155111&active=true';
     await page.goto(`/explore?${params}`);
@@ -183,10 +177,6 @@ test.describe('Explore Page Filter Persistence', () => {
 });
 
 test.describe('Explore Page Results Validation', () => {
-  test.beforeEach(async ({ page }) => {
-    await setupSmartApiMocks(page);
-  });
-
   test('Result count changes with filters', async ({ page }) => {
     // Get count without filters
     await page.goto('/explore');

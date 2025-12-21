@@ -1,15 +1,14 @@
 /**
  * E2E tests for explore page edge cases
  * Tests unusual or boundary conditions
+ *
+ * Note: MSW handles all backend API mocking at the Node.js level
+ * No browser-level mocks needed - see e2e/msw/handlers.ts
  */
 
 import { expect, test } from '@playwright/test';
-import { setupSmartApiMocks } from './fixtures/smart-api-mocks';
 
 test.describe('Explore Page Edge Cases', () => {
-  test.beforeEach(async ({ page }) => {
-    await setupSmartApiMocks(page);
-  });
 
   test.describe('Empty and Default States', () => {
     test('No filters shows default results', async ({ page }) => {
@@ -240,10 +239,6 @@ test.describe('Explore Page Edge Cases', () => {
 });
 
 test.describe('Explore Page Accessibility', () => {
-  test.beforeEach(async ({ page }) => {
-    await setupSmartApiMocks(page);
-  });
-
   test('Search input has accessible name', async ({ page }) => {
     await page.goto('/explore');
 

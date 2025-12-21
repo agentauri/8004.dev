@@ -1,11 +1,12 @@
 import AxeBuilder from '@axe-core/playwright';
 import { expect, test } from '@playwright/test';
-import { setupApiMocks } from './fixtures/api-mocks';
+
+// Note: MSW handles all backend API mocking at the Node.js level
+// No browser-level mocks needed - see e2e/msw/handlers.ts
 
 test.describe('Accessibility - WCAG 2.1 AA', () => {
   test.describe('Home Page', () => {
     test('should not have any automatically detectable WCAG A/AA violations', async ({ page }) => {
-      await setupApiMocks(page);
       await page.goto('/');
       await page.waitForLoadState('networkidle');
 
@@ -17,7 +18,6 @@ test.describe('Accessibility - WCAG 2.1 AA', () => {
     });
 
     test('should have no critical accessibility violations', async ({ page }) => {
-      await setupApiMocks(page);
       await page.goto('/');
       await page.waitForLoadState('networkidle');
 
@@ -36,7 +36,6 @@ test.describe('Accessibility - WCAG 2.1 AA', () => {
 
   test.describe('Explore Page', () => {
     test('should not have any automatically detectable WCAG A/AA violations', async ({ page }) => {
-      await setupApiMocks(page);
       await page.goto('/explore');
       await page.waitForLoadState('networkidle');
       await page.waitForTimeout(1000);
@@ -49,7 +48,6 @@ test.describe('Accessibility - WCAG 2.1 AA', () => {
     });
 
     test('search input should be accessible', async ({ page }) => {
-      await setupApiMocks(page);
       await page.goto('/explore');
       await page.waitForLoadState('networkidle');
 
@@ -60,7 +58,6 @@ test.describe('Accessibility - WCAG 2.1 AA', () => {
     });
 
     test('filter buttons should be keyboard accessible', async ({ page }) => {
-      await setupApiMocks(page);
       await page.goto('/explore');
       await page.waitForLoadState('networkidle');
 
@@ -76,7 +73,6 @@ test.describe('Accessibility - WCAG 2.1 AA', () => {
 
   test.describe('Agent Detail Page', () => {
     test('should not have any automatically detectable WCAG A/AA violations', async ({ page }) => {
-      await setupApiMocks(page);
       await page.goto('/agent/11155111:1');
       await page.waitForLoadState('networkidle');
       await page.waitForTimeout(1000);
@@ -89,7 +85,6 @@ test.describe('Accessibility - WCAG 2.1 AA', () => {
     });
 
     test('back link should be accessible via keyboard', async ({ page }) => {
-      await setupApiMocks(page);
       await page.goto('/agent/11155111:1');
       await page.waitForLoadState('networkidle');
       await page.waitForTimeout(1000);
@@ -106,7 +101,6 @@ test.describe('Accessibility - WCAG 2.1 AA', () => {
 
   test.describe('Color Contrast', () => {
     test('home page should have sufficient color contrast', async ({ page }) => {
-      await setupApiMocks(page);
       await page.goto('/');
       await page.waitForLoadState('networkidle');
 
@@ -118,7 +112,6 @@ test.describe('Accessibility - WCAG 2.1 AA', () => {
     });
 
     test('explore page should have sufficient color contrast', async ({ page }) => {
-      await setupApiMocks(page);
       await page.goto('/explore');
       await page.waitForLoadState('networkidle');
 
@@ -132,7 +125,6 @@ test.describe('Accessibility - WCAG 2.1 AA', () => {
 
   test.describe('Keyboard Navigation', () => {
     test('can navigate home page with keyboard only', async ({ page }) => {
-      await setupApiMocks(page);
       await page.goto('/');
       await page.waitForLoadState('networkidle');
 
@@ -146,7 +138,6 @@ test.describe('Accessibility - WCAG 2.1 AA', () => {
     });
 
     test('can navigate explore page with keyboard only', async ({ page }) => {
-      await setupApiMocks(page);
       await page.goto('/explore');
       await page.waitForLoadState('networkidle');
 
@@ -160,7 +151,6 @@ test.describe('Accessibility - WCAG 2.1 AA', () => {
     });
 
     test('can reverse tab with Shift+Tab', async ({ page }) => {
-      await setupApiMocks(page);
       await page.goto('/explore');
       await page.waitForLoadState('networkidle');
 
@@ -177,7 +167,6 @@ test.describe('Accessibility - WCAG 2.1 AA', () => {
 
   test.describe('Semantic Structure', () => {
     test('home page has proper heading hierarchy', async ({ page }) => {
-      await setupApiMocks(page);
       await page.goto('/');
       await page.waitForLoadState('networkidle');
 
@@ -187,7 +176,6 @@ test.describe('Accessibility - WCAG 2.1 AA', () => {
     });
 
     test('explore page has proper heading hierarchy', async ({ page }) => {
-      await setupApiMocks(page);
       await page.goto('/explore');
       await page.waitForLoadState('networkidle');
 
@@ -197,7 +185,6 @@ test.describe('Accessibility - WCAG 2.1 AA', () => {
     });
 
     test('pages have main landmark', async ({ page }) => {
-      await setupApiMocks(page);
       await page.goto('/');
       await page.waitForLoadState('networkidle');
 
@@ -206,7 +193,6 @@ test.describe('Accessibility - WCAG 2.1 AA', () => {
     });
 
     test('pages have header landmark', async ({ page }) => {
-      await setupApiMocks(page);
       await page.goto('/');
       await page.waitForLoadState('networkidle');
 
@@ -215,7 +201,6 @@ test.describe('Accessibility - WCAG 2.1 AA', () => {
     });
 
     test('pages have footer landmark', async ({ page }) => {
-      await setupApiMocks(page);
       await page.goto('/');
       await page.waitForLoadState('networkidle');
 
@@ -226,7 +211,6 @@ test.describe('Accessibility - WCAG 2.1 AA', () => {
 
   test.describe('Form Controls', () => {
     test('search input has accessible label', async ({ page }) => {
-      await setupApiMocks(page);
       await page.goto('/explore');
       await page.waitForLoadState('networkidle');
 

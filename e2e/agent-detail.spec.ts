@@ -1,19 +1,16 @@
 import { expect, test } from '@playwright/test';
-import { setupApiMocks } from './fixtures/api-mocks';
+
+// Note: MSW handles all backend API mocking at the Node.js level
+// No browser-level mocks needed - see e2e/msw/handlers.ts
 
 test.describe('Agent Detail Page', () => {
   const testAgentId = '11155111:1';
-
-  test.beforeEach(async ({ page }) => {
-    await setupApiMocks(page);
-  });
 
   test('loads agent page', async ({ page }) => {
     await page.goto(`/agent/${testAgentId}`);
     await page.waitForLoadState('domcontentloaded');
 
     // Verify the page renders without crashing
-    // In CI without backend API key, the page may show loading or error state
     const bodyText = await page.locator('body').textContent();
 
     // Page should have some content (not empty/blank/crashed)
@@ -53,10 +50,6 @@ test.describe('Agent Detail Page', () => {
 });
 
 test.describe('Agent Detail Page - Invalid Agent', () => {
-  test.beforeEach(async ({ page }) => {
-    await setupApiMocks(page);
-  });
-
   test('handles invalid agent ID gracefully', async ({ page }) => {
     await page.goto('/agent/invalid-id');
     await page.waitForTimeout(1000);
