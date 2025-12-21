@@ -13,10 +13,8 @@ export function serializeToUrl(state: UrlSearchState): URLSearchParams {
     params.set('q', state.query.trim());
   }
 
-  // Page (only if not page 1)
-  if (state.page > 1) {
-    params.set('page', String(state.page));
-  }
+  // Page parameter removed - cursor-based pagination is managed in React state
+  // Do not serialize page to URL
 
   // Page size (only if not default)
   if (state.pageSize !== DEFAULT_PAGE_SIZE) {

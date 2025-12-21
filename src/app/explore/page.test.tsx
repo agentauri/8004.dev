@@ -238,17 +238,25 @@ describe('ExplorePage', () => {
   });
 
   describe('error handling', () => {
-    it('displays error message when search fails', async () => {
-      mockFetch.mockResolvedValue({
-        json: () => Promise.resolve({ success: false, error: 'Network error' }),
-      });
+    it(
+      'displays error message when search fails',
+      async () => {
+        mockFetch.mockResolvedValue({
+          json: () => Promise.resolve({ success: false, error: 'Network error' }),
+        });
 
-      renderWithProviders(<ExplorePage />);
+        renderWithProviders(<ExplorePage />);
 
-      await waitFor(() => {
-        expect(screen.getByText('Network error')).toBeInTheDocument();
-      });
-    });
+        // With retry logic (3 retries with exponential backoff), errors take longer to surface
+        await waitFor(
+          () => {
+            expect(screen.getByText('Network error')).toBeInTheDocument();
+          },
+          { timeout: 15000 },
+        );
+      },
+      20000,
+    );
   });
 
   describe('empty results', () => {
@@ -311,17 +319,16 @@ describe('ExplorePage', () => {
       });
     });
 
-    it('initializes with page from URL (defaults to active=true)', async () => {
+    it('ignores page parameter from URL (cursor-based pagination)', async () => {
+      // Page parameter is deprecated - cursor-based pagination is managed in React state
+      // Page from URL is ignored, always starts at page 1
       mockSearchParams = new URLSearchParams('page=2');
 
       renderWithProviders(<ExplorePage />);
 
       await waitFor(() => {
-        // Default behavior now includes active=true filter
-        // Backend expects cursor in format: {"_global_offset": N}
-        expect(mockFetch).toHaveBeenCalledWith(
-          '/api/agents?active=true&limit=20&cursor=%7B%22_global_offset%22%3A20%7D',
-        );
+        // Page parameter is ignored - no cursor on first load
+        expect(mockFetch).toHaveBeenCalledWith('/api/agents?active=true&limit=20');
       });
     });
 

@@ -50,12 +50,29 @@ export interface ExploreTemplateProps {
   };
   /** Callback when an agent is clicked */
   onAgentClick?: (agent: AgentCardAgent) => void;
-  /** Current page number (1-indexed) */
+  /**
+   * @deprecated Use pageNumber for cursor-based pagination
+   * Current page number (1-indexed)
+   */
   currentPage?: number;
-  /** Total number of pages */
+  /**
+   * @deprecated Total pages not available with cursor-based pagination
+   * Total number of pages
+   */
   totalPages?: number;
-  /** Callback when page changes */
+  /**
+   * @deprecated Use onNext/onPrevious for cursor-based pagination
+   * Callback when page changes
+   */
   onPageChange?: (page: number) => void;
+  /** Current page number for cursor-based pagination */
+  pageNumber?: number;
+  /** Whether there are more results available */
+  hasMore?: boolean;
+  /** Callback when next page is requested */
+  onNext?: () => void;
+  /** Callback when previous page is requested */
+  onPrevious?: () => void;
   /** Current page size */
   pageSize?: number;
   /** Callback when page size changes */
@@ -107,6 +124,10 @@ export function ExploreTemplate({
   currentPage,
   totalPages,
   onPageChange,
+  pageNumber,
+  hasMore,
+  onNext,
+  onPrevious,
   pageSize,
   onPageSizeChange,
   sortBy,
@@ -167,6 +188,10 @@ export function ExploreTemplate({
             currentPage={currentPage}
             totalPages={totalPages}
             onPageChange={onPageChange}
+            pageNumber={pageNumber}
+            hasMore={hasMore}
+            onNext={onNext}
+            onPrevious={onPrevious}
             pageSize={pageSize}
             onPageSizeChange={onPageSizeChange}
             sortBy={sortBy}

@@ -16,11 +16,13 @@ describe('parseUrlParams', () => {
     });
   });
 
-  describe('page parsing', () => {
-    it('parses page number', () => {
+  describe('page parsing (deprecated)', () => {
+    // Page parameter is deprecated - cursor-based pagination is managed in React state
+    // Page always returns 1 for backwards compatibility
+    it('ignores page parameter (always returns 1)', () => {
       const params = new URLSearchParams('page=3');
       const result = parseUrlParams(params);
-      expect(result.page).toBe(3);
+      expect(result.page).toBe(1); // Page is deprecated, always 1
     });
 
     it('defaults to page 1', () => {
@@ -29,13 +31,13 @@ describe('parseUrlParams', () => {
       expect(result.page).toBe(1);
     });
 
-    it('enforces minimum page of 1', () => {
+    it('returns 1 for any page value (deprecated)', () => {
       const params = new URLSearchParams('page=-5');
       const result = parseUrlParams(params);
       expect(result.page).toBe(1);
     });
 
-    it('handles invalid page values', () => {
+    it('returns 1 for invalid page values', () => {
       const params = new URLSearchParams('page=invalid');
       const result = parseUrlParams(params);
       expect(result.page).toBe(1);

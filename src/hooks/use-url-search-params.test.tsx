@@ -43,10 +43,11 @@ describe('useUrlSearchParams', () => {
       expect(result.current.query).toBe('test search');
     });
 
-    it('parses page from URL', () => {
+    it('always returns page 1 (deprecated pagination)', () => {
       mockSearchParams = new URLSearchParams('page=3');
       const { result } = renderHook(() => useUrlSearchParams());
-      expect(result.current.page).toBe(3);
+      // page is deprecated and always returns 1 - cursor pagination is used instead
+      expect(result.current.page).toBe(1);
     });
 
     it('parses pageSize from URL', () => {
@@ -75,23 +76,26 @@ describe('useUrlSearchParams', () => {
     });
   });
 
-  describe('offset calculation', () => {
-    it('calculates offset correctly for page 1', () => {
+  describe('offset calculation (deprecated)', () => {
+    it('always returns 0 for page 1 (offset deprecated)', () => {
       mockSearchParams = new URLSearchParams('page=1&limit=20');
       const { result } = renderHook(() => useUrlSearchParams());
+      // offset is deprecated and always returns 0 - cursor pagination is used instead
       expect(result.current.offset).toBe(0);
     });
 
-    it('calculates offset correctly for page 2', () => {
+    it('always returns 0 regardless of page param (deprecated)', () => {
       mockSearchParams = new URLSearchParams('page=2&limit=20');
       const { result } = renderHook(() => useUrlSearchParams());
-      expect(result.current.offset).toBe(20);
+      // offset is deprecated and always returns 0
+      expect(result.current.offset).toBe(0);
     });
 
-    it('calculates offset correctly with different page sizes', () => {
+    it('always returns 0 regardless of page size (deprecated)', () => {
       mockSearchParams = new URLSearchParams('page=3&limit=50');
       const { result } = renderHook(() => useUrlSearchParams());
-      expect(result.current.offset).toBe(100);
+      // offset is deprecated and always returns 0
+      expect(result.current.offset).toBe(0);
     });
   });
 
@@ -127,25 +131,26 @@ describe('useUrlSearchParams', () => {
   });
 
   describe('setPage', () => {
-    it('updates page number', () => {
+    it('is a no-op for backwards compatibility (deprecated)', () => {
       const { result } = renderHook(() => useUrlSearchParams());
 
       act(() => {
         result.current.setPage(5);
       });
 
-      expect(mockPush).toHaveBeenCalledWith(expect.stringContaining('page=5'), expect.any(Object));
+      // setPage is deprecated and does nothing - cursor pagination is used instead
+      expect(mockPush).not.toHaveBeenCalled();
     });
 
-    it('enforces minimum page of 1', () => {
+    it('ignores negative page values (deprecated no-op)', () => {
       const { result } = renderHook(() => useUrlSearchParams());
 
       act(() => {
         result.current.setPage(-5);
       });
 
-      // Should push with page=1 (minimum enforced)
-      expect(mockPush).toHaveBeenCalled();
+      // setPage is deprecated and does nothing
+      expect(mockPush).not.toHaveBeenCalled();
     });
   });
 

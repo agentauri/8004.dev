@@ -17,12 +17,29 @@ export interface SearchResultsProps {
   emptyMessage?: string;
   /** Callback when an agent card is clicked */
   onAgentClick?: (agent: AgentCardAgent) => void;
-  /** Current page number (1-indexed) */
+  /**
+   * @deprecated Use pageNumber instead for cursor-based pagination
+   * Current page number (1-indexed)
+   */
   currentPage?: number;
-  /** Total number of pages */
+  /**
+   * @deprecated Total pages is not available with cursor-based pagination
+   * Total number of pages
+   */
   totalPages?: number;
-  /** Callback when page changes */
+  /**
+   * @deprecated Use onNext/onPrevious for cursor-based pagination
+   * Callback when page changes
+   */
   onPageChange?: (page: number) => void;
+  /** Current page number for cursor-based pagination */
+  pageNumber?: number;
+  /** Whether there are more results available */
+  hasMore?: boolean;
+  /** Callback when next page is requested */
+  onNext?: () => void;
+  /** Callback when previous page is requested */
+  onPrevious?: () => void;
   /** Current page size */
   pageSize?: number;
   /** Callback when page size changes */
@@ -66,6 +83,10 @@ export function SearchResults({
   currentPage,
   totalPages,
   onPageChange,
+  pageNumber,
+  hasMore,
+  onNext,
+  onPrevious,
   pageSize,
   onPageSizeChange,
   sortBy = 'relevance',
@@ -94,9 +115,19 @@ export function SearchResults({
         <div className="flex justify-center mb-6">
           <PixelExplorer size="lg" animation="float" />
         </div>
-        <p className="text-[var(--pixel-destructive)] font-[family-name:var(--font-pixel-body)] text-sm">
+        <p className="text-[var(--pixel-destructive)] font-[family-name:var(--font-pixel-body)] text-sm mb-4">
           {error}
         </p>
+        {onManualRefresh && (
+          <button
+            type="button"
+            onClick={onManualRefresh}
+            className="px-4 py-2 text-xs font-[family-name:var(--font-pixel-body)] uppercase tracking-wider bg-[var(--pixel-blue-sky)] text-[var(--pixel-black)] hover:bg-[var(--pixel-blue-sky)]/80 transition-colors"
+            data-testid="search-retry-button"
+          >
+            Retry
+          </button>
+        )}
       </div>
     );
   }
@@ -153,11 +184,15 @@ export function SearchResults({
     );
   }
 
-  const showPagination =
+  // Determine pagination mode: cursor-based (preferred) or page-based (legacy)
+  const isCursorBased = pageNumber !== undefined && onNext !== undefined && onPrevious !== undefined;
+  const isPageBased =
     currentPage !== undefined &&
     totalPages !== undefined &&
     totalPages > 1 &&
     onPageChange !== undefined;
+
+  const showPagination = isCursorBased || isPageBased;
 
   return (
     <div className={cn('space-y-6', className)} data-testid="search-results" data-state="success">
@@ -199,14 +234,27 @@ export function SearchResults({
       </div>
       {showPagination && (
         <div className="pt-4" data-testid="search-results-pagination">
-          <Pagination
-            currentPage={currentPage}
-            totalPages={totalPages}
-            onPageChange={onPageChange}
-            pageSize={pageSize}
-            onPageSizeChange={onPageSizeChange}
-            isLoading={isLoading}
-          />
+          {isCursorBased ? (
+            <Pagination
+              pageNumber={pageNumber}
+              hasMore={hasMore ?? false}
+              hasPrevious={pageNumber > 1}
+              onNext={onNext}
+              onPrevious={onPrevious}
+              pageSize={pageSize}
+              onPageSizeChange={onPageSizeChange}
+              isLoading={isLoading}
+            />
+          ) : (
+            <Pagination
+              currentPage={currentPage!}
+              totalPages={totalPages!}
+              onPageChange={onPageChange!}
+              pageSize={pageSize}
+              onPageSizeChange={onPageSizeChange}
+              isLoading={isLoading}
+            />
+          )}
         </div>
       )}
     </div>

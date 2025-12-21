@@ -50,7 +50,8 @@ describe('queryKeys', () => {
       // Parse and verify all properties are present
       const parsed = JSON.parse(result[2] as string);
       expect(parsed.q).toBe('trading');
-      expect(parsed.chains).toEqual([11155111, 84532]);
+      // Arrays are sorted for stable cache keys
+      expect(parsed.chains).toEqual([84532, 11155111]);
       expect(parsed.mcp).toBe(true);
     });
 

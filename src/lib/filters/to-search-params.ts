@@ -8,6 +8,20 @@ import type { SearchFiltersState } from '@/components/organisms/search-filters';
 import type { SearchParams } from '@/types/search';
 
 /**
+ * Options for converting filters to search params
+ */
+export interface ToSearchParamsOptions {
+  /** Search query string */
+  query: string;
+  /** Current filter state from UI */
+  filters: SearchFiltersState;
+  /** Number of results per page */
+  limit: number;
+  /** Cursor for pagination (from previous response's nextCursor) */
+  cursor?: string;
+}
+
+/**
  * Convert SearchFiltersState to SearchParams for the backend API
  *
  * Default behavior: Show only active agents with registration file
@@ -16,58 +30,91 @@ import type { SearchParams } from '@/types/search';
  * Note: Sorting is handled client-side, not sent to API.
  * This improves caching - the same data can be sorted multiple ways without refetching.
  *
- * @param query - Search query string
- * @param filters - Current filter state from UI
- * @param limit - Number of results per page
- * @param offset - Pagination offset (0-indexed)
+ * @param options - Search options including query, filters, limit, and cursor
  * @returns SearchParams object for API call
  *
  * @example
  * ```tsx
- * const params = toSearchParams(
- *   'trading agent',
- *   { protocols: ['mcp'], chains: [11155111], ... },
- *   20,
- *   0
- * );
+ * // First page
+ * const params = toSearchParams({
+ *   query: 'trading agent',
+ *   filters: { protocols: ['mcp'], chains: [11155111], ... },
+ *   limit: 20,
+ * });
+ *
+ * // Next page - use cursor from previous response
+ * const nextParams = toSearchParams({
+ *   query: 'trading agent',
+ *   filters: { protocols: ['mcp'], chains: [11155111], ... },
+ *   limit: 20,
+ *   cursor: previousResponse.nextCursor,
+ * });
  * ```
+ */
+export function toSearchParams(options: ToSearchParamsOptions): SearchParams;
+/**
+ * @deprecated Use options object instead. This signature will be removed.
  */
 export function toSearchParams(
   query: string,
   filters: SearchFiltersState,
   limit: number,
-  offset: number,
+  cursorOrOffset?: string | number,
+): SearchParams;
+export function toSearchParams(
+  queryOrOptions: string | ToSearchParamsOptions,
+  filters?: SearchFiltersState,
+  limit?: number,
+  cursorOrOffset?: string | number,
 ): SearchParams {
+  // Handle both signatures for backwards compatibility
+  let options: ToSearchParamsOptions;
+  if (typeof queryOrOptions === 'object') {
+    options = queryOrOptions;
+  } else {
+    // Legacy signature - convert offset to undefined (no cursor on first page)
+    const cursor = typeof cursorOrOffset === 'string' ? cursorOrOffset : undefined;
+    options = {
+      query: queryOrOptions,
+      filters: filters!,
+      limit: limit!,
+      cursor,
+    };
+  }
+
   const params: SearchParams = {};
 
   // Handle search query
-  const trimmedQuery = query.trim();
+  const trimmedQuery = options.query.trim();
   if (trimmedQuery) {
     params.q = trimmedQuery;
   }
 
   // Handle showAllAgents toggle vs default filtering
-  applyStatusFilters(params, filters);
+  applyStatusFilters(params, options.filters);
 
   // Apply protocol filters
-  applyProtocolFilters(params, filters);
+  applyProtocolFilters(params, options.filters);
 
   // Apply chain filters
-  applyChainFilters(params, filters);
+  applyChainFilters(params, options.filters);
 
   // Apply reputation filters
-  applyReputationFilters(params, filters);
+  applyReputationFilters(params, options.filters);
 
   // Apply taxonomy filters (skills and domains)
-  applyTaxonomyFilters(params, filters);
+  applyTaxonomyFilters(params, options.filters);
 
   // Apply filter mode (only send OR, since AND is the default)
-  if (filters.filterMode === 'OR') {
+  if (options.filters.filterMode === 'OR') {
     params.filterMode = 'OR';
   }
 
   // Apply pagination
-  applyPagination(params, limit, offset);
+  params.limit = options.limit;
+  if (options.cursor) {
+    params.cursor = options.cursor;
+  }
 
   return params;
 }
@@ -144,13 +191,3 @@ function applyTaxonomyFilters(params: SearchParams, filters: SearchFiltersState)
   }
 }
 
-/**
- * Apply pagination parameters
- */
-function applyPagination(params: SearchParams, limit: number, offset: number): void {
-  params.limit = limit;
-  if (offset > 0) {
-    // Backend expects cursor in format: {"_global_offset": N}
-    params.cursor = JSON.stringify({ _global_offset: offset });
-  }
-}

@@ -10,6 +10,7 @@ import { SUPPORTED_CHAIN_IDS, VALID_SORT_FIELDS, VALID_SORT_ORDERS } from './con
 
 export interface UrlSearchState {
   query: string;
+  /** @deprecated Page-based pagination removed. Use cursor from API response. */
   page: number;
   pageSize: number;
   filters: SearchFiltersState;
@@ -19,7 +20,9 @@ export interface UrlSearchState {
 
 export function parseUrlParams(searchParams: URLSearchParams): UrlSearchState {
   const query = searchParams.get('q') ?? '';
-  const page = Math.max(1, Number.parseInt(searchParams.get('page') ?? '1', 10) || 1);
+  // Page parameter is deprecated - cursor-based pagination is managed in React state
+  // Always return 1 for backwards compatibility with existing code
+  const page = 1;
 
   // Parse page size (limit) - validate against allowed options
   const limitParam = searchParams.get('limit');

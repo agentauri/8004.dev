@@ -1,6 +1,6 @@
 'use client';
 
-import { Suspense, useMemo, useState } from 'react';
+import { Suspense, useCallback, useEffect, useMemo, useState } from 'react';
 import type { ChainId } from '@/components/atoms';
 import type { CapabilityType } from '@/components/molecules';
 import type { AgentCardAgent } from '@/components/organisms/agent-card';
@@ -54,30 +54,60 @@ const DEFAULT_FILTERS: SearchFiltersState = {
   showAllAgents: false,
 };
 
+/**
+ * Cursor pagination state
+ */
+interface CursorState {
+  /** Current page number (1-indexed, for display) */
+  pageNumber: number;
+  /** Current cursor for API request (undefined for first page) */
+  currentCursor?: string;
+  /** History of cursors for back navigation (index 0 = page 1's cursor = undefined) */
+  cursorHistory: (string | undefined)[];
+}
+
+const INITIAL_CURSOR_STATE: CursorState = {
+  pageNumber: 1,
+  currentCursor: undefined,
+  cursorHistory: [undefined], // First page has no cursor
+};
+
 function ExplorePageContent() {
-  // URL-driven state for filters and pagination
+  // URL-driven state for filters (pagination is managed locally with cursors)
   const {
     query: urlQuery,
-    page,
     filters: urlFilters,
     pageSize,
     sortBy,
     sortOrder,
     setQuery: setUrlQuery,
-    setPage,
     setPageSize,
     setFilters: setUrlFilters,
     setSort,
-    offset,
+    resetSignal,
   } = useUrlSearchParams();
 
   // Local state for search input (before submission)
   const [inputQuery, setInputQuery] = useState(urlQuery);
 
-  // Build search params from current state (sorting handled client-side)
+  // Cursor-based pagination state
+  const [cursorState, setCursorState] = useState<CursorState>(INITIAL_CURSOR_STATE);
+
+  // Reset cursor state when URL params change (query, filters, sort, pageSize)
+  useEffect(() => {
+    setCursorState(INITIAL_CURSOR_STATE);
+  }, [resetSignal]);
+
+  // Build search params from current state (using cursor-based pagination)
   const searchParamsObj = useMemo(
-    () => toSearchParams(urlQuery, urlFilters, pageSize, offset),
-    [urlQuery, urlFilters, pageSize, offset],
+    () =>
+      toSearchParams({
+        query: urlQuery,
+        filters: urlFilters,
+        limit: pageSize,
+        cursor: cursorState.currentCursor,
+      }),
+    [urlQuery, urlFilters, pageSize, cursorState.currentCursor],
   );
 
   // Use TanStack Query hook for data fetching
@@ -91,18 +121,40 @@ function ExplorePageContent() {
     return sorted.map(toAgentCardAgent);
   }, [data?.agents, sortBy, sortOrder]);
 
-  // Calculate total pages
-  const totalPages = useMemo(() => {
-    if (!data?.total) return 1;
-    return Math.ceil(data.total / pageSize);
-  }, [data?.total, pageSize]);
+  // Navigation handlers
+  const handleNext = useCallback(() => {
+    if (!data?.hasMore || !data?.nextCursor) return;
+
+    setCursorState((prev) => ({
+      pageNumber: prev.pageNumber + 1,
+      currentCursor: data.nextCursor,
+      cursorHistory: [...prev.cursorHistory, data.nextCursor],
+    }));
+  }, [data?.hasMore, data?.nextCursor]);
+
+  const handlePrevious = useCallback(() => {
+    setCursorState((prev) => {
+      if (prev.pageNumber <= 1) return prev;
+
+      const newPageNumber = prev.pageNumber - 1;
+      // Get cursor from history (index is pageNumber - 1)
+      const previousCursor = prev.cursorHistory[newPageNumber - 1];
+
+      return {
+        pageNumber: newPageNumber,
+        currentCursor: previousCursor,
+        // Keep history but slice to current position + 1
+        cursorHistory: prev.cursorHistory.slice(0, newPageNumber),
+      };
+    });
+  }, []);
 
   const handleSearch = (searchQuery: string) => {
-    setUrlQuery(searchQuery); // This also resets page to 1
+    setUrlQuery(searchQuery); // This triggers resetSignal change, which resets cursor
   };
 
   const handleFiltersChange = (newFilters: SearchFiltersState) => {
-    setUrlFilters(newFilters); // This also resets page to 1
+    setUrlFilters(newFilters); // This triggers resetSignal change, which resets cursor
   };
 
   // Keep input in sync with URL query
@@ -121,9 +173,11 @@ function ExplorePageContent() {
       totalCount={data?.total ?? 0}
       isLoading={isLoading}
       error={error?.message}
-      currentPage={page}
-      totalPages={totalPages}
-      onPageChange={setPage}
+      // Cursor-based pagination props
+      pageNumber={cursorState.pageNumber}
+      hasMore={data?.hasMore ?? false}
+      onNext={handleNext}
+      onPrevious={handlePrevious}
       pageSize={pageSize}
       onPageSizeChange={setPageSize}
       sortBy={sortBy}

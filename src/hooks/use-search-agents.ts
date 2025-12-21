@@ -222,6 +222,9 @@ export function useSearchAgents(
     refetchOnMount: true, // Always check for updates on mount
     refetchOnWindowFocus: true, // Refetch when tab regains focus
     refetchInterval: autoRefresh ? refreshInterval : false,
+    // Retry on transient failures (search-service/SDK timeouts)
+    retry: 3,
+    retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 10000),
   });
 
   // Update lastUpdated timestamp when data changes

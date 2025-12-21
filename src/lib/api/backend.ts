@@ -190,8 +190,8 @@ export async function backendFetch<T>(
   if (!response.ok || !data.success) {
     const errorData = data as BackendErrorResponse;
     throw new BackendError(
-      errorData.error || 'Unknown error',
-      errorData.code || 'UNKNOWN_ERROR',
+      errorData.error || `Request failed (status ${response.status})`,
+      errorData.code || 'REQUEST_FAILED',
       response.status,
     );
   }

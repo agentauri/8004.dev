@@ -362,39 +362,55 @@ describe('useSearchAgents', () => {
   });
 
   describe('error handling', () => {
-    it('handles search errors', async () => {
-      mockFetch.mockResolvedValue({
-        json: () =>
-          Promise.resolve({
-            success: false,
-            error: 'Network error',
-          }),
-      });
+    it(
+      'handles search errors',
+      async () => {
+        mockFetch.mockResolvedValue({
+          json: () =>
+            Promise.resolve({
+              success: false,
+              error: 'Network error',
+            }),
+        });
 
-      const { result } = renderHook(() => useSearchAgents({}), {
-        wrapper: createWrapper(),
-      });
+        const { result } = renderHook(() => useSearchAgents({}), {
+          wrapper: createWrapper(),
+        });
 
-      await waitFor(() => {
-        expect(result.current.isError).toBe(true);
-      });
+        // With retry logic (3 retries with exponential backoff), errors take longer to surface
+        await waitFor(
+          () => {
+            expect(result.current.isError).toBe(true);
+          },
+          { timeout: 15000 },
+        );
 
-      expect(result.current.error?.message).toBe('Network error');
-    });
+        expect(result.current.error?.message).toBe('Network error');
+      },
+      20000,
+    );
 
-    it('handles fetch rejection', async () => {
-      mockFetch.mockRejectedValue(new Error('Fetch failed'));
+    it(
+      'handles fetch rejection',
+      async () => {
+        mockFetch.mockRejectedValue(new Error('Fetch failed'));
 
-      const { result } = renderHook(() => useSearchAgents({}), {
-        wrapper: createWrapper(),
-      });
+        const { result } = renderHook(() => useSearchAgents({}), {
+          wrapper: createWrapper(),
+        });
 
-      await waitFor(() => {
-        expect(result.current.isError).toBe(true);
-      });
+        // With retry logic (3 retries with exponential backoff), errors take longer to surface
+        await waitFor(
+          () => {
+            expect(result.current.isError).toBe(true);
+          },
+          { timeout: 15000 },
+        );
 
-      expect(result.current.error?.message).toBe('Fetch failed');
-    });
+        expect(result.current.error?.message).toBe('Fetch failed');
+      },
+      20000,
+    );
   });
 
   describe('enabled option', () => {

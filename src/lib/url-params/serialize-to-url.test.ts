@@ -42,11 +42,13 @@ describe('serializeToUrl', () => {
     });
   });
 
-  describe('page serialization', () => {
-    it('includes page when > 1', () => {
+  describe('page serialization (deprecated)', () => {
+    // Page parameter is deprecated - cursor-based pagination is managed in React state
+    // Page is never serialized to URL
+    it('never includes page (deprecated - use cursor)', () => {
       const state = { ...createDefaultState(), page: 3 };
       const result = serializeToUrl(state);
-      expect(result.get('page')).toBe('3');
+      expect(result.has('page')).toBe(false); // Page is never serialized
     });
 
     it('excludes page when 1', () => {

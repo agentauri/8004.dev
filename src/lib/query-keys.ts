@@ -19,11 +19,19 @@ function stableSerialize(obj: Record<string, unknown>): string {
     const value = obj[key];
     // Recursively sort nested objects and arrays
     if (Array.isArray(value)) {
-      sorted[key] = value.map((item) =>
+      const processed = value.map((item) =>
         typeof item === 'object' && item !== null
           ? JSON.parse(stableSerialize(item as Record<string, unknown>))
           : item,
       );
+      // Sort primitive arrays for stable cache keys (e.g., chains: [84532, 11155111] === [11155111, 84532])
+      if (processed.length > 0 && typeof processed[0] !== 'object') {
+        processed.sort((a, b) => {
+          if (typeof a === 'number' && typeof b === 'number') return a - b;
+          return String(a).localeCompare(String(b));
+        });
+      }
+      sorted[key] = processed;
     } else if (typeof value === 'object' && value !== null) {
       sorted[key] = JSON.parse(stableSerialize(value as Record<string, unknown>));
     } else {

@@ -216,22 +216,39 @@ describe('toSearchParams', () => {
       expect(result.limit).toBe(50);
     });
 
-    it('sets cursor when offset > 0', () => {
-      const result = toSearchParams('', createDefaultFilters(), 20, 40);
-      expect(result.cursor).toBe(JSON.stringify({ _global_offset: 40 }));
+    it('sets cursor when provided via options object', () => {
+      const result = toSearchParams({
+        query: '',
+        filters: createDefaultFilters(),
+        limit: 20,
+        cursor: 'next-page-cursor-token',
+      });
+      expect(result.cursor).toBe('next-page-cursor-token');
     });
 
-    it('does not set cursor when offset is 0', () => {
-      const result = toSearchParams('', createDefaultFilters(), 20, 0);
+    it('does not set cursor when not provided', () => {
+      const result = toSearchParams({
+        query: '',
+        filters: createDefaultFilters(),
+        limit: 20,
+      });
       expect(result.cursor).toBeUndefined();
+    });
+
+    it('ignores legacy offset parameter (deprecated)', () => {
+      // Legacy signature with offset as 4th param is deprecated
+      // Offset is no longer converted to cursor - use cursor directly
+      const result = toSearchParams('', createDefaultFilters(), 20, 40);
+      expect(result.cursor).toBeUndefined(); // Offset is now ignored
+      expect(result.limit).toBe(20);
     });
   });
 
   describe('complex combinations', () => {
     it('handles multiple filters together', () => {
-      const result = toSearchParams(
-        'trading agent',
-        createDefaultFilters({
+      const result = toSearchParams({
+        query: 'trading agent',
+        filters: createDefaultFilters({
           status: ['active'],
           protocols: ['mcp', 'a2a'],
           chains: [11155111],
@@ -241,9 +258,9 @@ describe('toSearchParams', () => {
           domains: ['finance'],
           filterMode: 'OR',
         }),
-        10,
-        20,
-      );
+        limit: 10,
+        cursor: 'cursor-for-page-2',
+      });
 
       expect(result.q).toBe('trading agent');
       expect(result.active).toBe(true);
@@ -257,7 +274,7 @@ describe('toSearchParams', () => {
       expect(result.domains).toEqual(['finance']);
       expect(result.filterMode).toBe('OR');
       expect(result.limit).toBe(10);
-      expect(result.cursor).toBe(JSON.stringify({ _global_offset: 20 }));
+      expect(result.cursor).toBe('cursor-for-page-2');
     });
   });
 });
