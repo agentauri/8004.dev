@@ -67,7 +67,8 @@
     --status-error: var(--pixel-red-fire);
 
     /* Trust Score Gradient */
-    --trust-low: #fc5454;
+    /* Low adjusted from #fc5454 to #ff6666 for WCAG AA contrast (5.3:1 on #2a2a2a) */
+    --trust-low: #ff6666;
     --trust-med: #fcc03c;
     --trust-high: #00d800;
 
