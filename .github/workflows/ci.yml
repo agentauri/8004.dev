@@ -41,8 +41,12 @@ jobs:
         run: pnpm typecheck
 
   test:
-    name: Unit Tests
+    name: Unit Tests (Shard ${{ matrix.shard }})
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [1, 2]
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -53,7 +57,42 @@ jobs:
           enable-vitest-cache: 'true'
 
       - name: Run tests with coverage
-        run: pnpm test:coverage
+        run: pnpm vitest run --coverage --shard=${{ matrix.shard }}/2 --coverage.thresholds.lines=0 --coverage.thresholds.statements=0 --coverage.thresholds.branches=0 --coverage.thresholds.functions=0
+
+      - name: Upload coverage artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-${{ matrix.shard }}
+          path: coverage/coverage-final.json
+          retention-days: 1
+
+  test-coverage:
+    name: Merge Coverage
+    runs-on: ubuntu-latest
+    needs: [test]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup CI
+        uses: ./.github/actions/setup-ci
+
+      - name: Download coverage artifacts
+        uses: actions/download-artifact@v4
+        with:
+          pattern: coverage-*
+          path: coverage-parts
+
+      - name: Merge coverage reports
+        run: |
+          mkdir -p coverage
+          # Move all coverage files with unique names
+          mv coverage-parts/coverage-1/coverage-final.json coverage/coverage-1.json
+          mv coverage-parts/coverage-2/coverage-final.json coverage/coverage-2.json
+          # Merge using nyc
+          pnpm exec nyc merge coverage coverage/coverage-final.json
+          # Generate lcov report
+          pnpm exec nyc report --reporter=lcov --temp-dir=coverage
 
       - name: Upload coverage reports
         uses: codecov/codecov-action@v4
