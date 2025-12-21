@@ -18,17 +18,6 @@ test.describe('Explore Page Single Filter Tests', () => {
       const cards = page.locator('[data-testid="agent-card"]');
       const count = await cards.count();
       expect(count).toBeGreaterThan(0);
-
-      // Verify MCP badge or indicator is present on each card
-      for (let i = 0; i < Math.min(count, 5); i++) {
-        const card = cards.nth(i);
-        // Check for MCP indicator (could be badge, icon, or text)
-        const hasMcpIndicator = await card
-          .locator('[data-testid="mcp-badge"], text=/MCP/i')
-          .count();
-        // MCP agents should have some MCP indication
-        expect(hasMcpIndicator).toBeGreaterThanOrEqual(0); // At least rendered
-      }
     });
 
     test('A2A filter shows only A2A agents', async ({ page }) => {

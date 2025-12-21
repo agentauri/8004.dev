@@ -73,13 +73,14 @@ test.describe('Explore Page Edge Cases', () => {
   test.describe('Boundary Values', () => {
     test('Reputation min equals max', async ({ page }) => {
       await page.goto('/explore?minRep=50&maxRep=50');
-      await page.waitForSelector('[data-testid="agent-card"], [data-testid="no-results"]', {
-        timeout: 5000,
-      });
+      await page.waitForSelector(
+        '[data-testid="agent-card"], [data-testid="search-results"][data-state="empty"]',
+        { timeout: 5000 },
+      );
 
       // Should work without errors
       const cards = page.locator('[data-testid="agent-card"]');
-      const noResults = page.locator('[data-testid="no-results"], text=/no agents found/i');
+      const noResults = page.locator('[data-testid="search-results"][data-state="empty"]');
 
       const hasCards = await cards
         .first()
@@ -113,9 +114,10 @@ test.describe('Explore Page Edge Cases', () => {
   test.describe('Invalid Parameters', () => {
     test('Invalid chain ID ignored gracefully', async ({ page }) => {
       await page.goto('/explore?chains=99999');
-      await page.waitForSelector('[data-testid="agent-card"], [data-testid="no-results"]', {
-        timeout: 5000,
-      });
+      await page.waitForSelector(
+        '[data-testid="agent-card"], [data-testid="search-results"][data-state="empty"]',
+        { timeout: 5000 },
+      );
 
       // Should not crash - either shows no results or ignores invalid chain
       const heading = page.getByRole('heading', { level: 1 });
@@ -154,9 +156,10 @@ test.describe('Explore Page Edge Cases', () => {
   test.describe('Conflicting Filters', () => {
     test('All protocols AND with all chains', async ({ page }) => {
       await page.goto('/explore?mcp=true&a2a=true&x402=true&chains=11155111,84532,80002');
-      await page.waitForSelector('[data-testid="agent-card"], [data-testid="no-results"]', {
-        timeout: 5000,
-      });
+      await page.waitForSelector(
+        '[data-testid="agent-card"], [data-testid="search-results"][data-state="empty"]',
+        { timeout: 5000 },
+      );
 
       // Should work - may return few or no results
       const heading = page.getByRole('heading', { level: 1 });
@@ -175,9 +178,10 @@ test.describe('Explore Page Edge Cases', () => {
 
     test('Min reputation greater than max', async ({ page }) => {
       await page.goto('/explore?minRep=80&maxRep=20');
-      await page.waitForSelector('[data-testid="agent-card"], [data-testid="no-results"]', {
-        timeout: 5000,
-      });
+      await page.waitForSelector(
+        '[data-testid="agent-card"], [data-testid="search-results"][data-state="empty"]',
+        { timeout: 5000 },
+      );
 
       // Should handle gracefully - probably no results
       const heading = page.getByRole('heading', { level: 1 });

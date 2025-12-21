@@ -112,13 +112,14 @@ test.describe('Explore Page Filter Combinations', () => {
       await page.goto(`/explore?${combo.params}`);
 
       // Wait for loading to complete
-      await page.waitForSelector('[data-testid="agent-card"], [data-testid="no-results"]', {
-        timeout: 5000,
-      });
+      await page.waitForSelector(
+        '[data-testid="agent-card"], [data-testid="search-results"][data-state="empty"]',
+        { timeout: 5000 },
+      );
 
       // Check that either we have results or a proper "no results" message
       const cards = page.locator('[data-testid="agent-card"]');
-      const noResults = page.locator('[data-testid="no-results"], text=/no agents found/i');
+      const noResults = page.locator('[data-testid="search-results"][data-state="empty"]');
 
       const cardCount = await cards.count();
       const hasNoResults = await noResults.isVisible().catch(() => false);
@@ -189,7 +190,7 @@ test.describe('Explore Page Results Validation', () => {
 
     // Should have fewer or equal results
     const filteredCards = page.locator('[data-testid="agent-card"]');
-    const noResults = page.locator('[data-testid="no-results"], text=/no agents found/i');
+    const noResults = page.locator('[data-testid="search-results"][data-state="empty"]');
 
     const filteredCount = await filteredCards.count();
     const hasNoResults = await noResults.isVisible().catch(() => false);
@@ -201,9 +202,10 @@ test.describe('Explore Page Results Validation', () => {
   test('OR mode returns more results than AND mode', async ({ page }) => {
     // AND mode
     await page.goto('/explore?mcp=true&a2a=true');
-    await page.waitForSelector('[data-testid="agent-card"], [data-testid="no-results"]', {
-      timeout: 5000,
-    });
+    await page.waitForSelector(
+      '[data-testid="agent-card"], [data-testid="search-results"][data-state="empty"]',
+      { timeout: 5000 },
+    );
     const andCount = await page.locator('[data-testid="agent-card"]').count();
 
     // OR mode

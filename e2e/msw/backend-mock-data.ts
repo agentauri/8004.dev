@@ -68,7 +68,7 @@ export const mockBackendAgents: BackendSearchResult[] = [
     active: true,
     hasMcp: true,
     hasA2a: true,
-    x402Support: false,
+    x402Support: true, // All protocols supported for testing "all protocols" filters
     supportedTrust: ['reputation', 'tee'],
     oasf: {
       skills: [{ slug: 'code_review', confidence: 0.88 }],
@@ -92,6 +92,7 @@ export const mockBackendAgents: BackendSearchResult[] = [
     endpoints: {
       mcp: { url: 'https://mcp.example.com/agent2', version: '1.0' },
       a2a: { url: 'https://a2a.example.com/agent2', version: '0.1' },
+      agentWallet: '0x2345678901abcdef2345678901abcdef23456789',
     },
     searchScore: 0.88,
     matchReasons: ['Matches query: code'],
