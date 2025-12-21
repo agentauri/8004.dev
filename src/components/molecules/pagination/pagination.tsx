@@ -89,21 +89,17 @@ export type PaginationProps = BasePaginationProps & (CursorPaginationProps | Pag
  * ```
  */
 export function Pagination(props: PaginationProps): React.JSX.Element {
-  const {
-    pageSize,
-    onPageSizeChange,
-    isLoading = false,
-    disabled = false,
-    className,
-  } = props;
+  const { pageSize, onPageSizeChange, isLoading = false, disabled = false, className } = props;
 
   // Determine if using cursor-based or page-based pagination
   const isCursorBased = 'pageNumber' in props && props.pageNumber !== undefined;
 
   // Extract values based on pagination type
-  const pageNumber = isCursorBased ? props.pageNumber : props.currentPage ?? 1;
+  const pageNumber = isCursorBased ? props.pageNumber : (props.currentPage ?? 1);
   const totalPages = isCursorBased ? undefined : props.totalPages;
-  const hasMore = isCursorBased ? props.hasMore : (props.currentPage ?? 1) < (props.totalPages ?? 1);
+  const hasMore = isCursorBased
+    ? props.hasMore
+    : (props.currentPage ?? 1) < (props.totalPages ?? 1);
   const hasPrevious = isCursorBased ? props.hasPrevious : (props.currentPage ?? 1) > 1;
 
   const isDisabled = disabled || isLoading;

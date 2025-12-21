@@ -71,12 +71,10 @@ export function useUrlSearchParams(): UseUrlSearchParamsReturn {
   const state = useMemo(() => parseUrlParams(searchParams), [searchParams]);
 
   // Serialize filters for stable comparison (object reference would change every render)
-  const filtersKey = useMemo(
-    () => JSON.stringify(state.filters),
-    [state.filters],
-  );
+  const filtersKey = useMemo(() => JSON.stringify(state.filters), [state.filters]);
 
   // Track changes to generate reset signal
+  // biome-ignore lint/correctness/useExhaustiveDependencies: Dependencies are intentional change triggers
   const resetSignal = useMemo(() => {
     // Increment signal on URL state changes (triggers cursor reset in consuming components)
     resetSignalRef.current += 1;

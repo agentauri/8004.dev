@@ -11,15 +11,15 @@ import { toSearchParams } from '@/lib/filters/to-search-params';
 import {
   createSmartBackendMock,
   createWrapper,
+  type FilterTestCase,
   formatValidationResult,
   generateEdgeCaseTests,
   generateSingleFilterTests,
   mockFetch,
   restoreFetch,
+  type SmartBackendMock,
   setupFetchMock,
   validateResponseMatchesFilters,
-  type FilterTestCase,
-  type SmartBackendMock,
 } from '@/test';
 
 describe('Explore Page Filter Integration Tests', () => {
@@ -73,7 +73,7 @@ describe('Explore Page Filter Integration Tests', () => {
       () => {
         expect(result.current.isSuccess).toBe(true);
       },
-      { timeout: 5000 }
+      { timeout: 5000 },
     );
 
     return result.current;
@@ -274,7 +274,7 @@ describe('Explore Page Filter Integration Tests', () => {
 
       // All returned agents should have at least MCP or x402
       for (const agent of result.current.data?.agents ?? []) {
-        const hasEither = agent.hasMcp || agent.x402Support;
+        const hasEither = agent.hasMcp || agent.x402support;
         expect(hasEither).toBe(true);
       }
     });

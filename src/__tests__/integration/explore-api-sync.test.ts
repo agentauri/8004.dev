@@ -13,8 +13,8 @@ import {
   createWrapper,
   mockFetch,
   restoreFetch,
-  setupFetchMock,
   type SmartBackendMock,
+  setupFetchMock,
 } from '@/test';
 
 describe('API → Frontend Sync Integration Tests', () => {
@@ -323,7 +323,7 @@ describe('API → Frontend Sync Integration Tests', () => {
       expect(agent).toHaveProperty('name');
       expect(agent).toHaveProperty('hasMcp');
       expect(agent).toHaveProperty('hasA2a');
-      expect(agent).toHaveProperty('x402Support');
+      expect(agent).toHaveProperty('x402support');
     });
   });
 

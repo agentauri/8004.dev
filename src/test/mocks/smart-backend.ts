@@ -34,21 +34,21 @@ export interface ParsedFilters {
 interface ProtocolConfig {
   hasMcp: boolean;
   hasA2a: boolean;
-  x402Support: boolean;
+  x402support: boolean;
 }
 
 /**
  * All possible protocol combinations for diversity
  */
 const PROTOCOL_CONFIGS: ProtocolConfig[] = [
-  { hasMcp: false, hasA2a: false, x402Support: false },
-  { hasMcp: true, hasA2a: false, x402Support: false },
-  { hasMcp: false, hasA2a: true, x402Support: false },
-  { hasMcp: false, hasA2a: false, x402Support: true },
-  { hasMcp: true, hasA2a: true, x402Support: false },
-  { hasMcp: true, hasA2a: false, x402Support: true },
-  { hasMcp: false, hasA2a: true, x402Support: true },
-  { hasMcp: true, hasA2a: true, x402Support: true },
+  { hasMcp: false, hasA2a: false, x402support: false },
+  { hasMcp: true, hasA2a: false, x402support: false },
+  { hasMcp: false, hasA2a: true, x402support: false },
+  { hasMcp: false, hasA2a: false, x402support: true },
+  { hasMcp: true, hasA2a: true, x402support: false },
+  { hasMcp: true, hasA2a: false, x402support: true },
+  { hasMcp: false, hasA2a: true, x402support: true },
+  { hasMcp: true, hasA2a: true, x402support: true },
 ];
 
 /**
@@ -90,9 +90,9 @@ export function generateDiverseAgentPool(): AgentSummary[] {
               reputationCount: 10,
               hasMcp: proto.hasMcp,
               hasA2a: proto.hasA2a,
-              x402Support: proto.x402Support,
+              x402support: proto.x402support,
               walletAddress: `0x${id.toString().padStart(40, '0')}`,
-            })
+            }),
           );
           id++;
         }
@@ -113,7 +113,7 @@ export function applyFilters(agents: AgentSummary[], filters: ParsedFilters): Ag
   if (filters.query?.trim()) {
     const q = filters.query.toLowerCase();
     result = result.filter(
-      (a) => a.name.toLowerCase().includes(q) || a.description.toLowerCase().includes(q)
+      (a) => a.name.toLowerCase().includes(q) || a.description.toLowerCase().includes(q),
     );
     // Add relevance scores
     result = result.map((a) => ({
@@ -134,7 +134,7 @@ export function applyFilters(agents: AgentSummary[], filters: ParsedFilters): Ag
         const matches: boolean[] = [];
         if (filters.mcp === true) matches.push(a.hasMcp);
         if (filters.a2a === true) matches.push(a.hasA2a);
-        if (filters.x402 === true) matches.push(a.x402Support);
+        if (filters.x402 === true) matches.push(a.x402support);
         return matches.length === 0 || matches.some((m) => m);
       });
     } else {
@@ -143,8 +143,8 @@ export function applyFilters(agents: AgentSummary[], filters: ParsedFilters): Ag
       if (filters.mcp === false) result = result.filter((a) => !a.hasMcp);
       if (filters.a2a === true) result = result.filter((a) => a.hasA2a);
       if (filters.a2a === false) result = result.filter((a) => !a.hasA2a);
-      if (filters.x402 === true) result = result.filter((a) => a.x402Support);
-      if (filters.x402 === false) result = result.filter((a) => !a.x402Support);
+      if (filters.x402 === true) result = result.filter((a) => a.x402support);
+      if (filters.x402 === false) result = result.filter((a) => !a.x402support);
     }
   }
 
@@ -297,7 +297,10 @@ export function createSmartBackendMock() {
     /**
      * The mock fetch handler
      */
-    handler: async (url: string, options?: RequestInit): Promise<ReturnType<typeof mockResponse>> => {
+    handler: async (
+      url: string,
+      options?: RequestInit,
+    ): Promise<ReturnType<typeof mockResponse>> => {
       const isSearch = url.includes('/api/search');
       const isAgentsList = url.includes('/api/agents');
 

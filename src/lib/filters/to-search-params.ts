@@ -190,4 +190,3 @@ function applyTaxonomyFilters(params: SearchParams, filters: SearchFiltersState)
     params.domains = filters.domains;
   }
 }
-

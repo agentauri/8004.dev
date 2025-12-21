@@ -13,8 +13,8 @@ import {
   createWrapper,
   mockFetch,
   restoreFetch,
-  setupFetchMock,
   type SmartBackendMock,
+  setupFetchMock,
 } from '@/test';
 
 describe('Cache Consistency Integration Tests', () => {

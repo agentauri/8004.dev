@@ -3,13 +3,17 @@
  * Used by both Vitest integration tests and Playwright E2E tests
  */
 
-export * from './test-matrix';
-export * from './pairwise-generator';
 export * from './filter-validators';
+export * from './pairwise-generator';
+export * from './test-matrix';
 
-// Re-export commonly used generators
-import { generateEdgeCaseTests, generateSingleFilterTests, generateSortingTests } from './test-matrix';
 import { generatePairwiseSubset, generatePairwiseTestCases } from './pairwise-generator';
+// Re-export commonly used generators
+import {
+  generateEdgeCaseTests,
+  generateSingleFilterTests,
+  generateSortingTests,
+} from './test-matrix';
 
 /**
  * Pre-generated test cases for both frameworks
@@ -46,5 +50,10 @@ export function getPairwiseSubset(count = 50): ReturnType<typeof generatePairwis
  */
 export function getTotalTestCount(): number {
   const cases = getAllTestCases();
-  return cases.singleFilter.length + cases.pairwise.length + cases.edgeCases.length + cases.sorting.length;
+  return (
+    cases.singleFilter.length +
+    cases.pairwise.length +
+    cases.edgeCases.length +
+    cases.sorting.length
+  );
 }

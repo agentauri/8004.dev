@@ -3,6 +3,7 @@
  * Validates that API responses match the applied filters
  */
 
+import type { ChainId } from '@/components/atoms';
 import type { AgentSummary } from '@/types/agent';
 import type { FilterTestCase, TestFiltersState } from './test-matrix';
 
@@ -31,7 +32,7 @@ export interface ResponseValidationResult {
 export function validateAgentMatchesFilters(
   agent: AgentSummary,
   filters: TestFiltersState,
-  filterMode: 'AND' | 'OR' = 'AND'
+  filterMode: 'AND' | 'OR' = 'AND',
 ): AgentValidationResult {
   const violations: string[] = [];
 
@@ -45,15 +46,15 @@ export function validateAgentMatchesFilters(
       if (filters.protocols.includes('a2a') && !agent.hasA2a) {
         violations.push(`Expected hasA2a=true for A2A filter`);
       }
-      if (filters.protocols.includes('x402') && !agent.x402Support) {
-        violations.push(`Expected x402Support=true for x402 filter`);
+      if (filters.protocols.includes('x402') && !agent.x402support) {
+        violations.push(`Expected x402support=true for x402 filter`);
       }
     } else {
       // At least one protocol must be present
       const hasAny =
         (filters.protocols.includes('mcp') && agent.hasMcp) ||
         (filters.protocols.includes('a2a') && agent.hasA2a) ||
-        (filters.protocols.includes('x402') && agent.x402Support);
+        (filters.protocols.includes('x402') && agent.x402support);
       if (!hasAny) {
         violations.push(`Expected at least one of [${filters.protocols.join(', ')}] in OR mode`);
       }
@@ -62,8 +63,10 @@ export function validateAgentMatchesFilters(
 
   // Chain filter
   if (filters.chains.length > 0) {
-    if (!filters.chains.includes(agent.chainId)) {
-      violations.push(`Expected chainId to be one of [${filters.chains.join(', ')}], got ${agent.chainId}`);
+    if (!filters.chains.includes(agent.chainId as ChainId)) {
+      violations.push(
+        `Expected chainId to be one of [${filters.chains.join(', ')}], got ${agent.chainId}`,
+      );
     }
   }
 
@@ -103,12 +106,16 @@ export function validateAgentMatchesFilters(
  */
 export function validateResponseMatchesFilters(
   agents: AgentSummary[],
-  testCase: FilterTestCase
+  testCase: FilterTestCase,
 ): ResponseValidationResult {
   const violations: AgentValidationResult[] = [];
 
   for (const agent of agents) {
-    const result = validateAgentMatchesFilters(agent, testCase.filters, testCase.filters.filterMode);
+    const result = validateAgentMatchesFilters(
+      agent,
+      testCase.filters,
+      testCase.filters.filterMode,
+    );
     if (!result.valid) {
       violations.push(result);
     }
@@ -127,7 +134,7 @@ export function validateResponseMatchesFilters(
  */
 export function assertCorrectEndpoint(
   fetchCall: { url: string; options?: RequestInit },
-  expectedEndpoint: 'GET' | 'POST'
+  expectedEndpoint: 'GET' | 'POST',
 ): void {
   const { url, options } = fetchCall;
   const method = options?.method ?? 'GET';
@@ -136,14 +143,14 @@ export function assertCorrectEndpoint(
     if (method !== 'POST' || !url.includes('/api/search')) {
       throw new Error(
         `Expected POST to /api/search, got ${method} to ${url}. ` +
-          `Queries with text should use POST /api/search endpoint.`
+          `Queries with text should use POST /api/search endpoint.`,
       );
     }
   } else {
     if (method !== 'GET' || !url.includes('/api/agents')) {
       throw new Error(
         `Expected GET to /api/agents, got ${method} to ${url}. ` +
-          `Queries without text should use GET /api/agents endpoint.`
+          `Queries without text should use GET /api/agents endpoint.`,
       );
     }
   }
@@ -152,7 +159,11 @@ export function assertCorrectEndpoint(
 /**
  * Validate that sorting is correctly applied
  */
-export function validateSorting(agents: AgentSummary[], sortBy: string, sortOrder: 'asc' | 'desc'): boolean {
+export function validateSorting(
+  agents: AgentSummary[],
+  sortBy: string,
+  sortOrder: 'asc' | 'desc',
+): boolean {
   if (agents.length < 2) return true;
 
   const getSortValue = (agent: AgentSummary): string | number => {
@@ -162,7 +173,8 @@ export function validateSorting(agents: AgentSummary[], sortBy: string, sortOrde
       case 'reputation':
         return agent.reputationScore ?? 0;
       case 'createdAt':
-        return agent.createdAt ?? '';
+        // createdAt is not available on AgentSummary, skip validation
+        return 0;
       default:
         return agent.relevanceScore ?? 0;
     }
@@ -194,7 +206,9 @@ export function formatValidationResult(result: ResponseValidationResult): string
     return `All ${result.totalAgents} agents passed validation`;
   }
 
-  const lines = [`Validation failed: ${result.violations.length}/${result.totalAgents} agents have violations`];
+  const lines = [
+    `Validation failed: ${result.violations.length}/${result.totalAgents} agents have violations`,
+  ];
 
   for (const violation of result.violations.slice(0, 5)) {
     // Limit output

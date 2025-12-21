@@ -83,7 +83,10 @@ test.describe('Explore Page Edge Cases', () => {
       const cards = page.locator('[data-testid="agent-card"]');
       const noResults = page.locator('[data-testid="no-results"], text=/no agents found/i');
 
-      const hasCards = await cards.first().isVisible().catch(() => false);
+      const hasCards = await cards
+        .first()
+        .isVisible()
+        .catch(() => false);
       const hasNoResults = await noResults.isVisible().catch(() => false);
 
       expect(hasCards || hasNoResults).toBeTruthy();

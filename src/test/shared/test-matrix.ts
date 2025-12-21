@@ -3,6 +3,7 @@
  * Used by both Vitest integration tests and Playwright E2E tests
  */
 
+import type { ChainId } from '@/components/atoms';
 import type { CapabilityType } from '@/components/molecules/capability-tag';
 import type { FilterMode } from '@/components/molecules/filter-mode-toggle';
 import type { SearchSortField, SearchSortOrder } from '@/types/search';
@@ -13,7 +14,7 @@ import type { SearchSortField, SearchSortOrder } from '@/types/search';
 export interface TestFiltersState {
   status: string[];
   protocols: CapabilityType[];
-  chains: number[];
+  chains: ChainId[];
   filterMode: FilterMode;
   minReputation: number;
   maxReputation: number;
@@ -70,7 +71,7 @@ export const PROTOCOL_SUBSETS: CapabilityType[][] = [
 /**
  * Chain subsets (power set of supported chains)
  */
-export const CHAIN_SUBSETS: number[][] = [
+export const CHAIN_SUBSETS: ChainId[][] = [
   [],
   [11155111],
   [84532],
@@ -108,8 +109,9 @@ export function generateSingleFilterTests(): FilterTestCase[] {
   }
 
   // Chain filters
-  for (const chainId of [11155111, 84532, 80002]) {
-    const chainNames: Record<number, string> = {
+  const chainIds: ChainId[] = [11155111, 84532, 80002];
+  for (const chainId of chainIds) {
+    const chainNames: Record<ChainId, string> = {
       11155111: 'Sepolia',
       84532: 'Base',
       80002: 'Polygon',
@@ -147,7 +149,7 @@ export function generateSingleFilterTests(): FilterTestCase[] {
       sortOrder: 'desc',
       expectedEndpoint: 'GET',
       category: 'single-filter',
-    }
+    },
   );
 
   // Query-based searches (uses POST)
@@ -171,7 +173,7 @@ export function generateSingleFilterTests(): FilterTestCase[] {
       sortOrder: 'desc',
       expectedEndpoint: 'POST',
       category: 'single-filter',
-    }
+    },
   );
 
   // Reputation filters
@@ -195,7 +197,7 @@ export function generateSingleFilterTests(): FilterTestCase[] {
       sortOrder: 'desc',
       expectedEndpoint: 'GET',
       category: 'single-filter',
-    }
+    },
   );
 
   // showAllAgents

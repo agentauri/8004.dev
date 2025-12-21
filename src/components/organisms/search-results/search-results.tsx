@@ -185,7 +185,8 @@ export function SearchResults({
   }
 
   // Determine pagination mode: cursor-based (preferred) or page-based (legacy)
-  const isCursorBased = pageNumber !== undefined && onNext !== undefined && onPrevious !== undefined;
+  const isCursorBased =
+    pageNumber !== undefined && onNext !== undefined && onPrevious !== undefined;
   const isPageBased =
     currentPage !== undefined &&
     totalPages !== undefined &&

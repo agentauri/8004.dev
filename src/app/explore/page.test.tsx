@@ -238,25 +238,21 @@ describe('ExplorePage', () => {
   });
 
   describe('error handling', () => {
-    it(
-      'displays error message when search fails',
-      async () => {
-        mockFetch.mockResolvedValue({
-          json: () => Promise.resolve({ success: false, error: 'Network error' }),
-        });
+    it('displays error message when search fails', async () => {
+      mockFetch.mockResolvedValue({
+        json: () => Promise.resolve({ success: false, error: 'Network error' }),
+      });
 
-        renderWithProviders(<ExplorePage />);
+      renderWithProviders(<ExplorePage />);
 
-        // With retry logic (3 retries with exponential backoff), errors take longer to surface
-        await waitFor(
-          () => {
-            expect(screen.getByText('Network error')).toBeInTheDocument();
-          },
-          { timeout: 15000 },
-        );
-      },
-      20000,
-    );
+      // With retry logic (3 retries with exponential backoff), errors take longer to surface
+      await waitFor(
+        () => {
+          expect(screen.getByText('Network error')).toBeInTheDocument();
+        },
+        { timeout: 15000 },
+      );
+    }, 20000);
   });
 
   describe('empty results', () => {

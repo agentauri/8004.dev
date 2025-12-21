@@ -50,7 +50,11 @@ const PAIRWISE_COMBINATIONS: FilterCombination[] = [
   { id: 'mcp-x402-and', name: 'MCP AND x402', params: 'mcp=true&x402=true' },
   { id: 'a2a-x402-or', name: 'A2A OR x402', params: 'a2a=true&x402=true&filterMode=OR' },
   { id: 'all-protocols-and', name: 'All protocols AND', params: 'mcp=true&a2a=true&x402=true' },
-  { id: 'all-protocols-or', name: 'All protocols OR', params: 'mcp=true&a2a=true&x402=true&filterMode=OR' },
+  {
+    id: 'all-protocols-or',
+    name: 'All protocols OR',
+    params: 'mcp=true&a2a=true&x402=true&filterMode=OR',
+  },
 
   // Query + Filter combinations
   { id: 'query-mcp', name: 'Query with MCP', params: 'q=Test&mcp=true' },
@@ -60,15 +64,39 @@ const PAIRWISE_COMBINATIONS: FilterCombination[] = [
 
   // Sort + Filter combinations
   { id: 'sort-name-mcp', name: 'Sort by name with MCP', params: 'sort=name&order=asc&mcp=true' },
-  { id: 'sort-rep-chain', name: 'Sort by rep with chain', params: 'sort=reputation&order=desc&chains=11155111' },
-  { id: 'sort-created-active', name: 'Sort by created with active', params: 'sort=createdAt&order=desc&active=true' },
+  {
+    id: 'sort-rep-chain',
+    name: 'Sort by rep with chain',
+    params: 'sort=reputation&order=desc&chains=11155111',
+  },
+  {
+    id: 'sort-created-active',
+    name: 'Sort by created with active',
+    params: 'sort=createdAt&order=desc&active=true',
+  },
 
   // Complex multi-filter combinations
-  { id: 'complex-1', name: 'MCP + Sepolia + Active', params: 'mcp=true&chains=11155111&active=true' },
+  {
+    id: 'complex-1',
+    name: 'MCP + Sepolia + Active',
+    params: 'mcp=true&chains=11155111&active=true',
+  },
   { id: 'complex-2', name: 'A2A + Base + High rep', params: 'a2a=true&chains=84532&minRep=75' },
-  { id: 'complex-3', name: 'x402 + Polygon + Inactive', params: 'x402=true&chains=80002&active=false' },
-  { id: 'complex-4', name: 'MCP+A2A + Sepolia + Active', params: 'mcp=true&a2a=true&chains=11155111&active=true' },
-  { id: 'complex-5', name: 'Query + MCP + Chain + Sort', params: 'q=Test&mcp=true&chains=11155111&sort=name&order=asc' },
+  {
+    id: 'complex-3',
+    name: 'x402 + Polygon + Inactive',
+    params: 'x402=true&chains=80002&active=false',
+  },
+  {
+    id: 'complex-4',
+    name: 'MCP+A2A + Sepolia + Active',
+    params: 'mcp=true&a2a=true&chains=11155111&active=true',
+  },
+  {
+    id: 'complex-5',
+    name: 'Query + MCP + Chain + Sort',
+    params: 'q=Test&mcp=true&chains=11155111&sort=name&order=asc',
+  },
 
   // Multi-chain combinations
   { id: 'multi-chain-1', name: 'Sepolia + Base', params: 'chains=11155111,84532' },
@@ -128,9 +156,9 @@ test.describe('Explore Page Filter Persistence', () => {
 
     // Click clear/reset button if available
     const clearButton = page.locator(
-      '[data-testid="clear-filters"], button:has-text("Clear"), button:has-text("Reset")'
+      '[data-testid="clear-filters"], button:has-text("Clear"), button:has-text("Reset")',
     );
-    if ((await clearButton.isVisible().catch(() => false))) {
+    if (await clearButton.isVisible().catch(() => false)) {
       await clearButton.click();
       await page.waitForTimeout(500);
 

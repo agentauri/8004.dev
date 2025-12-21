@@ -4,16 +4,17 @@
  * Based on the IPO (In-Parameter-Order) algorithm
  */
 
+import type { ChainId } from '@/components/atoms';
 import type { CapabilityType } from '@/components/molecules/capability-tag';
 import type { FilterMode } from '@/components/molecules/filter-mode-toggle';
 import type { SearchSortField, SearchSortOrder } from '@/types/search';
 import {
   CHAIN_SUBSETS,
+  createDefaultFilters,
   type FilterTestCase,
   PROTOCOL_SUBSETS,
   STATUS_OPTIONS,
   type TestFiltersState,
-  createDefaultFilters,
 } from './test-matrix';
 
 /**
@@ -64,12 +65,17 @@ function pairKey(param1: string, val1: unknown, param2: string, val2: unknown): 
 function countCoveredPairs(
   testCase: Record<string, unknown>,
   paramNames: string[],
-  uncoveredPairs: Set<string>
+  uncoveredPairs: Set<string>,
 ): number {
   let count = 0;
   for (let i = 0; i < paramNames.length; i++) {
     for (let j = i + 1; j < paramNames.length; j++) {
-      const key = pairKey(paramNames[i], testCase[paramNames[i]], paramNames[j], testCase[paramNames[j]]);
+      const key = pairKey(
+        paramNames[i],
+        testCase[paramNames[i]],
+        paramNames[j],
+        testCase[paramNames[j]],
+      );
       if (uncoveredPairs.has(key)) count++;
     }
   }
@@ -82,11 +88,16 @@ function countCoveredPairs(
 function removeCoveredPairs(
   testCase: Record<string, unknown>,
   paramNames: string[],
-  uncoveredPairs: Set<string>
+  uncoveredPairs: Set<string>,
 ): void {
   for (let i = 0; i < paramNames.length; i++) {
     for (let j = i + 1; j < paramNames.length; j++) {
-      const key = pairKey(paramNames[i], testCase[paramNames[i]], paramNames[j], testCase[paramNames[j]]);
+      const key = pairKey(
+        paramNames[i],
+        testCase[paramNames[i]],
+        paramNames[j],
+        testCase[paramNames[j]],
+      );
       uncoveredPairs.delete(key);
     }
   }
@@ -107,7 +118,7 @@ function seededRandom(seed: number): () => number {
  */
 export function generatePairwiseTestCases(
   paramSpace: ParameterSpace = DEFAULT_PARAMETER_SPACE,
-  seed = 12345
+  seed = 12345,
 ): FilterTestCase[] {
   const random = seededRandom(seed);
   const paramNames = Object.keys(paramSpace) as (keyof ParameterSpace)[];
@@ -165,7 +176,7 @@ export function generatePairwiseTestCases(
   // Log coverage stats
   const coveredPairs = initialPairCount - uncoveredPairs.size;
   console.log(
-    `Pairwise: Generated ${result.length} test cases covering ${coveredPairs}/${initialPairCount} pairs (${((coveredPairs / initialPairCount) * 100).toFixed(1)}%)`
+    `Pairwise: Generated ${result.length} test cases covering ${coveredPairs}/${initialPairCount} pairs (${((coveredPairs / initialPairCount) * 100).toFixed(1)}%)`,
   );
 
   return result;
@@ -177,7 +188,7 @@ export function generatePairwiseTestCases(
 function convertToTestCase(params: Record<string, unknown>, index: number): FilterTestCase {
   const query = params.query as string;
   const protocols = params.protocols as CapabilityType[];
-  const chains = params.chains as number[];
+  const chains = params.chains as ChainId[];
   const status = params.status as string[];
   const filterMode = params.filterMode as FilterMode;
   const reputation = params.reputation as { min: number; max: number };
@@ -205,7 +216,8 @@ function convertToTestCase(params: Record<string, unknown>, index: number): Filt
   if (chains.length > 0) parts.push(`chains=[${chains.length}]`);
   if (status.length > 0) parts.push(`status=[${status.join(',')}]`);
   if (filterMode === 'OR') parts.push('OR mode');
-  if (reputation.min > 0 || reputation.max < 100) parts.push(`rep=${reputation.min}-${reputation.max}`);
+  if (reputation.min > 0 || reputation.max < 100)
+    parts.push(`rep=${reputation.min}-${reputation.max}`);
   if (showAllAgents) parts.push('showAll');
   if (sortBy !== 'relevance' || sortOrder !== 'desc') parts.push(`sort=${sortBy}:${sortOrder}`);
 

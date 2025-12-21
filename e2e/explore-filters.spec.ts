@@ -25,7 +25,9 @@ test.describe('Explore Page Single Filter Tests', () => {
       for (let i = 0; i < Math.min(count, 5); i++) {
         const card = cards.nth(i);
         // Check for MCP indicator (could be badge, icon, or text)
-        const hasMcpIndicator = await card.locator('[data-testid="mcp-badge"], text=/MCP/i').count();
+        const hasMcpIndicator = await card
+          .locator('[data-testid="mcp-badge"], text=/MCP/i')
+          .count();
         // MCP agents should have some MCP indication
         expect(hasMcpIndicator).toBeGreaterThanOrEqual(0); // At least rendered
       }

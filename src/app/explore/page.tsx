@@ -94,6 +94,7 @@ function ExplorePageContent() {
   const [cursorState, setCursorState] = useState<CursorState>(INITIAL_CURSOR_STATE);
 
   // Reset cursor state when URL params change (query, filters, sort, pageSize)
+  // biome-ignore lint/correctness/useExhaustiveDependencies: resetSignal is an intentional change trigger
   useEffect(() => {
     setCursorState(INITIAL_CURSOR_STATE);
   }, [resetSignal]);
