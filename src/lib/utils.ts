@@ -94,7 +94,10 @@ export async function copyToClipboard(text: string): Promise<boolean> {
   try {
     await navigator.clipboard.writeText(text);
     return true;
-  } catch {
+  } catch (error) {
+    if (process.env.NODE_ENV === 'development') {
+      console.warn('Failed to copy to clipboard:', error);
+    }
     return false;
   }
 }

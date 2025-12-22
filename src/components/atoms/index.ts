@@ -12,6 +12,8 @@ export type { CopyButtonProps } from './copy-button';
 export { CopyButton } from './copy-button';
 export type { DistributionBarProps } from './distribution-bar';
 export { DistributionBar } from './distribution-bar';
+export type { ErrorBoundaryProps, ErrorBoundaryState } from './error-boundary/error-boundary';
+export { ErrorBoundary } from './error-boundary/error-boundary';
 export type { FeedbackTagsProps } from './feedback-tags';
 export { FeedbackTags } from './feedback-tags';
 export type { HealthBadgeProps, HealthLevel } from './health-badge';

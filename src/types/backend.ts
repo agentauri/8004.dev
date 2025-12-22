@@ -16,16 +16,11 @@ export interface OASFItem {
 }
 
 /**
- * @deprecated Use OASFItem instead
- */
-export type BackendOASFItem = OASFItem;
-
-/**
  * Full OASF classification from backend
  */
 export interface BackendOASFClassification {
-  skills: BackendOASFItem[];
-  domains: BackendOASFItem[];
+  skills: OASFItem[];
+  domains: OASFItem[];
   confidence: number;
   classifiedAt: string;
   modelVersion: string;
@@ -129,21 +124,11 @@ export type ValidationType = 'tee' | 'zkml' | 'stake' | 'none';
 export type ValidationStatus = 'valid' | 'pending' | 'expired' | 'none';
 
 /**
- * @deprecated Use ValidationType instead
- */
-export type BackendValidationType = ValidationType;
-
-/**
- * @deprecated Use ValidationStatus instead
- */
-export type BackendValidationStatus = ValidationStatus;
-
-/**
  * Backend validation entry from the Validation Registry
  */
 export interface BackendValidation {
-  type: BackendValidationType;
-  status: BackendValidationStatus;
+  type: ValidationType;
+  status: ValidationStatus;
   validatorAddress?: string;
   attestationId?: string;
   timestamp?: string;

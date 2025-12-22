@@ -94,8 +94,10 @@ export function useFilterPresets(): UseFilterPresetsResult {
         const parsed = JSON.parse(stored) as FilterPreset[];
         setCustomPresets(parsed);
       }
-    } catch {
-      // Ignore localStorage errors
+    } catch (error) {
+      if (process.env.NODE_ENV === 'development') {
+        console.warn('Failed to load filter presets from localStorage:', error);
+      }
     }
     setIsInitialized(true);
   }, []);
@@ -105,8 +107,10 @@ export function useFilterPresets(): UseFilterPresetsResult {
     if (!isInitialized) return;
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(customPresets));
-    } catch {
-      // Ignore localStorage errors
+    } catch (error) {
+      if (process.env.NODE_ENV === 'development') {
+        console.warn('Failed to save filter presets to localStorage:', error);
+      }
     }
   }, [customPresets, isInitialized]);
 

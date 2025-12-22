@@ -7,7 +7,7 @@
  * Supports real-time updates via configurable polling interval.
  */
 
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useCallback, useEffect, useState } from 'react';
 import { queryKeys } from '@/lib/query-keys';
 import type { AgentSummary } from '@/types/agent';
@@ -205,6 +205,7 @@ export function useSearchAgents(
   // Track auto-refresh state internally for toggle capability
   const [autoRefresh, setAutoRefresh] = useState(initialAutoRefresh);
   const [lastUpdated, setLastUpdated] = useState<Date | undefined>(undefined);
+  const queryClient = useQueryClient();
 
   // Sync with external autoRefresh option
   useEffect(() => {
@@ -216,8 +217,8 @@ export function useSearchAgents(
     queryFn: () => fetchAgents(params),
     enabled,
     // Stale-while-revalidate: show cached data immediately, refetch in background
-    // Reduced from 30s to 10s to minimize stale empty results
-    staleTime: 10 * 1000, // 10 seconds - consider stale quickly for fresher data
+    // Agent data is relatively static - 60s matches global provider setting
+    staleTime: 60 * 1000, // 60 seconds - agent data doesn't change frequently
     gcTime: 5 * 60 * 1000, // 5 minutes - keep in cache for background refetch
     refetchOnMount: true, // Always check for updates on mount
     refetchOnWindowFocus: true, // Refetch when tab regains focus
@@ -233,6 +234,21 @@ export function useSearchAgents(
       setLastUpdated(new Date(query.dataUpdatedAt));
     }
   }, [query.data, query.dataUpdatedAt]);
+
+  // Prefetch next page when we have more results available
+  useEffect(() => {
+    if (query.data?.hasMore && query.data?.nextCursor) {
+      const nextPageParams: SearchParams = {
+        ...params,
+        cursor: query.data.nextCursor,
+      };
+      queryClient.prefetchQuery({
+        queryKey: queryKeys.list(nextPageParams),
+        queryFn: () => fetchAgents(nextPageParams),
+        staleTime: 60 * 1000,
+      });
+    }
+  }, [query.data?.hasMore, query.data?.nextCursor, params, queryClient]);
 
   // Toggle auto-refresh on/off
   const toggleAutoRefresh = useCallback(() => {
