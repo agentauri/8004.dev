@@ -22,6 +22,8 @@ export type { FooterProps } from './footer';
 export { Footer } from './footer';
 export type { HeaderProps } from './header';
 export { Header } from './header';
+export type { MCPConnectModalProps } from './mcp-connect-modal';
+export { MCPConnectModal } from './mcp-connect-modal';
 export type { RelatedAgentsProps } from './related-agents';
 export { RelatedAgents } from './related-agents';
 export type { ReputationSectionProps } from './reputation-section';

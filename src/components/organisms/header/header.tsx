@@ -1,8 +1,12 @@
+'use client';
+
 import { Cpu } from 'lucide-react';
 import Link from 'next/link';
 import type React from 'react';
+import { useState } from 'react';
 import { type ChainId, PixelExplorer } from '@/components/atoms';
 import { ChainSelector } from '@/components/molecules';
+import { MCPConnectModal } from '@/components/organisms/mcp-connect-modal';
 import { cn } from '@/lib/utils';
 
 export interface HeaderProps {
@@ -33,6 +37,8 @@ export function Header({
   chainSelectorDisabled = false,
   className,
 }: HeaderProps): React.JSX.Element {
+  const [showMCPModal, setShowMCPModal] = useState(false);
+
   return (
     <header
       className={cn(
@@ -67,12 +73,29 @@ export function Header({
         >
           Explore
         </Link>
+        <button
+          type="button"
+          onClick={() => setShowMCPModal(true)}
+          className={cn(
+            'font-[family-name:var(--font-pixel-body)] text-xs md:text-sm uppercase tracking-wider',
+            'px-2 md:px-3 py-1.5 border-2 border-[var(--pixel-gold-coin)]',
+            'text-[var(--pixel-gold-coin)] bg-transparent',
+            'hover:bg-[var(--pixel-gold-coin)] hover:text-[var(--pixel-black)]',
+            'hover:shadow-[0_0_12px_var(--pixel-gold-coin)]',
+            'transition-all duration-150',
+          )}
+          data-testid="nav-connect-mcp"
+        >
+          Connect MCP
+        </button>
         <ChainSelector
           value={selectedChains}
           onChange={onChainsChange}
           disabled={chainSelectorDisabled}
         />
       </nav>
+
+      <MCPConnectModal isOpen={showMCPModal} onClose={() => setShowMCPModal(false)} />
     </header>
   );
 }

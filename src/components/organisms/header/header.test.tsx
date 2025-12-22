@@ -49,6 +49,33 @@ describe('Header', () => {
       expect(exploreLink).toHaveAttribute('href', '/explore');
       expect(exploreLink).toHaveTextContent('Explore');
     });
+
+    it('renders Connect MCP button', () => {
+      render(<Header />);
+      const mcpButton = screen.getByTestId('nav-connect-mcp');
+      expect(mcpButton).toBeInTheDocument();
+      expect(mcpButton).toHaveTextContent('Connect MCP');
+    });
+
+    it('opens MCP modal when Connect MCP button is clicked', () => {
+      render(<Header />);
+
+      expect(screen.queryByTestId('mcp-modal')).not.toBeInTheDocument();
+
+      fireEvent.click(screen.getByTestId('nav-connect-mcp'));
+
+      expect(screen.getByTestId('mcp-modal')).toBeInTheDocument();
+    });
+
+    it('closes MCP modal when close button is clicked', () => {
+      render(<Header />);
+
+      fireEvent.click(screen.getByTestId('nav-connect-mcp'));
+      expect(screen.getByTestId('mcp-modal')).toBeInTheDocument();
+
+      fireEvent.click(screen.getByTestId('mcp-modal-close'));
+      expect(screen.queryByTestId('mcp-modal')).not.toBeInTheDocument();
+    });
   });
 
   describe('chain selector', () => {

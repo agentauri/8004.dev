@@ -5,12 +5,13 @@ import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { PixelExplorer } from '@/components/atoms';
 import { SearchInput } from '@/components/molecules';
-import { StatsGrid } from '@/components/organisms';
+import { MCPConnectModal, StatsGrid } from '@/components/organisms';
 import { useStats } from '@/hooks';
 
 export default function HomePage() {
   const router = useRouter();
   const [searchQuery, setSearchQuery] = useState('');
+  const [showMCPModal, setShowMCPModal] = useState(false);
   const { data: stats, isLoading: statsLoading, error: statsError } = useStats();
 
   const handleSearch = (query: string) => {
@@ -24,7 +25,15 @@ export default function HomePage() {
       {/* Header with navigation */}
       <header className="flex items-center justify-between px-4 py-3 border-b border-[var(--pixel-gray-800)]">
         <span className="text-pixel-body text-sm text-[var(--pixel-gray-400)]">8004.dev</span>
-        <nav>
+        <nav className="flex items-center gap-4">
+          <button
+            type="button"
+            onClick={() => setShowMCPModal(true)}
+            className="text-pixel-body text-sm text-[var(--pixel-gold-coin)] hover:text-glow border border-[var(--pixel-gold-coin)] px-2 py-1 hover:bg-[var(--pixel-gold-coin)] hover:text-[var(--pixel-black)] transition-all"
+            data-testid="home-connect-mcp"
+          >
+            Connect MCP
+          </button>
           <Link
             href="/explore"
             className="text-pixel-body text-sm text-[var(--pixel-blue-text)] hover:text-glow-blue"
@@ -124,6 +133,8 @@ export default function HomePage() {
           open-source tools
         </p>
       </footer>
+
+      <MCPConnectModal isOpen={showMCPModal} onClose={() => setShowMCPModal(false)} />
     </div>
   );
 }

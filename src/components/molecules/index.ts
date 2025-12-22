@@ -6,6 +6,8 @@ export type { CapabilityTagProps, CapabilityType } from './capability-tag';
 export { CapabilityTag } from './capability-tag';
 export type { ChainSelectorProps } from './chain-selector';
 export { ChainSelector } from './chain-selector';
+export type { CodeBlockProps } from './code-block';
+export { CodeBlock } from './code-block';
 export type { EndpointItemProps, EndpointType } from './endpoint-item';
 export { EndpointItem } from './endpoint-item';
 export type { FeedbackEntryProps } from './feedback-entry';
