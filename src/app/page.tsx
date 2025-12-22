@@ -35,7 +35,7 @@ export default function HomePage() {
       </header>
 
       {/* Main content */}
-      <main className="flex-1 flex flex-col items-center justify-center p-8">
+      <main className="flex-1 flex flex-col items-center justify-center p-8 pb-16">
         <div className="text-center space-y-8">
           {/* Hero Title with Explorer */}
           <div className="flex flex-col items-center gap-4">
