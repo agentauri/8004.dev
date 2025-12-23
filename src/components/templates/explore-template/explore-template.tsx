@@ -3,7 +3,7 @@
 import dynamic from 'next/dynamic';
 import type React from 'react';
 import type { SortField, SortOrder } from '@/components/molecules';
-import { SearchBar, type SearchFiltersState } from '@/components/organisms';
+import { Header, SearchBar, type SearchFiltersState } from '@/components/organisms';
 import type { AgentCardAgent } from '@/components/organisms/agent-card';
 import { MobileFilterSheet } from '@/components/organisms/mobile-filter-sheet';
 import { cn } from '@/lib/utils';
@@ -139,70 +139,73 @@ export function ExploreTemplate({
   className,
 }: ExploreTemplateProps): React.JSX.Element {
   return (
-    <div className={cn('flex min-h-full', className)} data-testid="explore-template">
-      {/* Desktop Sidebar - hidden on mobile */}
-      <aside
-        className="hidden md:block w-64 shrink-0 sticky top-0 h-screen overflow-y-auto p-4 lg:p-6 border-r border-[var(--pixel-gray-700)] bg-[var(--pixel-gray-900)]"
-        data-testid="explore-sidebar"
-      >
-        <SearchFilters
-          filters={filters}
-          onFiltersChange={onFiltersChange}
-          counts={filterCounts}
-          disabled={isLoading}
-        />
-      </aside>
-
-      <main className="flex-1 p-4 md:p-6 lg:p-8" data-testid="explore-main">
-        <div className="max-w-4xl mx-auto">
-          <h1 className="font-[family-name:var(--font-pixel-heading)] text-[var(--pixel-gray-100)] text-xl md:text-2xl mb-6 md:mb-8">
-            EXPLORE AGENTS
-          </h1>
-
-          {/* Mobile Filter Button - visible only on mobile */}
-          <div className="md:hidden mb-4">
-            <MobileFilterSheet
-              filters={filters}
-              onFiltersChange={onFiltersChange}
-              counts={filterCounts}
-              disabled={isLoading}
-            />
-          </div>
-
-          <div className="mb-6 md:mb-8">
-            <SearchBar
-              query={query}
-              onQueryChange={onQueryChange}
-              onSubmit={onSearch}
-              isLoading={isLoading}
-              autoFocus
-            />
-          </div>
-
-          <SearchResults
-            agents={agents}
-            totalCount={totalCount}
-            isLoading={isLoading}
-            error={error}
-            onAgentClick={onAgentClick}
-            currentPage={currentPage}
-            totalPages={totalPages}
-            onPageChange={onPageChange}
-            pageNumber={pageNumber}
-            hasMore={hasMore}
-            onNext={onNext}
-            onPrevious={onPrevious}
-            pageSize={pageSize}
-            onPageSizeChange={onPageSizeChange}
-            sortBy={sortBy}
-            sortOrder={sortOrder}
-            onSortChange={onSortChange}
-            isRefreshing={isRefreshing}
-            lastUpdated={lastUpdated}
-            onManualRefresh={onManualRefresh}
+    <div className={cn('flex flex-col h-screen', className)} data-testid="explore-template">
+      <Header />
+      <div className="flex flex-1 min-h-0">
+        {/* Desktop Sidebar - hidden on mobile */}
+        <aside
+          className="hidden md:block w-64 shrink-0 h-full overflow-y-auto p-4 lg:p-6 border-r border-[var(--pixel-gray-700)] bg-[var(--pixel-gray-900)]"
+          data-testid="explore-sidebar"
+        >
+          <SearchFilters
+            filters={filters}
+            onFiltersChange={onFiltersChange}
+            counts={filterCounts}
+            disabled={isLoading}
           />
-        </div>
-      </main>
+        </aside>
+
+        <main className="flex-1 p-4 md:p-6 lg:p-8 overflow-y-auto" data-testid="explore-main">
+          <div className="max-w-4xl mx-auto">
+            <h1 className="font-[family-name:var(--font-pixel-heading)] text-[var(--pixel-gray-100)] text-xl md:text-2xl mb-6 md:mb-8">
+              EXPLORE AGENTS
+            </h1>
+
+            {/* Mobile Filter Button - visible only on mobile */}
+            <div className="md:hidden mb-4">
+              <MobileFilterSheet
+                filters={filters}
+                onFiltersChange={onFiltersChange}
+                counts={filterCounts}
+                disabled={isLoading}
+              />
+            </div>
+
+            <div className="mb-6 md:mb-8">
+              <SearchBar
+                query={query}
+                onQueryChange={onQueryChange}
+                onSubmit={onSearch}
+                isLoading={isLoading}
+                autoFocus
+              />
+            </div>
+
+            <SearchResults
+              agents={agents}
+              totalCount={totalCount}
+              isLoading={isLoading}
+              error={error}
+              onAgentClick={onAgentClick}
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onPageChange={onPageChange}
+              pageNumber={pageNumber}
+              hasMore={hasMore}
+              onNext={onNext}
+              onPrevious={onPrevious}
+              pageSize={pageSize}
+              onPageSizeChange={onPageSizeChange}
+              sortBy={sortBy}
+              sortOrder={sortOrder}
+              onSortChange={onSortChange}
+              isRefreshing={isRefreshing}
+              lastUpdated={lastUpdated}
+              onManualRefresh={onManualRefresh}
+            />
+          </div>
+        </main>
+      </div>
     </div>
   );
 }

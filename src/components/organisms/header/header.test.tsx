@@ -29,10 +29,9 @@ describe('Header', () => {
       expect(screen.getByText('.dev')).toBeInTheDocument();
     });
 
-    it('renders logo icon', () => {
+    it('renders pixel explorer in logo', () => {
       render(<Header />);
-      const logo = screen.getByTestId('header-logo');
-      expect(logo.querySelector('.lucide-cpu')).toBeInTheDocument();
+      expect(screen.getByTestId('pixel-explorer')).toBeInTheDocument();
     });
   });
 
@@ -78,41 +77,4 @@ describe('Header', () => {
     });
   });
 
-  describe('chain selector', () => {
-    it('renders chain selector', () => {
-      render(<Header />);
-      expect(screen.getByTestId('chain-selector')).toBeInTheDocument();
-    });
-
-    it('uses default chain value (all chains)', () => {
-      render(<Header />);
-      expect(screen.getByText('ALL CHAINS')).toBeInTheDocument();
-    });
-
-    it('uses provided chain value', () => {
-      render(<Header selectedChains={[11155111]} />);
-      expect(screen.getByText('SEPOLIA')).toBeInTheDocument();
-    });
-
-    it('shows multiple chains when selected', () => {
-      render(<Header selectedChains={[11155111, 84532]} />);
-      const badges = screen.getAllByTestId('chain-badge');
-      expect(badges).toHaveLength(2);
-    });
-
-    it('calls onChainsChange when chain is selected', () => {
-      const onChainsChange = vi.fn();
-      render(<Header onChainsChange={onChainsChange} />);
-
-      fireEvent.click(screen.getByTestId('chain-selector-trigger'));
-      fireEvent.click(screen.getByTestId('chain-option-11155111'));
-
-      expect(onChainsChange).toHaveBeenCalledWith([11155111]);
-    });
-
-    it('disables chain selector when chainSelectorDisabled is true', () => {
-      render(<Header chainSelectorDisabled />);
-      expect(screen.getByTestId('chain-selector-trigger')).toBeDisabled();
-    });
-  });
 });

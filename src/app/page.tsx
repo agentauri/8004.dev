@@ -21,9 +21,9 @@ export default function HomePage() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-pixel-grid">
+    <div className="min-h-screen md:h-screen flex flex-col bg-pixel-grid overflow-y-auto md:overflow-hidden">
       {/* Header with navigation */}
-      <header className="flex items-center justify-between px-4 py-3 border-b border-[var(--pixel-gray-800)]">
+      <header className="flex items-center justify-between px-4 py-3 border-b border-[var(--pixel-gray-800)] shrink-0">
         <span className="text-pixel-body text-sm text-[var(--pixel-gray-400)]">8004.dev</span>
         <nav className="flex items-center gap-4">
           <button
@@ -44,10 +44,10 @@ export default function HomePage() {
       </header>
 
       {/* Main content */}
-      <main className="flex-1 flex flex-col items-center justify-center p-8 pb-16">
-        <div className="text-center space-y-8">
+      <main className="flex-1 flex flex-col items-center justify-center p-4 md:p-6 pb-8 md:pb-4">
+        <div className="text-center space-y-6 md:space-y-4">
           {/* Hero Title with Explorer */}
-          <div className="flex flex-col items-center gap-4">
+          <div className="flex flex-col items-center gap-3 md:gap-2">
             <PixelExplorer size="lg" animation="float" />
             <h1 className="text-pixel-display text-2xl md:text-4xl text-[var(--pixel-blue-text)] text-glow-blue">
               AGENT EXPLORER
@@ -78,7 +78,7 @@ export default function HomePage() {
           </p>
 
           {/* Search Input + Buttons grouped */}
-          <div className="pt-4 space-y-4">
+          <div className="pt-2 md:pt-1 space-y-3 md:space-y-2">
             <SearchInput
               value={searchQuery}
               onChange={setSearchQuery}
@@ -97,7 +97,7 @@ export default function HomePage() {
           </div>
 
           {/* Platform Statistics */}
-          <div className="pt-12 space-y-4 w-full max-w-3xl mx-auto">
+          <div className="pt-6 md:pt-3 space-y-3 md:space-y-2 w-full max-w-3xl mx-auto">
             <p className="text-pixel-body text-xs text-[var(--pixel-gray-400)]">
               PLATFORM STATISTICS
             </p>
@@ -107,7 +107,7 @@ export default function HomePage() {
       </main>
 
       {/* Footer */}
-      <footer className="py-4 text-center space-y-2 border-t border-[var(--pixel-gray-800)]">
+      <footer className="py-3 md:py-2 text-center space-y-1 border-t border-[var(--pixel-gray-800)] shrink-0">
         <p className="text-pixel-body text-xs text-[var(--pixel-gray-400)]">
           Powered by{' '}
           <a

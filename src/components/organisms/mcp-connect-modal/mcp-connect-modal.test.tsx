@@ -67,7 +67,7 @@ describe('MCPConnectModal', () => {
 
     expect(screen.getByTestId('tab-content-other')).toBeInTheDocument();
     expect(screen.getByText(MCP_ENDPOINTS.sse)).toBeInTheDocument();
-    expect(screen.getByText(MCP_ENDPOINTS.http)).toBeInTheDocument();
+    expect(screen.getByText(MCP_ENDPOINTS.mcp)).toBeInTheDocument();
   });
 
   it('calls onClose when close button is clicked', () => {
@@ -127,14 +127,14 @@ describe('MCPConnectModal', () => {
     expect(modal).toHaveAttribute('aria-labelledby', 'mcp-modal-title');
   });
 
-  it('renders config paths in Claude Desktop tab', () => {
+  it('renders GUI instructions in Claude Desktop tab', () => {
     render(<MCPConnectModal isOpen={true} onClose={mockOnClose} />);
 
     fireEvent.click(screen.getByTestId('tab-claude-desktop'));
 
-    expect(screen.getByText('macOS')).toBeInTheDocument();
-    expect(screen.getByText('Windows')).toBeInTheDocument();
-    expect(screen.getByText('Linux')).toBeInTheDocument();
+    expect(screen.getByText(/Settings → Connectors/)).toBeInTheDocument();
+    expect(screen.getByText(/Add custom connector/)).toBeInTheDocument();
+    expect(screen.getByText(/Pro, Max, Team, or Enterprise/)).toBeInTheDocument();
   });
 
   it('renders config paths in Cursor tab', () => {

@@ -1,5 +1,5 @@
-import { fireEvent, render, screen } from '@testing-library/react';
-import { describe, expect, it, vi } from 'vitest';
+import { render, screen } from '@testing-library/react';
+import { describe, expect, it } from 'vitest';
 import { MainLayout } from './main-layout';
 
 describe('MainLayout', () => {
@@ -42,41 +42,6 @@ describe('MainLayout', () => {
     it('applies className to main content', () => {
       render(<MainLayout className="custom-class">Content</MainLayout>);
       expect(screen.getByTestId('main-content')).toHaveClass('custom-class');
-    });
-  });
-
-  describe('chain selection', () => {
-    it('uses default chain value (all chains)', () => {
-      render(<MainLayout>Content</MainLayout>);
-      expect(screen.getByText('ALL CHAINS')).toBeInTheDocument();
-    });
-
-    it('uses initial chains value', () => {
-      render(<MainLayout initialChains={[11155111]}>Content</MainLayout>);
-      expect(screen.getByText('SEPOLIA')).toBeInTheDocument();
-    });
-
-    it('calls onChainsChange when chain is selected', () => {
-      const onChainsChange = vi.fn();
-      render(<MainLayout onChainsChange={onChainsChange}>Content</MainLayout>);
-
-      fireEvent.click(screen.getByTestId('chain-selector-trigger'));
-      fireEvent.click(screen.getByTestId('chain-option-11155111'));
-
-      expect(onChainsChange).toHaveBeenCalledWith([11155111]);
-    });
-
-    it('updates displayed chain when selection changes', () => {
-      render(<MainLayout>Content</MainLayout>);
-
-      expect(screen.getByText('ALL CHAINS')).toBeInTheDocument();
-
-      fireEvent.click(screen.getByTestId('chain-selector-trigger'));
-      fireEvent.click(screen.getByTestId('chain-option-84532'));
-
-      // After selection, the trigger shows the selected chain badge
-      const trigger = screen.getByTestId('chain-selector-trigger');
-      expect(trigger).toHaveTextContent('BASE');
     });
   });
 

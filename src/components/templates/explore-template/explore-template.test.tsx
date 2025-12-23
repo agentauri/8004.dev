@@ -9,6 +9,15 @@ vi.mock('@/components/organisms/mobile-filter-sheet', () => ({
   MobileFilterSheet: () => <div data-testid="mobile-filter-sheet-mock">Mobile Filters</div>,
 }));
 
+// Mock Header to avoid complex dependencies in template tests
+vi.mock('@/components/organisms', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('@/components/organisms')>();
+  return {
+    ...actual,
+    Header: () => <header data-testid="header-mock">Header</header>,
+  };
+});
+
 const mockAgents: AgentCardAgent[] = [
   {
     id: '0x1111111111111111111111111111111111111111',
@@ -48,6 +57,11 @@ describe('ExploreTemplate', () => {
     it('renders explore template container', () => {
       render(<ExploreTemplate {...defaultProps} />);
       expect(screen.getByTestId('explore-template')).toBeInTheDocument();
+    });
+
+    it('renders header', () => {
+      render(<ExploreTemplate {...defaultProps} />);
+      expect(screen.getByTestId('header-mock')).toBeInTheDocument();
     });
 
     it('renders sidebar with filters', () => {

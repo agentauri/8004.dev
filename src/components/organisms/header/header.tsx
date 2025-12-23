@@ -1,42 +1,26 @@
 'use client';
 
-import { Cpu } from 'lucide-react';
 import Link from 'next/link';
 import type React from 'react';
 import { useState } from 'react';
-import { type ChainId, PixelExplorer } from '@/components/atoms';
-import { ChainSelector } from '@/components/molecules';
+import { PixelExplorer } from '@/components/atoms';
 import { MCPConnectModal } from '@/components/organisms/mcp-connect-modal';
 import { cn } from '@/lib/utils';
 
 export interface HeaderProps {
-  /** Currently selected chains (empty array means all chains) */
-  selectedChains?: ChainId[];
-  /** Callback when chain selection changes */
-  onChainsChange?: (chains: ChainId[]) => void;
-  /** Whether the chain selector is disabled */
-  chainSelectorDisabled?: boolean;
   /** Optional additional class names */
   className?: string;
 }
 
 /**
- * Header displays the main navigation bar with logo and chain selector.
+ * Header displays the main navigation bar with logo and navigation links.
  *
  * @example
  * ```tsx
- * <Header
- *   selectedChains={[]}
- *   onChainsChange={setChains}
- * />
+ * <Header />
  * ```
  */
-export function Header({
-  selectedChains = [],
-  onChainsChange,
-  chainSelectorDisabled = false,
-  className,
-}: HeaderProps): React.JSX.Element {
+export function Header({ className }: HeaderProps): React.JSX.Element {
   const [showMCPModal, setShowMCPModal] = useState(false);
 
   return (
@@ -53,10 +37,7 @@ export function Header({
         className="flex items-center gap-2 md:gap-3 hover:opacity-80 transition-opacity"
         data-testid="header-logo"
       >
-        <div className="w-8 h-8 bg-[var(--pixel-primary)] flex items-center justify-center shrink-0">
-          <Cpu size={20} className="text-white" aria-hidden="true" />
-        </div>
-        <span className="hidden sm:inline font-[family-name:var(--font-pixel-heading)] text-[var(--pixel-gray-100)] text-base md:text-lg tracking-wider">
+        <span className="font-[family-name:var(--font-pixel-heading)] text-[var(--pixel-gray-100)] text-base md:text-lg tracking-wider">
           8004<span className="text-[var(--pixel-primary)]">.dev</span>
         </span>
         <PixelExplorer size="sm" animation="none" className="hidden md:block" />
@@ -88,11 +69,6 @@ export function Header({
         >
           Connect MCP
         </button>
-        <ChainSelector
-          value={selectedChains}
-          onChange={onChainsChange}
-          disabled={chainSelectorDisabled}
-        />
       </nav>
 
       <MCPConnectModal isOpen={showMCPModal} onClose={() => setShowMCPModal(false)} />

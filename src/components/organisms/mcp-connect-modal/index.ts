@@ -1,8 +1,8 @@
 export {
   CLAUDE_CODE_COMMAND,
-  CONFIG_PATHS,
+  CURSOR_CONFIG,
+  CURSOR_CONFIG_PATHS,
   MCP_ENDPOINTS,
-  MCP_SERVER_CONFIG,
   MCP_TABS,
   type MCPTab,
 } from './mcp-config';
