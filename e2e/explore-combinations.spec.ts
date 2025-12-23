@@ -168,9 +168,7 @@ test.describe('Explore Page Filter Persistence', () => {
     await page.waitForSelector('[data-testid="agent-card"]', { timeout: 5000 });
 
     // Try to click MCP filter (CapabilityTag with data-type="mcp")
-    const mcpButton = page
-      .locator('[data-testid="capability-tag"][data-type="mcp"]')
-      .first();
+    const mcpButton = page.locator('[data-testid="capability-tag"][data-type="mcp"]').first();
     if (await mcpButton.isVisible().catch(() => false)) {
       await mcpButton.click();
       await page.waitForURL(/mcp=true/, { timeout: 10000 });
