@@ -15,10 +15,6 @@ const meta = {
     },
   },
   argTypes: {
-    initialChains: {
-      control: 'object',
-      description: 'Initial selected chains (empty array = all chains)',
-    },
     showFooter: {
       control: 'boolean',
       description: 'Whether to show the footer',
@@ -55,20 +51,6 @@ export const WithoutFooter: Story = {
           NO FOOTER PAGE
         </h1>
         <p className="text-[var(--pixel-gray-400)]">This page has no footer.</p>
-      </div>
-    ),
-  },
-};
-
-export const WithInitialChains: Story = {
-  args: {
-    initialChains: [11155111],
-    children: (
-      <div className="p-8">
-        <h1 className="text-[var(--pixel-gray-100)] font-[family-name:var(--font-pixel-heading)] text-2xl mb-4">
-          SEPOLIA AGENTS
-        </h1>
-        <p className="text-[var(--pixel-gray-400)]">Showing agents on Sepolia network.</p>
       </div>
     ),
   },

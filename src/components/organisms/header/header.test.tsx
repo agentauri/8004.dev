@@ -76,5 +76,4 @@ describe('Header', () => {
       expect(screen.queryByTestId('mcp-modal')).not.toBeInTheDocument();
     });
   });
-
 });
