@@ -6,6 +6,8 @@ import { CodeBlock } from '@/components/molecules/code-block';
 import { TabNavigation } from '@/components/molecules/tab-navigation';
 import {
   CLAUDE_CODE_COMMAND,
+  CLAUDE_DESKTOP_CONFIG,
+  CLAUDE_DESKTOP_CONFIG_PATHS,
   CURSOR_CONFIG,
   CURSOR_CONFIG_PATHS,
   MCP_ENDPOINTS,
@@ -141,58 +143,46 @@ function ClaudeCodeTab() {
 }
 
 function ClaudeDesktopTab() {
+  const configJson = JSON.stringify(CLAUDE_DESKTOP_CONFIG, null, 2);
+
   return (
     <div className="space-y-4" data-testid="tab-content-claude-desktop">
+      <div className="p-3 bg-[var(--pixel-gray-800)] border border-[var(--pixel-gold-coin)]">
+        <p className="text-pixel-body text-xs text-[var(--pixel-gray-300)]">
+          <strong className="text-[var(--pixel-gold-coin)]">Note:</strong> The native Connector
+          feature has a{' '}
+          <a
+            href="https://github.com/anthropics/claude-code/issues/5826"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-[var(--pixel-blue-text)] hover:underline"
+          >
+            known bug
+          </a>
+          . Use the config file method below instead.
+        </p>
+      </div>
+
       <p className="text-pixel-body text-sm text-[var(--pixel-gray-300)]">
-        Connect via the Claude Desktop settings interface:
+        Add the following to your Claude Desktop configuration file:
       </p>
 
-      <ol className="space-y-3 text-pixel-body text-sm text-[var(--pixel-gray-200)]">
-        <li className="flex gap-3">
-          <span className="text-[var(--pixel-gold-coin)] font-bold">1.</span>
-          <span>
-            Open <strong className="text-[var(--pixel-white)]">Claude Desktop</strong>
-          </span>
-        </li>
-        <li className="flex gap-3">
-          <span className="text-[var(--pixel-gold-coin)] font-bold">2.</span>
-          <span>
-            Go to <strong className="text-[var(--pixel-white)]">Settings → Connectors</strong>
-          </span>
-        </li>
-        <li className="flex gap-3">
-          <span className="text-[var(--pixel-gold-coin)] font-bold">3.</span>
-          <span>
-            Click <strong className="text-[var(--pixel-white)]">Add custom connector</strong>
-          </span>
-        </li>
-        <li className="flex gap-3">
-          <span className="text-[var(--pixel-gold-coin)] font-bold">4.</span>
-          <span>Enter the server URL:</span>
-        </li>
-      </ol>
+      <CodeBlock code={configJson} language="json" label="Configuration" />
 
-      <CodeBlock code={MCP_ENDPOINTS.mcp} language="text" label="Server URL" showCopy />
+      <div className="space-y-2">
+        <p className="text-pixel-body text-xs text-[var(--pixel-gray-400)] uppercase tracking-wider">
+          Config file location:
+        </p>
+        <div className="space-y-1">
+          <CodeBlock code={CLAUDE_DESKTOP_CONFIG_PATHS.mac} language="text" label="macOS" showCopy />
+          <CodeBlock code={CLAUDE_DESKTOP_CONFIG_PATHS.windows} language="text" label="Windows" showCopy />
+        </div>
+      </div>
 
-      <ol start={5} className="space-y-3 text-pixel-body text-sm text-[var(--pixel-gray-200)]">
-        <li className="flex gap-3">
-          <span className="text-[var(--pixel-gold-coin)] font-bold">5.</span>
-          <span>
-            Name it <strong className="text-[var(--pixel-white)]">8004 Agent Explorer</strong>
-          </span>
-        </li>
-        <li className="flex gap-3">
-          <span className="text-[var(--pixel-gold-coin)] font-bold">6.</span>
-          <span>
-            Click <strong className="text-[var(--pixel-white)]">Add</strong>
-          </span>
-        </li>
-      </ol>
-
-      <div className="mt-4 p-3 bg-[var(--pixel-gray-800)] border border-[var(--pixel-gray-700)]">
+      <div className="p-3 bg-[var(--pixel-gray-800)] border border-[var(--pixel-gray-700)]">
         <p className="text-pixel-body text-xs text-[var(--pixel-gray-400)]">
-          <strong className="text-[var(--pixel-gold-coin)]">Note:</strong> Requires a Claude Pro,
-          Max, Team, or Enterprise plan. OAuth authentication is handled automatically.
+          <strong className="text-[var(--pixel-gold-coin)]">Requires:</strong> Node.js installed
+          (for npx command). Restart Claude Desktop after editing the config.
         </p>
       </div>
     </div>

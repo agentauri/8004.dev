@@ -12,12 +12,30 @@ export const MCP_ENDPOINTS = {
 export const CLAUDE_CODE_COMMAND =
   'claude mcp add --transport sse 8004-agents https://api.8004.dev/sse';
 
+/**
+ * Claude Desktop config (uses mcp-remote bridge due to Connector bug)
+ * @see https://github.com/anthropics/claude-code/issues/5826
+ */
+export const CLAUDE_DESKTOP_CONFIG = {
+  mcpServers: {
+    '8004-agents': {
+      command: 'npx',
+      args: ['-y', 'mcp-remote', 'https://api.8004.dev/sse'],
+    },
+  },
+};
+
+export const CLAUDE_DESKTOP_CONFIG_PATHS = {
+  mac: '~/Library/Application Support/Claude/claude_desktop_config.json',
+  windows: '%APPDATA%\\Claude\\claude_desktop_config.json',
+} as const;
+
 /** Cursor config (uses mcp-remote bridge for stdio-based clients) */
 export const CURSOR_CONFIG = {
   mcpServers: {
     '8004-agents': {
       command: 'npx',
-      args: ['mcp-remote', 'https://api.8004.dev/sse'],
+      args: ['-y', 'mcp-remote', 'https://api.8004.dev/sse'],
     },
   },
 };

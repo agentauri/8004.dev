@@ -1,6 +1,6 @@
 import { fireEvent, render, screen } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { CLAUDE_CODE_COMMAND, MCP_ENDPOINTS } from './mcp-config';
+import { CLAUDE_CODE_COMMAND, CLAUDE_DESKTOP_CONFIG_PATHS, MCP_ENDPOINTS } from './mcp-config';
 import { MCPConnectModal } from './mcp-connect-modal';
 
 describe('MCPConnectModal', () => {
@@ -127,14 +127,15 @@ describe('MCPConnectModal', () => {
     expect(modal).toHaveAttribute('aria-labelledby', 'mcp-modal-title');
   });
 
-  it('renders GUI instructions in Claude Desktop tab', () => {
+  it('renders config file instructions in Claude Desktop tab', () => {
     render(<MCPConnectModal isOpen={true} onClose={mockOnClose} />);
 
     fireEvent.click(screen.getByTestId('tab-claude-desktop'));
 
-    expect(screen.getByText(/Settings → Connectors/)).toBeInTheDocument();
-    expect(screen.getByText(/Add custom connector/)).toBeInTheDocument();
-    expect(screen.getByText(/Pro, Max, Team, or Enterprise/)).toBeInTheDocument();
+    expect(screen.getByText(/known bug/)).toBeInTheDocument();
+    expect(screen.getByText(/config file method/)).toBeInTheDocument();
+    expect(screen.getByText(CLAUDE_DESKTOP_CONFIG_PATHS.mac)).toBeInTheDocument();
+    expect(screen.getByText(/Node.js installed/)).toBeInTheDocument();
   });
 
   it('renders config paths in Cursor tab', () => {
