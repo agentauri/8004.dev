@@ -287,7 +287,7 @@ describe('POST /api/search', () => {
       expect(response.status).toBe(400);
       expect(data.success).toBe(false);
       expect(data.error).toBe('Query is required');
-      expect(data.code).toBe('VALIDATION_ERROR');
+      expect(data.code).toBe('MISSING_QUERY');
     });
 
     it('returns 400 for empty query', async () => {
@@ -296,7 +296,7 @@ describe('POST /api/search', () => {
 
       expect(response.status).toBe(400);
       expect(data.success).toBe(false);
-      expect(data.code).toBe('VALIDATION_ERROR');
+      expect(data.code).toBe('MISSING_QUERY');
     });
 
     it('returns 400 for non-string query', async () => {
@@ -315,8 +315,8 @@ describe('POST /api/search', () => {
 
       expect(response.status).toBe(400);
       expect(data.success).toBe(false);
-      expect(data.error).toBe('Query must be between 1 and 1000 characters');
-      expect(data.code).toBe('VALIDATION_ERROR');
+      expect(data.error).toBe('Query must be at most 1000 characters');
+      expect(data.code).toBe('QUERY_TOO_LONG');
     });
 
     it('returns 400 for invalid JSON body', async () => {

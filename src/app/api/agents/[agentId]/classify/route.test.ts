@@ -148,7 +148,7 @@ describe('GET /api/agents/[agentId]/classify', () => {
       expect(response.status).toBe(400);
       expect(data.success).toBe(false);
       expect(data.error).toBe('Invalid agent ID format. Expected: chainId:tokenId');
-      expect(data.code).toBe('INVALID_AGENT_ID');
+      expect(data.code).toBe('INVALID_AGENT_ID_FORMAT');
     });
 
     it('returns 400 for empty agent ID', async () => {
@@ -159,7 +159,7 @@ describe('GET /api/agents/[agentId]/classify', () => {
 
       expect(response.status).toBe(400);
       expect(data.success).toBe(false);
-      expect(data.code).toBe('INVALID_AGENT_ID');
+      expect(data.code).toBe('MISSING_AGENT_ID');
     });
   });
 
@@ -288,7 +288,7 @@ describe('POST /api/agents/[agentId]/classify', () => {
       expect(response.status).toBe(400);
       expect(data.success).toBe(false);
       expect(data.error).toBe('Invalid agent ID format. Expected: chainId:tokenId');
-      expect(data.code).toBe('INVALID_AGENT_ID');
+      expect(data.code).toBe('INVALID_AGENT_ID_FORMAT');
     });
 
     it('returns 400 for empty agent ID', async () => {
@@ -299,7 +299,7 @@ describe('POST /api/agents/[agentId]/classify', () => {
 
       expect(response.status).toBe(400);
       expect(data.success).toBe(false);
-      expect(data.code).toBe('INVALID_AGENT_ID');
+      expect(data.code).toBe('MISSING_AGENT_ID');
     });
   });
 

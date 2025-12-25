@@ -40,6 +40,7 @@ next-env.d.ts
 
 # Storybook
 storybook-static/
+debug-storybook.log
 
 # Playwright
 /test-results/

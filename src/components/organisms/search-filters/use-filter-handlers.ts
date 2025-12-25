@@ -1,8 +1,12 @@
 /**
  * Custom hook for SearchFilters event handlers
+ *
+ * Uses a ref to track current filters to avoid recreating callbacks
+ * on every filter change. This improves performance by keeping stable
+ * callback references for child components.
  */
 
-import { useCallback, useMemo } from 'react';
+import { useCallback, useEffect, useMemo, useRef } from 'react';
 import type { ChainId } from '@/components/atoms';
 import type { CapabilityType, FilterMode } from '@/components/molecules';
 import { EMPTY_FILTERS, STATUS_OPTIONS } from './filter-constants';
@@ -35,66 +39,74 @@ export function useFilterHandlers(
   onFiltersChange: (filters: SearchFiltersState) => void,
   counts: FilterCounts = {},
 ): UseFilterHandlersReturn {
+  // Use ref to track current filters without causing callback recreation
+  const filtersRef = useRef(filters);
+  useEffect(() => {
+    filtersRef.current = filters;
+  }, [filters]);
+
   const handleStatusChange = useCallback(
     (status: string[]) => {
-      onFiltersChange({ ...filters, status });
+      onFiltersChange({ ...filtersRef.current, status });
     },
-    [filters, onFiltersChange],
+    [onFiltersChange],
   );
 
   const handleProtocolToggle = useCallback(
     (protocol: CapabilityType) => {
-      const newProtocols = filters.protocols.includes(protocol)
-        ? filters.protocols.filter((p) => p !== protocol)
-        : [...filters.protocols, protocol];
-      onFiltersChange({ ...filters, protocols: newProtocols });
+      const current = filtersRef.current;
+      const newProtocols = current.protocols.includes(protocol)
+        ? current.protocols.filter((p) => p !== protocol)
+        : [...current.protocols, protocol];
+      onFiltersChange({ ...current, protocols: newProtocols });
     },
-    [filters, onFiltersChange],
+    [onFiltersChange],
   );
 
   const handleFilterModeChange = useCallback(
     (mode: FilterMode) => {
-      onFiltersChange({ ...filters, filterMode: mode });
+      onFiltersChange({ ...filtersRef.current, filterMode: mode });
     },
-    [filters, onFiltersChange],
+    [onFiltersChange],
   );
 
   const handleReputationChange = useCallback(
     (minReputation: number, maxReputation: number) => {
-      onFiltersChange({ ...filters, minReputation, maxReputation });
+      onFiltersChange({ ...filtersRef.current, minReputation, maxReputation });
     },
-    [filters, onFiltersChange],
+    [onFiltersChange],
   );
 
   const handleChainToggle = useCallback(
     (chainId: ChainId) => {
-      const newChains = filters.chains.includes(chainId)
-        ? filters.chains.filter((c) => c !== chainId)
-        : [...filters.chains, chainId];
-      onFiltersChange({ ...filters, chains: newChains });
+      const current = filtersRef.current;
+      const newChains = current.chains.includes(chainId)
+        ? current.chains.filter((c) => c !== chainId)
+        : [...current.chains, chainId];
+      onFiltersChange({ ...current, chains: newChains });
     },
-    [filters, onFiltersChange],
+    [onFiltersChange],
   );
 
   const handleSkillsChange = useCallback(
     (skills: string[]) => {
-      onFiltersChange({ ...filters, skills });
+      onFiltersChange({ ...filtersRef.current, skills });
     },
-    [filters, onFiltersChange],
+    [onFiltersChange],
   );
 
   const handleDomainsChange = useCallback(
     (domains: string[]) => {
-      onFiltersChange({ ...filters, domains });
+      onFiltersChange({ ...filtersRef.current, domains });
     },
-    [filters, onFiltersChange],
+    [onFiltersChange],
   );
 
   const handleShowAllAgentsChange = useCallback(
     (showAllAgents: boolean) => {
-      onFiltersChange({ ...filters, showAllAgents });
+      onFiltersChange({ ...filtersRef.current, showAllAgents });
     },
-    [filters, onFiltersChange],
+    [onFiltersChange],
   );
 
   const handleClearAll = useCallback(() => {

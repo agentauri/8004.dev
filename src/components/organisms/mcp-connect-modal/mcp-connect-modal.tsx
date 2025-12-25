@@ -174,8 +174,18 @@ function ClaudeDesktopTab() {
           Config file location:
         </p>
         <div className="space-y-1">
-          <CodeBlock code={CLAUDE_DESKTOP_CONFIG_PATHS.mac} language="text" label="macOS" showCopy />
-          <CodeBlock code={CLAUDE_DESKTOP_CONFIG_PATHS.windows} language="text" label="Windows" showCopy />
+          <CodeBlock
+            code={CLAUDE_DESKTOP_CONFIG_PATHS.mac}
+            language="text"
+            label="macOS"
+            showCopy
+          />
+          <CodeBlock
+            code={CLAUDE_DESKTOP_CONFIG_PATHS.windows}
+            language="text"
+            label="Windows"
+            showCopy
+          />
         </div>
       </div>
 

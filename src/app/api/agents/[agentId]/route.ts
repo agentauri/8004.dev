@@ -6,6 +6,7 @@
 import { BackendError, backendFetch } from '@/lib/api/backend';
 import { mapAgentDetailResponse } from '@/lib/api/mappers';
 import { errorResponse, handleRouteError, successResponse } from '@/lib/api/route-helpers';
+import { validateAgentId } from '@/lib/api/validation';
 import type { BackendAgent, BackendReputation, BackendValidation } from '@/types/backend';
 
 interface RouteParams {
@@ -16,13 +17,10 @@ export async function GET(_request: Request, { params }: RouteParams) {
   try {
     const { agentId } = await params;
 
-    // Validate agent ID format (chainId:tokenId)
-    if (!agentId || !agentId.includes(':')) {
-      return errorResponse(
-        'Invalid agent ID format. Expected: chainId:tokenId',
-        'INVALID_AGENT_ID',
-        400,
-      );
+    // Validate agent ID format (chainId:tokenId) with strict validation
+    const validation = validateAgentId(agentId);
+    if (!validation.valid) {
+      return errorResponse(validation.error, validation.code, 400);
     }
 
     // Fetch agent, reputation, and validations in parallel

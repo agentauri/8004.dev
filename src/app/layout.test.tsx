@@ -25,7 +25,11 @@ vi.mock('./providers', () => ({
 describe('RootLayout', () => {
   describe('metadata', () => {
     it('has correct title', () => {
-      expect(metadata.title).toBe('Agent Explorer - ERC-8004 Agent Discovery');
+      // Title is now an object with default and template
+      expect(metadata.title).toEqual({
+        default: 'Agent Explorer - ERC-8004 Agent Discovery',
+        template: '%s | Agent Explorer',
+      });
     });
 
     it('has correct description', () => {

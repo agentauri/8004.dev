@@ -6,6 +6,7 @@
 
 import { NextResponse } from 'next/server';
 import { BackendError, backendFetch } from '@/lib/api/backend';
+import { validateAgentId } from '@/lib/api/validation';
 import type { BackendClassificationStatus, BackendOASFClassification } from '@/types/backend';
 
 interface RouteParams {
@@ -20,13 +21,14 @@ export async function GET(_request: Request, { params }: RouteParams) {
   try {
     const { agentId } = await params;
 
-    // Validate agent ID format
-    if (!agentId || !agentId.includes(':')) {
+    // Validate agent ID format with strict validation
+    const validation = validateAgentId(agentId);
+    if (!validation.valid) {
       return NextResponse.json(
         {
           success: false,
-          error: 'Invalid agent ID format. Expected: chainId:tokenId',
-          code: 'INVALID_AGENT_ID',
+          error: validation.error,
+          code: validation.code,
         },
         { status: 400 },
       );
@@ -100,13 +102,14 @@ export async function POST(request: Request, { params }: RouteParams) {
   try {
     const { agentId } = await params;
 
-    // Validate agent ID format
-    if (!agentId || !agentId.includes(':')) {
+    // Validate agent ID format with strict validation
+    const validation = validateAgentId(agentId);
+    if (!validation.valid) {
       return NextResponse.json(
         {
           success: false,
-          error: 'Invalid agent ID format. Expected: chainId:tokenId',
-          code: 'INVALID_AGENT_ID',
+          error: validation.error,
+          code: validation.code,
         },
         { status: 400 },
       );

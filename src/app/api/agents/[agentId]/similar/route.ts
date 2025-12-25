@@ -6,6 +6,7 @@
 import { BackendError, backendFetch } from '@/lib/api/backend';
 import { mapSimilarAgents } from '@/lib/api/mappers';
 import { errorResponse, handleRouteError, successResponse } from '@/lib/api/route-helpers';
+import { validateAgentId, validateLimit } from '@/lib/api/validation';
 import type { BackendSimilarAgent } from '@/types/backend';
 
 interface RouteParams {
@@ -16,19 +17,16 @@ export async function GET(request: Request, { params }: RouteParams) {
   try {
     const { agentId } = await params;
 
-    // Validate agent ID format (chainId:tokenId)
-    if (!agentId || !agentId.includes(':')) {
-      return errorResponse(
-        'Invalid agent ID format. Expected: chainId:tokenId',
-        'INVALID_AGENT_ID',
-        400,
-      );
+    // Validate agent ID format (chainId:tokenId) with strict validation
+    const validation = validateAgentId(agentId);
+    if (!validation.valid) {
+      return errorResponse(validation.error, validation.code, 400);
     }
 
     // Parse limit from query params, default to 10, max 20
     const { searchParams } = new URL(request.url);
     const limitParam = searchParams.get('limit');
-    const limit = Math.min(Math.max(Number(limitParam) || 10, 1), 20);
+    const limit = validateLimit(limitParam, 20, 10);
 
     const response = await backendFetch<BackendSimilarAgent[]>(
       `/api/v1/agents/${agentId}/similar?limit=${limit}`,

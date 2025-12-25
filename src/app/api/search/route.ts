@@ -26,6 +26,7 @@
 import { backendFetch } from '@/lib/api/backend';
 import { mapSearchResultsToSummaries } from '@/lib/api/mappers';
 import { errorResponse, handleRouteError, successResponse } from '@/lib/api/route-helpers';
+import { validateLimit, validateSearchQuery } from '@/lib/api/validation';
 import type { BackendSearchResult } from '@/types/backend';
 
 interface SearchRequestBody {
@@ -89,19 +90,16 @@ export async function POST(request: Request) {
   try {
     const body: SearchRequestBody = await request.json();
 
-    // Validate query
-    if (!body.query || typeof body.query !== 'string') {
-      return errorResponse('Query is required', 'VALIDATION_ERROR', 400);
-    }
-
-    if (body.query.length < 1 || body.query.length > 1000) {
-      return errorResponse('Query must be between 1 and 1000 characters', 'VALIDATION_ERROR', 400);
+    // Validate and sanitize query with strict validation
+    const queryValidation = validateSearchQuery(body.query);
+    if (!queryValidation.valid) {
+      return errorResponse(queryValidation.error, queryValidation.code, 400);
     }
 
     // Build backend request per OpenAPI spec
     const searchRequest: SearchRequest = {
-      query: body.query,
-      limit: body.limit ?? 20,
+      query: queryValidation.query,
+      limit: validateLimit(body.limit, 100, 20),
       minScore: body.minScore,
       filters: body.filters,
     };

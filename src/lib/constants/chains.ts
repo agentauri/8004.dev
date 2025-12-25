@@ -86,3 +86,11 @@ export function getExplorerAddressUrl(chainId: number, address: string): string 
   if (!chain) return undefined;
   return `${chain.explorerUrl}/address/${address}`;
 }
+
+/**
+ * Get display name for a chain (e.g., "Ethereum Sepolia", "Base Sepolia")
+ */
+export function getChainDisplayName(chainId: number): string {
+  const chain = CHAINS[chainId];
+  return chain?.name ?? `Chain ${chainId}`;
+}

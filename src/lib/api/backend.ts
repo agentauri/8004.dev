@@ -34,6 +34,9 @@ export class BackendError extends Error {
   }
 }
 
+/** Default request timeout in milliseconds (30 seconds) */
+const DEFAULT_TIMEOUT_MS = 30000;
+
 /**
  * Options for backend fetch requests
  */
@@ -53,6 +56,8 @@ export interface BackendFetchOptions {
     revalidate?: number | false;
     tags?: string[];
   };
+  /** Request timeout in milliseconds (default: 30000) */
+  timeout?: number;
 }
 
 /**
@@ -135,7 +140,15 @@ export async function backendFetch<T>(
   endpoint: string,
   options: BackendFetchOptions = {},
 ): Promise<BackendResponse<T>> {
-  const { params, method = 'GET', body, headers = {}, cache, next } = options;
+  const {
+    params,
+    method = 'GET',
+    body,
+    headers = {},
+    cache,
+    next,
+    timeout = DEFAULT_TIMEOUT_MS,
+  } = options;
 
   const apiKey = getApiKey();
   if (!apiKey) {
@@ -144,6 +157,10 @@ export async function backendFetch<T>(
 
   const url = buildUrl(endpoint, params);
 
+  // Set up timeout with AbortController
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), timeout);
+
   const fetchOptions: RequestInit & { next?: BackendFetchOptions['next'] } = {
     method,
     headers: {
@@ -151,6 +168,7 @@ export async function backendFetch<T>(
       'Content-Type': 'application/json',
       ...headers,
     },
+    signal: controller.signal,
   };
 
   if (body !== undefined) {
@@ -170,6 +188,11 @@ export async function backendFetch<T>(
   try {
     response = await fetch(url, fetchOptions);
   } catch (error) {
+    clearTimeout(timeoutId);
+    // Handle abort/timeout error
+    if (error instanceof Error && error.name === 'AbortError') {
+      throw new BackendError(`Request timeout after ${timeout}ms`, 'TIMEOUT_ERROR', 408);
+    }
     // Network error or fetch failure
     throw new BackendError(
       error instanceof Error ? error.message : 'Network error',
@@ -177,6 +200,8 @@ export async function backendFetch<T>(
       0,
     );
   }
+
+  clearTimeout(timeoutId);
 
   let data: BackendResponse<T> | BackendErrorResponse;
 
