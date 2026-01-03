@@ -1,12 +1,12 @@
 'use client';
 
-import { Suspense, useCallback, useEffect, useMemo, useState } from 'react';
+import { Suspense, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { ChainId } from '@/components/atoms';
 import type { CapabilityType } from '@/components/molecules';
 import type { AgentCardAgent } from '@/components/organisms/agent-card';
 import type { SearchFiltersState } from '@/components/organisms/search-filters';
 import { ExploreTemplate } from '@/components/templates';
-import { useSearchAgents, useUrlSearchParams } from '@/hooks';
+import { useSearchAgents, useStreamingSearch, useUrlSearchParams } from '@/hooks';
 import { toSearchParams } from '@/lib/filters';
 import { sortAgents } from '@/lib/sorting';
 import type { AgentSummary } from '@/types/agent';
@@ -90,8 +90,14 @@ function ExplorePageContent() {
   // Local state for search input (before submission)
   const [inputQuery, setInputQuery] = useState(urlQuery);
 
-  // Cursor-based pagination state
+  // Track if we have an active text query (for streaming vs regular search decision)
+  const hasTextQuery = useMemo(() => !!urlQuery.trim(), [urlQuery]);
+
+  // Cursor-based pagination state (only used for regular search)
   const [cursorState, setCursorState] = useState<CursorState>(INITIAL_CURSOR_STATE);
+
+  // Track previous query for change detection
+  const prevQueryRef = useRef(urlQuery);
 
   // Reset cursor state when URL params change (query, filters, sort, pageSize)
   // biome-ignore lint/correctness/useExhaustiveDependencies: resetSignal is an intentional change trigger
@@ -111,27 +117,87 @@ function ExplorePageContent() {
     [urlQuery, urlFilters, pageSize, cursorState.currentCursor],
   );
 
-  // Use TanStack Query hook for data fetching
-  const { data, isLoading, error, isRefreshing, lastUpdated, manualRefresh } =
-    useSearchAgents(searchParamsObj);
+  // Streaming search hook - enabled when there's a text query
+  const streaming = useStreamingSearch(searchParamsObj, {
+    enabled: hasTextQuery,
+    onComplete: () => {
+      // Stream completed - results are now in streaming.results
+    },
+  });
+
+  // Regular search hook - enabled when there's NO text query (filter-only browsing)
+  const regular = useSearchAgents(searchParamsObj, {
+    enabled: !hasTextQuery,
+  });
+
+  // Auto-start streaming when query changes
+  useEffect(() => {
+    if (hasTextQuery && prevQueryRef.current !== urlQuery) {
+      // Query changed, start new stream
+      streaming.startStream();
+    }
+    prevQueryRef.current = urlQuery;
+  }, [urlQuery, hasTextQuery, streaming.startStream]);
+
+  // Also start stream when filters change while we have a query
+  // biome-ignore lint/correctness/useExhaustiveDependencies: resetSignal is an intentional change trigger
+  useEffect(() => {
+    if (hasTextQuery && streaming.streamState === 'idle') {
+      streaming.startStream();
+    }
+  }, [resetSignal]);
+
+  // Determine the error to display
+  const displayError = useMemo(() => {
+    if (hasTextQuery) {
+      // For streaming, only show error if it's not an "empty query" error
+      // (which would happen before user types anything)
+      if (streaming.error && streaming.error.code !== 'EMPTY_QUERY') {
+        return streaming.error.message;
+      }
+      return undefined;
+    }
+    return regular.error?.message;
+  }, [hasTextQuery, streaming.error, regular.error]);
 
   // Transform and sort agents for display (client-side sorting)
   const agents = useMemo(() => {
-    if (!data?.agents) return [];
-    const sorted = sortAgents(data.agents, sortBy, sortOrder);
-    return sorted.map(toAgentCardAgent);
-  }, [data?.agents, sortBy, sortOrder]);
+    // Choose data source based on search mode
+    const sourceAgents = hasTextQuery ? streaming.results : regular.data?.agents;
 
-  // Navigation handlers
+    if (!sourceAgents || sourceAgents.length === 0) return [];
+
+    const sorted = sortAgents(sourceAgents, sortBy, sortOrder);
+    return sorted.map(toAgentCardAgent);
+  }, [hasTextQuery, streaming.results, regular.data?.agents, sortBy, sortOrder]);
+
+  // Determine loading state
+  const isLoading = useMemo(() => {
+    if (hasTextQuery) {
+      // For streaming, we're "loading" only during initial connection
+      return streaming.streamState === 'connecting';
+    }
+    return regular.isLoading;
+  }, [hasTextQuery, streaming.streamState, regular.isLoading]);
+
+  // Total count for display
+  const totalCount = useMemo(() => {
+    if (hasTextQuery) {
+      return streaming.expectedTotal ?? streaming.resultCount;
+    }
+    return regular.data?.total ?? 0;
+  }, [hasTextQuery, streaming.expectedTotal, streaming.resultCount, regular.data?.total]);
+
+  // Navigation handlers (only used for regular search)
   const handleNext = useCallback(() => {
-    if (!data?.hasMore || !data?.nextCursor) return;
+    if (!regular.data?.hasMore || !regular.data?.nextCursor) return;
 
     setCursorState((prev) => ({
       pageNumber: prev.pageNumber + 1,
-      currentCursor: data.nextCursor,
-      cursorHistory: [...prev.cursorHistory, data.nextCursor],
+      currentCursor: regular.data.nextCursor,
+      cursorHistory: [...prev.cursorHistory, regular.data.nextCursor],
     }));
-  }, [data?.hasMore, data?.nextCursor]);
+  }, [regular.data?.hasMore, regular.data?.nextCursor]);
 
   const handlePrevious = useCallback(() => {
     setCursorState((prev) => {
@@ -150,9 +216,17 @@ function ExplorePageContent() {
     });
   }, []);
 
-  const handleSearch = (searchQuery: string) => {
-    setUrlQuery(searchQuery); // This triggers resetSignal change, which resets cursor
-  };
+  const handleSearch = useCallback(
+    (searchQuery: string) => {
+      setUrlQuery(searchQuery); // This triggers resetSignal change, which resets cursor
+
+      // Clear streaming results if query is cleared
+      if (!searchQuery.trim()) {
+        streaming.clearResults();
+      }
+    },
+    [setUrlQuery, streaming.clearResults],
+  );
 
   const handleFiltersChange = (newFilters: SearchFiltersState) => {
     setUrlFilters(newFilters); // This triggers resetSignal change, which resets cursor
@@ -163,6 +237,15 @@ function ExplorePageContent() {
     setInputQuery(newQuery);
   };
 
+  // Handle retry for streaming errors
+  const handleRetry = useCallback(() => {
+    if (hasTextQuery) {
+      streaming.startStream();
+    } else {
+      regular.manualRefresh?.();
+    }
+  }, [hasTextQuery, streaming.startStream, regular.manualRefresh]);
+
   return (
     <ExploreTemplate
       query={inputQuery}
@@ -171,22 +254,36 @@ function ExplorePageContent() {
       filters={urlFilters}
       onFiltersChange={handleFiltersChange}
       agents={agents}
-      totalCount={data?.total ?? 0}
+      totalCount={totalCount}
       isLoading={isLoading}
-      error={error?.message}
-      // Cursor-based pagination props
-      pageNumber={cursorState.pageNumber}
-      hasMore={data?.hasMore ?? false}
-      onNext={handleNext}
-      onPrevious={handlePrevious}
+      error={displayError}
+      // Cursor-based pagination props (only for regular search)
+      pageNumber={hasTextQuery ? undefined : cursorState.pageNumber}
+      hasMore={hasTextQuery ? false : (regular.data?.hasMore ?? false)}
+      onNext={hasTextQuery ? undefined : handleNext}
+      onPrevious={hasTextQuery ? undefined : handlePrevious}
       pageSize={pageSize}
       onPageSizeChange={setPageSize}
       sortBy={sortBy}
       sortOrder={sortOrder}
       onSortChange={setSort}
-      isRefreshing={isRefreshing}
-      lastUpdated={lastUpdated}
-      onManualRefresh={manualRefresh}
+      isRefreshing={hasTextQuery ? false : regular.isRefreshing}
+      lastUpdated={hasTextQuery ? undefined : regular.lastUpdated}
+      onManualRefresh={handleRetry}
+      // Streaming props
+      isStreaming={hasTextQuery ? streaming.isStreaming : false}
+      streamProgress={
+        hasTextQuery
+          ? {
+              current: streaming.resultCount,
+              expected: streaming.expectedTotal,
+            }
+          : undefined
+      }
+      hydeQuery={hasTextQuery ? streaming.hydeQuery : null}
+      onStopStream={hasTextQuery ? streaming.stopStream : undefined}
+      // Compose team button (shown when we have results)
+      showComposeButton={agents.length > 0}
     />
   );
 }

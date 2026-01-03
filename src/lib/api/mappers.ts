@@ -7,28 +7,60 @@
 
 import type {
   Agent,
+  AgentClassifiedEvent,
+  AgentCreatedEvent,
   AgentDetailResponse,
   AgentFeedback,
   AgentHealthScore,
   AgentOASF,
   AgentReputation,
   AgentSummary,
+  AgentUpdatedEvent,
   AgentValidation,
   AgentWarning,
+  BenchmarkResult,
+  Evaluation,
+  EvaluationCompletedEvent,
+  EvaluationScores,
   HealthCheck,
+  IntentTemplate,
+  RealtimeEvent,
+  ReputationChangedEvent,
   SimilarAgent,
+  StreamError,
+  StreamEvent,
+  StreamMetadata,
+  TeamComposition,
+  TeamMember,
+  WorkflowStep,
 } from '@/types/agent';
 import type {
   BackendAgent,
+  BackendAgentClassifiedEvent,
+  BackendAgentCreatedEvent,
+  BackendAgentUpdatedEvent,
   BackendAgentWarning,
+  BackendBenchmarkResult,
+  BackendEvaluation,
+  BackendEvaluationCompletedEvent,
+  BackendEvaluationScores,
   BackendFeedback,
   BackendHealthCheck,
   BackendHealthScore,
+  BackendIntentTemplate,
   BackendOASFClassification,
+  BackendRealtimeEvent,
   BackendReputation,
+  BackendReputationChangedEvent,
   BackendSearchResult,
   BackendSimilarAgent,
+  BackendStreamError,
+  BackendStreamEvent,
+  BackendStreamMetadata,
+  BackendTeamComposition,
+  BackendTeamMember,
   BackendValidation,
+  BackendWorkflowStep,
 } from '@/types/backend';
 
 /**
@@ -296,4 +328,295 @@ export function mapSimilarAgent(agent: BackendSimilarAgent): SimilarAgent {
  */
 export function mapSimilarAgents(agents: BackendSimilarAgent[]): SimilarAgent[] {
   return agents.map(mapSimilarAgent);
+}
+
+// ============================================================================
+// Streaming Search Mappers
+// ============================================================================
+
+/**
+ * Map backend stream metadata to frontend StreamMetadata
+ */
+export function mapStreamMetadata(metadata: BackendStreamMetadata): StreamMetadata {
+  return {
+    hydeQuery: metadata.hydeQuery,
+    totalExpected: metadata.totalExpected,
+    rerankerModel: metadata.rerankerModel,
+  };
+}
+
+/**
+ * Map backend stream error to frontend StreamError
+ */
+export function mapStreamError(error: BackendStreamError): StreamError {
+  return {
+    code: error.code,
+    message: error.message,
+  };
+}
+
+/**
+ * Map backend stream event to frontend StreamEvent.
+ * Handles discriminated union mapping for type-safe event processing.
+ */
+export function mapStreamEvent(event: BackendStreamEvent): StreamEvent {
+  switch (event.type) {
+    case 'result':
+      return {
+        type: 'result',
+        data: mapSearchResultToSummary(event.data),
+      };
+    case 'metadata':
+      return {
+        type: 'metadata',
+        data: mapStreamMetadata(event.data),
+      };
+    case 'error':
+      return {
+        type: 'error',
+        data: mapStreamError(event.data),
+      };
+    case 'done':
+      return {
+        type: 'done',
+        data: null,
+      };
+  }
+}
+
+// ============================================================================
+// Evaluation Mappers
+// ============================================================================
+
+/**
+ * Map backend benchmark result to frontend BenchmarkResult
+ */
+export function mapBenchmarkResult(result: BackendBenchmarkResult): BenchmarkResult {
+  return {
+    name: result.name,
+    category: result.category,
+    score: result.score,
+    maxScore: result.maxScore,
+    details: result.details,
+  };
+}
+
+/**
+ * Map backend evaluation scores to frontend EvaluationScores
+ */
+export function mapEvaluationScores(scores: BackendEvaluationScores): EvaluationScores {
+  return {
+    safety: scores.safety,
+    capability: scores.capability,
+    reliability: scores.reliability,
+    performance: scores.performance,
+  };
+}
+
+/**
+ * Map backend evaluation to frontend Evaluation.
+ * Converts ISO timestamp strings to Date objects.
+ */
+export function mapEvaluation(evaluation: BackendEvaluation): Evaluation {
+  return {
+    id: evaluation.id,
+    agentId: evaluation.agentId,
+    status: evaluation.status,
+    benchmarks: evaluation.benchmarks.map(mapBenchmarkResult),
+    scores: mapEvaluationScores(evaluation.scores),
+    createdAt: new Date(evaluation.createdAt),
+    completedAt: evaluation.completedAt ? new Date(evaluation.completedAt) : undefined,
+  };
+}
+
+/**
+ * Map backend evaluations array to frontend Evaluation array
+ */
+export function mapEvaluations(evaluations: BackendEvaluation[]): Evaluation[] {
+  return evaluations.map(mapEvaluation);
+}
+
+// ============================================================================
+// Team Composition Mappers
+// ============================================================================
+
+/**
+ * Map backend team member to frontend TeamMember
+ */
+export function mapTeamMember(member: BackendTeamMember): TeamMember {
+  return {
+    agentId: member.agentId,
+    role: member.role,
+    contribution: member.contribution,
+    compatibilityScore: member.compatibilityScore,
+  };
+}
+
+/**
+ * Map backend team composition to frontend TeamComposition.
+ * Converts ISO timestamp string to Date object.
+ */
+export function mapTeamComposition(composition: BackendTeamComposition): TeamComposition {
+  return {
+    id: composition.id,
+    task: composition.task,
+    team: composition.team.map(mapTeamMember),
+    fitnessScore: composition.fitnessScore,
+    reasoning: composition.reasoning,
+    createdAt: new Date(composition.createdAt),
+  };
+}
+
+/**
+ * Map backend team compositions array to frontend TeamComposition array
+ */
+export function mapTeamCompositions(compositions: BackendTeamComposition[]): TeamComposition[] {
+  return compositions.map(mapTeamComposition);
+}
+
+// ============================================================================
+// Intent Template Mappers
+// ============================================================================
+
+/**
+ * Map backend workflow step to frontend WorkflowStep
+ */
+export function mapWorkflowStep(step: BackendWorkflowStep): WorkflowStep {
+  return {
+    order: step.order,
+    name: step.name,
+    description: step.description,
+    requiredRole: step.requiredRole,
+    inputs: step.inputs,
+    outputs: step.outputs,
+  };
+}
+
+/**
+ * Map backend intent template to frontend IntentTemplate
+ */
+export function mapIntentTemplate(template: BackendIntentTemplate): IntentTemplate {
+  return {
+    id: template.id,
+    name: template.name,
+    description: template.description,
+    category: template.category,
+    steps: template.steps.map(mapWorkflowStep),
+    requiredRoles: template.requiredRoles,
+    matchedAgents: template.matchedAgents,
+  };
+}
+
+/**
+ * Map backend intent templates array to frontend IntentTemplate array
+ */
+export function mapIntentTemplates(templates: BackendIntentTemplate[]): IntentTemplate[] {
+  return templates.map(mapIntentTemplate);
+}
+
+// ============================================================================
+// Real-time Event Mappers
+// ============================================================================
+
+/**
+ * Map backend agent created event to frontend AgentCreatedEvent
+ */
+export function mapAgentCreatedEvent(event: BackendAgentCreatedEvent): AgentCreatedEvent {
+  return {
+    agentId: event.agentId,
+    chainId: event.chainId,
+    tokenId: event.tokenId,
+    name: event.name,
+  };
+}
+
+/**
+ * Map backend agent updated event to frontend AgentUpdatedEvent
+ */
+export function mapAgentUpdatedEvent(event: BackendAgentUpdatedEvent): AgentUpdatedEvent {
+  return {
+    agentId: event.agentId,
+    changedFields: event.changedFields,
+  };
+}
+
+/**
+ * Map backend agent classified event to frontend AgentClassifiedEvent
+ */
+export function mapAgentClassifiedEvent(event: BackendAgentClassifiedEvent): AgentClassifiedEvent {
+  return {
+    agentId: event.agentId,
+    skills: event.skills,
+    domains: event.domains,
+    confidence: event.confidence,
+  };
+}
+
+/**
+ * Map backend reputation changed event to frontend ReputationChangedEvent
+ */
+export function mapReputationChangedEvent(
+  event: BackendReputationChangedEvent,
+): ReputationChangedEvent {
+  return {
+    agentId: event.agentId,
+    previousScore: event.previousScore,
+    newScore: event.newScore,
+    feedbackId: event.feedbackId,
+  };
+}
+
+/**
+ * Map backend evaluation completed event to frontend EvaluationCompletedEvent
+ */
+export function mapEvaluationCompletedEvent(
+  event: BackendEvaluationCompletedEvent,
+): EvaluationCompletedEvent {
+  return {
+    evaluationId: event.evaluationId,
+    agentId: event.agentId,
+    overallScore: event.overallScore,
+    status: event.status,
+  };
+}
+
+/**
+ * Map backend realtime event to frontend RealtimeEvent.
+ * Handles discriminated union mapping and converts timestamp to Date.
+ */
+export function mapRealtimeEvent(event: BackendRealtimeEvent): RealtimeEvent {
+  const timestamp = new Date(event.timestamp);
+
+  switch (event.type) {
+    case 'agent.created':
+      return {
+        type: 'agent.created',
+        timestamp,
+        data: mapAgentCreatedEvent(event.data),
+      };
+    case 'agent.updated':
+      return {
+        type: 'agent.updated',
+        timestamp,
+        data: mapAgentUpdatedEvent(event.data),
+      };
+    case 'agent.classified':
+      return {
+        type: 'agent.classified',
+        timestamp,
+        data: mapAgentClassifiedEvent(event.data),
+      };
+    case 'reputation.changed':
+      return {
+        type: 'reputation.changed',
+        timestamp,
+        data: mapReputationChangedEvent(event.data),
+      };
+    case 'evaluation.completed':
+      return {
+        type: 'evaluation.completed',
+        timestamp,
+        data: mapEvaluationCompletedEvent(event.data),
+      };
+  }
 }

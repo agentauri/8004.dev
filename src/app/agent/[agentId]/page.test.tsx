@@ -56,6 +56,50 @@ function createQueryClient() {
   });
 }
 
+/**
+ * Create a mock fetch implementation that handles multiple API endpoints.
+ * Returns appropriate responses for agent detail, similar agents, evaluations, and intents.
+ */
+function createMockFetch(options: {
+  agentResponse?: { success: boolean; data?: unknown; error?: string; code?: string };
+  evaluationsResponse?: { success: boolean; data?: unknown[] };
+  intentsResponse?: { success: boolean; data?: unknown[] };
+  similarAgentsResponse?: { success: boolean; data?: unknown[] };
+}) {
+  const {
+    agentResponse = {
+      success: true,
+      data: { agent: mockAgent, reputation: mockReputation, recentFeedback: [] },
+    },
+    evaluationsResponse = { success: true, data: [] },
+    intentsResponse = { success: true, data: [] },
+    similarAgentsResponse = { success: true, data: [] },
+  } = options;
+
+  return (url: string) => {
+    // Handle different API endpoints
+    if (url.includes('/evaluations')) {
+      return Promise.resolve({
+        json: () => Promise.resolve(evaluationsResponse),
+      });
+    }
+    if (url.includes('/intents')) {
+      return Promise.resolve({
+        json: () => Promise.resolve(intentsResponse),
+      });
+    }
+    if (url.includes('/similar')) {
+      return Promise.resolve({
+        json: () => Promise.resolve(similarAgentsResponse),
+      });
+    }
+    // Default: agent detail endpoint
+    return Promise.resolve({
+      json: () => Promise.resolve(agentResponse),
+    });
+  };
+}
+
 async function renderAgentPage(agentId: string) {
   const paramsPromise = Promise.resolve({ agentId });
   const queryClient = createQueryClient();
@@ -94,17 +138,18 @@ describe('AgentPage', () => {
 
   describe('success state', () => {
     it('displays agent details after loading', async () => {
-      mockFetch.mockResolvedValue({
-        json: () =>
-          Promise.resolve({
+      mockFetch.mockImplementation(
+        createMockFetch({
+          agentResponse: {
             success: true,
             data: {
               agent: mockAgent,
               reputation: mockReputation,
               recentFeedback: [],
             },
-          }),
-      });
+          },
+        }),
+      );
 
       await renderAgentPage('11155111:123');
 
@@ -114,17 +159,18 @@ describe('AgentPage', () => {
     });
 
     it('fetches agent with correct ID', async () => {
-      mockFetch.mockResolvedValue({
-        json: () =>
-          Promise.resolve({
+      mockFetch.mockImplementation(
+        createMockFetch({
+          agentResponse: {
             success: true,
             data: {
               agent: mockAgent,
               reputation: mockReputation,
               recentFeedback: [],
             },
-          }),
-      });
+          },
+        }),
+      );
 
       await renderAgentPage('11155111:123');
 
@@ -134,17 +180,18 @@ describe('AgentPage', () => {
     });
 
     it('displays agent description', async () => {
-      mockFetch.mockResolvedValue({
-        json: () =>
-          Promise.resolve({
+      mockFetch.mockImplementation(
+        createMockFetch({
+          agentResponse: {
             success: true,
             data: {
               agent: mockAgent,
               reputation: mockReputation,
               recentFeedback: [],
             },
-          }),
-      });
+          },
+        }),
+      );
 
       await renderAgentPage('11155111:123');
 
@@ -156,9 +203,11 @@ describe('AgentPage', () => {
 
   describe('error state', () => {
     it('displays error message when fetch fails', async () => {
-      mockFetch.mockResolvedValue({
-        json: () => Promise.resolve({ success: false, error: 'Network error' }),
-      });
+      mockFetch.mockImplementation(
+        createMockFetch({
+          agentResponse: { success: false, error: 'Network error' },
+        }),
+      );
 
       await renderAgentPage('11155111:123');
 
@@ -170,9 +219,11 @@ describe('AgentPage', () => {
 
   describe('not found state', () => {
     it('displays not found when agent is null', async () => {
-      mockFetch.mockResolvedValue({
-        json: () => Promise.resolve({ success: false, code: 'AGENT_NOT_FOUND' }),
-      });
+      mockFetch.mockImplementation(
+        createMockFetch({
+          agentResponse: { success: false, code: 'AGENT_NOT_FOUND' },
+        }),
+      );
 
       await renderAgentPage('11155111:999');
 
@@ -184,17 +235,18 @@ describe('AgentPage', () => {
 
   describe('different agent IDs', () => {
     it('fetches agent with different ID format', async () => {
-      mockFetch.mockResolvedValue({
-        json: () =>
-          Promise.resolve({
+      mockFetch.mockImplementation(
+        createMockFetch({
+          agentResponse: {
             success: true,
             data: {
               agent: { ...mockAgent, id: '84532:456', chainId: 84532 },
               reputation: mockReputation,
               recentFeedback: [],
             },
-          }),
-      });
+          },
+        }),
+      );
 
       await renderAgentPage('84532:456');
 

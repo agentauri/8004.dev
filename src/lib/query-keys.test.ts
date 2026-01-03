@@ -126,9 +126,108 @@ describe('queryKeys', () => {
     });
   });
 
+  describe('evaluations', () => {
+    it('returns evaluations key', () => {
+      expect(queryKeys.evaluations()).toEqual(['evaluations']);
+    });
+  });
+
+  describe('evaluation', () => {
+    it('returns evaluation key with id', () => {
+      expect(queryKeys.evaluation('eval-123')).toEqual(['evaluations', 'eval-123']);
+    });
+  });
+
+  describe('agentEvaluations', () => {
+    it('returns agentEvaluations key with agent ID', () => {
+      expect(queryKeys.agentEvaluations('11155111:1')).toEqual([
+        'evaluations',
+        'agent',
+        '11155111:1',
+      ]);
+    });
+  });
+
+  describe('evaluationsByStatus', () => {
+    it('returns evaluationsByStatus key with pending status', () => {
+      expect(queryKeys.evaluationsByStatus('pending')).toEqual([
+        'evaluations',
+        'status',
+        'pending',
+      ]);
+    });
+
+    it('returns evaluationsByStatus key with completed status', () => {
+      expect(queryKeys.evaluationsByStatus('completed')).toEqual([
+        'evaluations',
+        'status',
+        'completed',
+      ]);
+    });
+  });
+
+  describe('events', () => {
+    it('returns events key', () => {
+      expect(queryKeys.events()).toEqual(['events']);
+    });
+  });
+
+  describe('eventsByType', () => {
+    it('returns eventsByType key with type', () => {
+      expect(queryKeys.eventsByType('agent_registered')).toEqual(['events', 'agent_registered']);
+    });
+  });
+
+  describe('intents', () => {
+    it('returns intents key', () => {
+      expect(queryKeys.intents()).toEqual(['intents']);
+    });
+  });
+
+  describe('intent', () => {
+    it('returns intent key with id', () => {
+      expect(queryKeys.intent('intent-456')).toEqual(['intents', 'intent-456']);
+    });
+  });
+
+  describe('intentsByCategory', () => {
+    it('returns intentsByCategory key with category', () => {
+      expect(queryKeys.intentsByCategory('trading')).toEqual(['intents', 'category', 'trading']);
+    });
+  });
+
+  describe('intentMatches', () => {
+    it('returns intentMatches key with intent id', () => {
+      expect(queryKeys.intentMatches('intent-789')).toEqual(['intents', 'intent-789', 'matches']);
+    });
+  });
+
   describe('stats', () => {
     it('returns stats key', () => {
       expect(queryKeys.stats()).toEqual(['stats']);
+    });
+  });
+
+  describe('teams', () => {
+    it('returns teams key', () => {
+      expect(queryKeys.teams()).toEqual(['teams']);
+    });
+  });
+
+  describe('composition', () => {
+    it('returns composition key with id', () => {
+      expect(queryKeys.composition('team-123')).toEqual(['teams', 'composition', 'team-123']);
+    });
+  });
+
+  describe('composeTask', () => {
+    it('returns composeTask key with serialized task', () => {
+      const result = queryKeys.composeTask('analyze market data');
+      expect(result[0]).toBe('teams');
+      expect(result[1]).toBe('task');
+      expect(typeof result[2]).toBe('string');
+      const parsed = JSON.parse(result[2] as string);
+      expect(parsed.task).toBe('analyze market data');
     });
   });
 

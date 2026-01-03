@@ -1,14 +1,35 @@
-import { render, screen } from '@testing-library/react';
-import { describe, expect, it, vi } from 'vitest';
+import { cleanup, fireEvent, render, screen } from '@testing-library/react';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import type { Evaluation, IntentTemplate } from '@/types/agent';
 import { AgentDetailTemplate } from './agent-detail-template';
 
 // Mock next/link
 vi.mock('next/link', () => ({
-  default: ({ children, href, ...props }: { children: React.ReactNode; href: string }) => (
-    <a href={href} {...props}>
+  default: ({
+    children,
+    href,
+    onClick,
+    ...props
+  }: {
+    children: React.ReactNode;
+    href: string;
+    onClick?: () => void;
+  }) => (
+    <a href={href} onClick={onClick} {...props}>
       {children}
     </a>
   ),
+}));
+
+// Mock next/navigation
+const mockPush = vi.fn();
+vi.mock('next/navigation', () => ({
+  useRouter: () => ({
+    push: mockPush,
+    replace: vi.fn(),
+    prefetch: vi.fn(),
+    back: vi.fn(),
+  }),
 }));
 
 describe('AgentDetailTemplate', () => {
@@ -40,6 +61,83 @@ describe('AgentDetailTemplate', () => {
     averageScore: 85,
     distribution: { low: 5, medium: 25, high: 70 },
   };
+
+  const mockEvaluations: Evaluation[] = [
+    {
+      id: 'eval-1',
+      agentId: '11155111:123',
+      status: 'completed',
+      benchmarks: [],
+      scores: {
+        safety: 92,
+        capability: 85,
+        reliability: 78,
+        performance: 88,
+      },
+      createdAt: new Date('2024-01-10T10:00:00Z'),
+      completedAt: new Date('2024-01-10T11:00:00Z'),
+    },
+    {
+      id: 'eval-2',
+      agentId: '11155111:123',
+      status: 'pending',
+      benchmarks: [],
+      scores: {
+        safety: 0,
+        capability: 0,
+        reliability: 0,
+        performance: 0,
+      },
+      createdAt: new Date('2024-01-15T10:00:00Z'),
+    },
+  ];
+
+  const mockIntents: IntentTemplate[] = [
+    {
+      id: 'code-review',
+      name: 'Code Review Workflow',
+      description: 'Automated code review process',
+      category: 'development',
+      steps: [
+        {
+          order: 1,
+          name: 'analyze',
+          description: 'Analyze code',
+          requiredRole: 'analyzer',
+          inputs: [],
+          outputs: [],
+        },
+      ],
+      requiredRoles: ['analyzer', 'reviewer'],
+    },
+    {
+      id: 'data-pipeline',
+      name: 'Data Pipeline',
+      description: 'Data processing workflow',
+      category: 'automation',
+      steps: [
+        {
+          order: 1,
+          name: 'process',
+          description: 'Process data',
+          requiredRole: 'processor',
+          inputs: [],
+          outputs: [],
+        },
+      ],
+      requiredRoles: ['processor', 'validator'],
+    },
+  ];
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+    // Reset window.location.hash to ensure clean state
+    window.history.replaceState(null, '', window.location.pathname);
+  });
+
+  afterEach(() => {
+    cleanup();
+  });
 
   describe('rendering', () => {
     it('renders template container', () => {
@@ -145,6 +243,331 @@ describe('AgentDetailTemplate', () => {
         />,
       );
       expect(screen.getByTestId('agent-detail-template')).toHaveClass('custom-class');
+    });
+  });
+
+  describe('evaluations tab', () => {
+    it('renders evaluations tab in navigation', () => {
+      render(<AgentDetailTemplate agent={mockAgent} reputation={mockReputation} />);
+      expect(screen.getByRole('tab', { name: /evaluations/i })).toBeInTheDocument();
+    });
+
+    it('shows evaluation count badge when evaluations exist', () => {
+      render(
+        <AgentDetailTemplate
+          agent={mockAgent}
+          reputation={mockReputation}
+          evaluations={mockEvaluations}
+        />,
+      );
+      // Count badge shows only completed evaluations (1 in our mock)
+      const evaluationsTab = screen.getByRole('tab', { name: /evaluations/i });
+      expect(evaluationsTab).toHaveTextContent('1');
+    });
+
+    it('switches to evaluations tab when clicked', () => {
+      render(
+        <AgentDetailTemplate
+          agent={mockAgent}
+          reputation={mockReputation}
+          evaluations={mockEvaluations}
+        />,
+      );
+
+      const evaluationsTab = screen.getByRole('tab', { name: /evaluations/i });
+      fireEvent.click(evaluationsTab);
+
+      expect(screen.getByTestId('evaluations-tab-content')).toBeInTheDocument();
+    });
+
+    it('shows evaluations grid when evaluations exist', () => {
+      render(
+        <AgentDetailTemplate
+          agent={mockAgent}
+          reputation={mockReputation}
+          evaluations={mockEvaluations}
+          initialTab="evaluations"
+        />,
+      );
+
+      expect(screen.getByTestId('evaluations-grid')).toBeInTheDocument();
+      expect(screen.getAllByTestId('evaluation-card').length).toBe(2);
+    });
+
+    it('shows empty state when no evaluations exist', () => {
+      render(
+        <AgentDetailTemplate
+          agent={mockAgent}
+          reputation={mockReputation}
+          evaluations={[]}
+          initialTab="evaluations"
+        />,
+      );
+
+      expect(screen.getByTestId('evaluations-empty-state')).toBeInTheDocument();
+      expect(screen.getByText('No evaluations yet')).toBeInTheDocument();
+    });
+
+    it('shows loading state when evaluations are loading', () => {
+      render(
+        <AgentDetailTemplate
+          agent={mockAgent}
+          reputation={mockReputation}
+          evaluationsLoading={true}
+          initialTab="evaluations"
+        />,
+      );
+
+      expect(screen.getByText('Loading evaluations...')).toBeInTheDocument();
+    });
+
+    it('navigates to create evaluation page when new evaluation button clicked', () => {
+      render(
+        <AgentDetailTemplate
+          agent={mockAgent}
+          reputation={mockReputation}
+          evaluations={mockEvaluations}
+          initialTab="evaluations"
+        />,
+      );
+
+      const newEvalButton = screen.getByTestId('new-evaluation-button');
+      fireEvent.click(newEvalButton);
+
+      expect(mockPush).toHaveBeenCalledWith('/agent/11155111:123/evaluate');
+    });
+
+    it('navigates to create evaluation from empty state', () => {
+      render(
+        <AgentDetailTemplate
+          agent={mockAgent}
+          reputation={mockReputation}
+          evaluations={[]}
+          initialTab="evaluations"
+        />,
+      );
+
+      const createButton = screen.getByTestId('create-first-evaluation-button');
+      fireEvent.click(createButton);
+
+      expect(mockPush).toHaveBeenCalledWith('/agent/11155111:123/evaluate');
+    });
+  });
+
+  describe('evaluation scores in header', () => {
+    it('shows evaluation scores when completed evaluation exists', () => {
+      render(
+        <AgentDetailTemplate
+          agent={mockAgent}
+          reputation={mockReputation}
+          evaluations={mockEvaluations}
+        />,
+      );
+
+      expect(screen.getByTestId('header-evaluation-scores')).toBeInTheDocument();
+      expect(screen.getByText('Latest Evaluation Scores')).toBeInTheDocument();
+    });
+
+    it('does not show evaluation scores when no completed evaluations', () => {
+      const pendingOnlyEvaluations: Evaluation[] = [
+        {
+          id: 'eval-pending',
+          agentId: '11155111:123',
+          status: 'pending',
+          benchmarks: [],
+          scores: { safety: 0, capability: 0, reliability: 0, performance: 0 },
+          createdAt: new Date(),
+        },
+      ];
+
+      render(
+        <AgentDetailTemplate
+          agent={mockAgent}
+          reputation={mockReputation}
+          evaluations={pendingOnlyEvaluations}
+        />,
+      );
+
+      expect(screen.queryByTestId('header-evaluation-scores')).not.toBeInTheDocument();
+    });
+  });
+
+  describe('action buttons', () => {
+    it('renders action buttons', () => {
+      render(<AgentDetailTemplate agent={mockAgent} reputation={mockReputation} />);
+
+      expect(screen.getByTestId('agent-action-buttons')).toBeInTheDocument();
+      expect(screen.getByTestId('view-evaluations-button')).toBeInTheDocument();
+      expect(screen.getByTestId('add-to-team-button')).toBeInTheDocument();
+    });
+
+    it('view evaluations button links to evaluations tab', () => {
+      render(<AgentDetailTemplate agent={mockAgent} reputation={mockReputation} />);
+
+      const viewEvalsButton = screen.getByTestId('view-evaluations-button');
+      expect(viewEvalsButton).toHaveAttribute('href', '/agent/11155111:123#evaluations');
+    });
+
+    it('add to team button links to compose page', () => {
+      render(<AgentDetailTemplate agent={mockAgent} reputation={mockReputation} />);
+
+      const addToTeamButton = screen.getByTestId('add-to-team-button');
+      expect(addToTeamButton).toHaveAttribute('href', '/compose?agents=11155111:123');
+    });
+  });
+
+  describe('matching workflows section', () => {
+    it('shows matching workflows when intents exist', () => {
+      render(
+        <AgentDetailTemplate
+          agent={mockAgent}
+          reputation={mockReputation}
+          matchingIntents={mockIntents}
+          initialTab="overview"
+        />,
+      );
+
+      expect(screen.getByTestId('matching-workflows-section')).toBeInTheDocument();
+      expect(screen.getByText('Matching Workflows')).toBeInTheDocument();
+      expect(
+        screen.getByText('Intent templates this agent can participate in'),
+      ).toBeInTheDocument();
+    });
+
+    it('renders intent cards for matching workflows', () => {
+      render(
+        <AgentDetailTemplate
+          agent={mockAgent}
+          reputation={mockReputation}
+          matchingIntents={mockIntents}
+          initialTab="overview"
+        />,
+      );
+
+      expect(screen.getAllByTestId('intent-card').length).toBe(2);
+      expect(screen.getByText('Code Review Workflow')).toBeInTheDocument();
+      expect(screen.getByText('Data Pipeline')).toBeInTheDocument();
+    });
+
+    it('navigates to intent page when intent card clicked', () => {
+      render(
+        <AgentDetailTemplate
+          agent={mockAgent}
+          reputation={mockReputation}
+          matchingIntents={mockIntents}
+          initialTab="overview"
+        />,
+      );
+
+      const intentCards = screen.getAllByTestId('intent-card');
+      fireEvent.click(intentCards[0]);
+
+      expect(mockPush).toHaveBeenCalledWith('/intents/code-review?agent=11155111:123');
+    });
+
+    it('shows view all link when more than 4 intents', () => {
+      const manyIntents: IntentTemplate[] = Array.from({ length: 6 }, (_, i) => ({
+        id: `intent-${i}`,
+        name: `Intent ${i}`,
+        description: `Description ${i}`,
+        category: 'automation',
+        steps: [],
+        requiredRoles: ['role1'],
+      }));
+
+      render(
+        <AgentDetailTemplate
+          agent={mockAgent}
+          reputation={mockReputation}
+          matchingIntents={manyIntents}
+          initialTab="overview"
+        />,
+      );
+
+      expect(screen.getByTestId('view-all-workflows-link')).toBeInTheDocument();
+      expect(screen.getByText('View all 6 matching workflows')).toBeInTheDocument();
+    });
+
+    it('only shows 4 intent cards when more exist', () => {
+      const manyIntents: IntentTemplate[] = Array.from({ length: 6 }, (_, i) => ({
+        id: `intent-${i}`,
+        name: `Intent ${i}`,
+        description: `Description ${i}`,
+        category: 'automation',
+        steps: [],
+        requiredRoles: ['role1'],
+      }));
+
+      render(
+        <AgentDetailTemplate
+          agent={mockAgent}
+          reputation={mockReputation}
+          matchingIntents={manyIntents}
+          initialTab="overview"
+        />,
+      );
+
+      expect(screen.getAllByTestId('intent-card').length).toBe(4);
+    });
+
+    it('does not show matching workflows when no intents', () => {
+      render(
+        <AgentDetailTemplate
+          agent={mockAgent}
+          reputation={mockReputation}
+          matchingIntents={[]}
+          initialTab="overview"
+        />,
+      );
+
+      expect(screen.queryByTestId('matching-workflows-section')).not.toBeInTheDocument();
+    });
+
+    it('does not show matching workflows while loading', () => {
+      render(
+        <AgentDetailTemplate
+          agent={mockAgent}
+          reputation={mockReputation}
+          matchingIntents={mockIntents}
+          intentsLoading={true}
+          initialTab="overview"
+        />,
+      );
+
+      expect(screen.queryByTestId('matching-workflows-section')).not.toBeInTheDocument();
+    });
+  });
+
+  describe('tab navigation', () => {
+    it('shows all tabs including evaluations', () => {
+      render(<AgentDetailTemplate agent={mockAgent} reputation={mockReputation} />);
+
+      expect(screen.getByRole('tab', { name: /overview/i })).toBeInTheDocument();
+      expect(screen.getByRole('tab', { name: /evaluations/i })).toBeInTheDocument();
+      expect(screen.getByRole('tab', { name: /statistics/i })).toBeInTheDocument();
+      expect(screen.getByRole('tab', { name: /feedbacks/i })).toBeInTheDocument();
+      expect(screen.getByRole('tab', { name: /validations/i })).toBeInTheDocument();
+      expect(screen.getByRole('tab', { name: /metadata/i })).toBeInTheDocument();
+    });
+
+    it('starts on overview tab by default', () => {
+      render(
+        <AgentDetailTemplate agent={mockAgent} reputation={mockReputation} initialTab="overview" />,
+      );
+
+      expect(screen.getByTestId('tabpanel-overview')).toBeInTheDocument();
+    });
+
+    it('can set initial tab to evaluations', () => {
+      render(
+        <AgentDetailTemplate
+          agent={mockAgent}
+          reputation={mockReputation}
+          initialTab="evaluations"
+        />,
+      );
+
+      expect(screen.getByTestId('tabpanel-evaluations')).toBeInTheDocument();
     });
   });
 });

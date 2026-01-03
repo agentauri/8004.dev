@@ -1,11 +1,13 @@
 'use client';
 
 import dynamic from 'next/dynamic';
+import Link from 'next/link';
 import type React from 'react';
 import type { SortField, SortOrder } from '@/components/molecules';
 import { Header, SearchBar, type SearchFiltersState } from '@/components/organisms';
 import type { AgentCardAgent } from '@/components/organisms/agent-card';
 import { MobileFilterSheet } from '@/components/organisms/mobile-filter-sheet';
+import type { StreamProgress } from '@/components/organisms/search-results';
 import { cn } from '@/lib/utils';
 import { FiltersSkeleton } from './filters-skeleton';
 import { ResultsSkeleton } from './results-skeleton';
@@ -91,6 +93,17 @@ export interface ExploreTemplateProps {
   onManualRefresh?: () => void;
   /** Optional additional class names */
   className?: string;
+  // Streaming support props
+  /** Whether results are being streamed */
+  isStreaming?: boolean;
+  /** Progress of the streaming operation */
+  streamProgress?: StreamProgress;
+  /** HyDE (Hypothetical Document Embeddings) expanded query */
+  hydeQuery?: string | null;
+  /** Callback to stop the streaming operation */
+  onStopStream?: () => void;
+  /** Whether to show the compose team button */
+  showComposeButton?: boolean;
 }
 
 /**
@@ -137,6 +150,12 @@ export function ExploreTemplate({
   lastUpdated,
   onManualRefresh,
   className,
+  // Streaming props
+  isStreaming,
+  streamProgress,
+  hydeQuery,
+  onStopStream,
+  showComposeButton = false,
 }: ExploreTemplateProps): React.JSX.Element {
   return (
     <div className={cn('flex flex-col h-screen', className)} data-testid="explore-template">
@@ -151,7 +170,7 @@ export function ExploreTemplate({
             filters={filters}
             onFiltersChange={onFiltersChange}
             counts={filterCounts}
-            disabled={isLoading}
+            disabled={isLoading || isStreaming}
           />
         </aside>
 
@@ -167,7 +186,7 @@ export function ExploreTemplate({
                 filters={filters}
                 onFiltersChange={onFiltersChange}
                 counts={filterCounts}
-                disabled={isLoading}
+                disabled={isLoading || isStreaming}
               />
             </div>
 
@@ -176,7 +195,7 @@ export function ExploreTemplate({
                 query={query}
                 onQueryChange={onQueryChange}
                 onSubmit={onSearch}
-                isLoading={isLoading}
+                isLoading={isLoading || isStreaming}
                 autoFocus
               />
             </div>
@@ -202,7 +221,28 @@ export function ExploreTemplate({
               isRefreshing={isRefreshing}
               lastUpdated={lastUpdated}
               onManualRefresh={onManualRefresh}
+              // Streaming props
+              isStreaming={isStreaming}
+              streamProgress={streamProgress}
+              hydeQuery={hydeQuery}
+              onStopStream={onStopStream}
             />
+
+            {/* Compose Team Button */}
+            {showComposeButton && agents && agents.length > 0 && !isLoading && !isStreaming && (
+              <div className="mt-6 flex justify-center" data-testid="compose-team-section">
+                <Link
+                  href={`/compose?agents=${agents
+                    .slice(0, 5)
+                    .map((a) => a.id)
+                    .join(',')}`}
+                  className="px-6 py-3 text-sm font-[family-name:var(--font-pixel-body)] uppercase tracking-wider bg-[var(--pixel-gray-800)] text-[var(--pixel-gold-coin)] border-2 border-[var(--pixel-gold-coin)] hover:bg-[var(--pixel-gold-coin)] hover:text-[var(--pixel-black)] transition-colors"
+                  data-testid="compose-team-button"
+                >
+                  Compose Team from Results
+                </Link>
+              </div>
+            )}
           </div>
         </main>
       </div>

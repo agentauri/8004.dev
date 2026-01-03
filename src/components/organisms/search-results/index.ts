@@ -1,2 +1,2 @@
-export type { SearchResultsProps } from './search-results';
+export type { SearchResultsProps, StreamProgress } from './search-results';
 export { SearchResults } from './search-results';

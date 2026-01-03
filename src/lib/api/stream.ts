@@ -1,0 +1,489 @@
+/**
+ * Server-Sent Events (SSE) Client Utilities
+ *
+ * Provides a reusable SSE client for streaming search and real-time events.
+ * Uses native EventSource API with auto-reconnect and exponential backoff.
+ *
+ * IMPORTANT: This module is for client-side use only.
+ * Use in React components or client-side hooks.
+ */
+
+import type { AgentSummary } from '@/types';
+
+// ============================================================================
+// Types
+// ============================================================================
+
+/**
+ * SSE connection state
+ */
+export type SSEConnectionState = 'connecting' | 'open' | 'closed' | 'error';
+
+/**
+ * Options for creating an SSE client
+ */
+export interface SSEClientOptions<T> {
+  /** Callback when a message is received */
+  onMessage: (data: T) => void;
+  /** Callback when an error occurs */
+  onError?: (error: Error) => void;
+  /** Callback when the stream completes */
+  onComplete?: () => void;
+  /** Callback when reconnection is attempted */
+  onReconnect?: (attempt: number) => void;
+  /** Maximum number of reconnection attempts (default: 3) */
+  maxRetries?: number;
+  /** Base delay between retries in ms (default: 1000) */
+  retryDelay?: number;
+  /** Custom event types to listen for (default: ['message']) */
+  eventTypes?: string[];
+}
+
+/**
+ * SSE client instance
+ */
+export interface SSEClient {
+  /** Close the SSE connection */
+  close: () => void;
+  /** Get the current connection state */
+  getState: () => SSEConnectionState;
+}
+
+/**
+ * Metadata sent with streaming search
+ */
+export interface StreamMetadata {
+  /** Total count of results (if available) */
+  total?: number;
+  /** Whether there are more results */
+  hasMore?: boolean;
+  /** Cursor for pagination */
+  nextCursor?: string;
+  /** Query that was executed */
+  query?: string;
+  /** Time taken in ms */
+  duration?: number;
+}
+
+/**
+ * Error from streaming search
+ */
+export interface StreamError {
+  /** Error code */
+  code: string;
+  /** Human-readable message */
+  message: string;
+  /** HTTP status (if applicable) */
+  status?: number;
+}
+
+/**
+ * Options for streaming search
+ */
+export interface StreamSearchOptions {
+  /** Search query string */
+  query: string;
+  /** Optional filters */
+  filters?: Record<string, unknown>;
+  /** Callback for each search result */
+  onResult: (result: AgentSummary) => void;
+  /** Callback for stream metadata */
+  onMetadata?: (metadata: StreamMetadata) => void;
+  /** Callback for errors */
+  onError?: (error: StreamError) => void;
+  /** Callback when search completes */
+  onComplete?: () => void;
+}
+
+/**
+ * Real-time event from the platform
+ */
+export interface RealtimeEvent {
+  /** Event type identifier */
+  type: string;
+  /** Event payload */
+  payload: unknown;
+  /** Timestamp of the event */
+  timestamp: string;
+  /** Source chain ID (if applicable) */
+  chainId?: number;
+}
+
+/**
+ * Options for real-time event stream
+ */
+export interface EventStreamOptions {
+  /** Callback for each event */
+  onEvent: (event: RealtimeEvent) => void;
+  /** Callback for errors */
+  onError?: (error: Error) => void;
+  /** Filter to specific event types (empty = all events) */
+  eventTypes?: string[];
+}
+
+// ============================================================================
+// Utilities
+// ============================================================================
+
+/**
+ * Check if Server-Sent Events are supported in the current environment
+ *
+ * @returns true if SSE is supported, false otherwise
+ *
+ * @example
+ * ```typescript
+ * if (!isSSESupported()) {
+ *   console.warn('SSE not supported, falling back to polling');
+ * }
+ * ```
+ */
+export function isSSESupported(): boolean {
+  return typeof EventSource !== 'undefined';
+}
+
+/**
+ * Calculate exponential backoff delay
+ *
+ * @param attempt - The current retry attempt (0-based)
+ * @param baseDelay - Base delay in milliseconds
+ * @returns Delay in milliseconds with jitter
+ */
+function calculateBackoff(attempt: number, baseDelay: number): number {
+  // Exponential backoff: delay * 2^attempt
+  const exponentialDelay = baseDelay * 2 ** attempt;
+  // Add jitter (0-25% of delay) to prevent thundering herd
+  const jitter = exponentialDelay * Math.random() * 0.25;
+  // Cap at 30 seconds
+  return Math.min(exponentialDelay + jitter, 30000);
+}
+
+/**
+ * Safely parse JSON, returning null on failure
+ *
+ * @param text - JSON string to parse
+ * @returns Parsed object or null
+ */
+function safeJsonParse<T>(text: string): T | null {
+  try {
+    return JSON.parse(text) as T;
+  } catch {
+    return null;
+  }
+}
+
+// ============================================================================
+// Core SSE Client
+// ============================================================================
+
+/**
+ * Create a generic SSE client with auto-reconnect and exponential backoff
+ *
+ * @param url - The SSE endpoint URL
+ * @param options - Client configuration options
+ * @returns SSEClient instance with close() and getState() methods
+ *
+ * @example
+ * ```typescript
+ * const client = createSSEClient<SearchResult>('/api/stream/search', {
+ *   onMessage: (result) => console.log('Got result:', result),
+ *   onError: (error) => console.error('Error:', error),
+ *   onComplete: () => console.log('Stream complete'),
+ *   maxRetries: 3,
+ *   retryDelay: 1000,
+ * });
+ *
+ * // Later: clean up
+ * client.close();
+ * ```
+ */
+export function createSSEClient<T>(url: string, options: SSEClientOptions<T>): SSEClient {
+  const {
+    onMessage,
+    onError,
+    onComplete,
+    onReconnect,
+    maxRetries = 3,
+    retryDelay = 1000,
+    eventTypes = ['message'],
+  } = options;
+
+  // Check for SSE support
+  if (!isSSESupported()) {
+    const error = new Error('Server-Sent Events are not supported in this environment');
+    onError?.(error);
+    return {
+      close: () => {},
+      getState: () => 'error',
+    };
+  }
+
+  let state: SSEConnectionState = 'connecting';
+  let eventSource: EventSource | null = null;
+  let retryCount = 0;
+  let retryTimeout: ReturnType<typeof setTimeout> | null = null;
+  let isClosed = false;
+
+  /**
+   * Handle incoming message event
+   */
+  const handleMessage = (event: MessageEvent): void => {
+    // Check for completion signal
+    if (event.data === '[DONE]' || event.data === '') {
+      onComplete?.();
+      return;
+    }
+
+    // Parse JSON data
+    const data = safeJsonParse<T>(event.data);
+    if (data === null) {
+      onError?.(new Error(`Failed to parse SSE message: ${event.data}`));
+      return;
+    }
+
+    onMessage(data);
+  };
+
+  /**
+   * Handle connection open
+   */
+  const handleOpen = (): void => {
+    state = 'open';
+    retryCount = 0; // Reset retry count on successful connection
+  };
+
+  /**
+   * Handle connection error and reconnection
+   */
+  const handleError = (): void => {
+    if (isClosed) return;
+
+    state = 'error';
+
+    // Clean up current connection
+    if (eventSource) {
+      eventSource.close();
+      eventSource = null;
+    }
+
+    // Attempt reconnection
+    if (retryCount < maxRetries) {
+      retryCount++;
+      const delay = calculateBackoff(retryCount - 1, retryDelay);
+
+      onReconnect?.(retryCount);
+
+      retryTimeout = setTimeout(() => {
+        if (!isClosed) {
+          connect();
+        }
+      }, delay);
+    } else {
+      onError?.(new Error(`SSE connection failed after ${maxRetries} retries`));
+      state = 'closed';
+      onComplete?.();
+    }
+  };
+
+  /**
+   * Establish SSE connection
+   */
+  const connect = (): void => {
+    if (isClosed) return;
+
+    state = 'connecting';
+    eventSource = new EventSource(url);
+
+    // Set up event listeners
+    eventSource.onopen = handleOpen;
+    eventSource.onerror = handleError;
+
+    // Listen to specified event types
+    for (const eventType of eventTypes) {
+      eventSource.addEventListener(eventType, handleMessage);
+    }
+  };
+
+  /**
+   * Close the SSE connection and clean up
+   */
+  const close = (): void => {
+    isClosed = true;
+    state = 'closed';
+
+    // Clear any pending retry
+    if (retryTimeout) {
+      clearTimeout(retryTimeout);
+      retryTimeout = null;
+    }
+
+    // Close EventSource
+    if (eventSource) {
+      // Remove event listeners
+      for (const eventType of eventTypes) {
+        eventSource.removeEventListener(eventType, handleMessage);
+      }
+      eventSource.close();
+      eventSource = null;
+    }
+  };
+
+  /**
+   * Get current connection state
+   */
+  const getState = (): SSEConnectionState => state;
+
+  // Start connection
+  connect();
+
+  return {
+    close,
+    getState,
+  };
+}
+
+// ============================================================================
+// Specialized Helpers
+// ============================================================================
+
+/**
+ * Create a streaming search client for agent discovery
+ *
+ * Connects to the streaming search endpoint and emits results as they arrive.
+ * Handles metadata events and completion signals automatically.
+ *
+ * @param options - Streaming search configuration
+ * @returns SSEClient instance
+ *
+ * @example
+ * ```typescript
+ * const results: AgentSummary[] = [];
+ *
+ * const search = createStreamingSearch({
+ *   query: 'AI assistant for code review',
+ *   filters: { chains: [11155111], mcp: true },
+ *   onResult: (agent) => {
+ *     results.push(agent);
+ *     updateUI(results);
+ *   },
+ *   onMetadata: (meta) => {
+ *     console.log(`Found ${meta.total} total results`);
+ *   },
+ *   onComplete: () => {
+ *     console.log('Search complete');
+ *   },
+ * });
+ *
+ * // Cancel if needed
+ * search.close();
+ * ```
+ */
+export function createStreamingSearch(options: StreamSearchOptions): SSEClient {
+  const { query, filters, onResult, onMetadata, onError, onComplete } = options;
+
+  // Build URL with query parameters
+  const url = new URL('/api/search/stream', window.location.origin);
+  url.searchParams.set('q', query);
+
+  if (filters) {
+    url.searchParams.set('filters', JSON.stringify(filters));
+  }
+
+  return createSSEClient<StreamSearchMessage>(url.toString(), {
+    onMessage: (message) => {
+      // Route message to appropriate handler based on type
+      switch (message.type) {
+        case 'result':
+          if (message.data) {
+            onResult(message.data as AgentSummary);
+          }
+          break;
+        case 'metadata':
+          if (message.metadata && onMetadata) {
+            onMetadata(message.metadata);
+          }
+          break;
+        case 'error':
+          if (message.error && onError) {
+            onError(message.error);
+          }
+          break;
+        case 'complete':
+          onComplete?.();
+          break;
+      }
+    },
+    onError: (error) => {
+      onError?.({
+        code: 'SSE_ERROR',
+        message: error.message,
+      });
+    },
+    onComplete,
+    eventTypes: ['message', 'result', 'metadata', 'error', 'complete'],
+  });
+}
+
+/**
+ * Internal message type for streaming search
+ */
+interface StreamSearchMessage {
+  type: 'result' | 'metadata' | 'error' | 'complete';
+  data?: AgentSummary;
+  metadata?: StreamMetadata;
+  error?: StreamError;
+}
+
+/**
+ * Create a real-time event stream for platform updates
+ *
+ * Connects to the real-time event endpoint and filters events by type.
+ * Useful for live updates like new agent registrations or feedback.
+ *
+ * @param options - Event stream configuration
+ * @returns SSEClient instance
+ *
+ * @example
+ * ```typescript
+ * const stream = createEventStream({
+ *   eventTypes: ['agent.registered', 'feedback.submitted'],
+ *   onEvent: (event) => {
+ *     switch (event.type) {
+ *       case 'agent.registered':
+ *         showNotification('New agent registered!');
+ *         break;
+ *       case 'feedback.submitted':
+ *         refreshFeedbackList();
+ *         break;
+ *     }
+ *   },
+ *   onError: (error) => {
+ *     console.error('Event stream error:', error);
+ *   },
+ * });
+ *
+ * // Disconnect when done
+ * stream.close();
+ * ```
+ */
+export function createEventStream(options: EventStreamOptions): SSEClient {
+  const { onEvent, onError, eventTypes = [] } = options;
+
+  // Build URL with event type filter
+  const url = new URL('/api/events', window.location.origin);
+
+  if (eventTypes.length > 0) {
+    url.searchParams.set('types', eventTypes.join(','));
+  }
+
+  return createSSEClient<RealtimeEvent>(url.toString(), {
+    onMessage: (event) => {
+      // If eventTypes filter is specified, only emit matching events
+      if (eventTypes.length === 0 || eventTypes.includes(event.type)) {
+        onEvent(event);
+      }
+    },
+    onError,
+    // Use custom event types if specified, otherwise just 'message'
+    eventTypes: eventTypes.length > 0 ? eventTypes : ['message'],
+  });
+}

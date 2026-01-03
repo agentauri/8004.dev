@@ -2,10 +2,50 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import type { ReactNode } from 'react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import type { StreamingSearchResult } from '@/hooks';
+import { RealtimeEventsProvider } from '@/providers/realtime-events-provider';
 import ExplorePage from './page';
 
 // Mock fetch
 const mockFetch = vi.fn();
+
+// Mock EventSource for RealtimeEventsProvider
+const mockEventSource = {
+  addEventListener: vi.fn(),
+  removeEventListener: vi.fn(),
+  close: vi.fn(),
+  readyState: 1,
+};
+
+vi.stubGlobal(
+  'EventSource',
+  vi.fn(() => mockEventSource),
+);
+
+// Mock streaming search hook
+const mockStartStream = vi.fn();
+const mockStopStream = vi.fn();
+const mockClearResults = vi.fn();
+
+const defaultStreamingState: StreamingSearchResult = {
+  results: [],
+  metadata: null,
+  hydeQuery: null,
+  streamState: 'idle',
+  isStreaming: false,
+  error: null,
+  startStream: mockStartStream,
+  stopStream: mockStopStream,
+  clearResults: mockClearResults,
+  resultCount: 0,
+  expectedTotal: null,
+};
+
+let mockStreamingState = { ...defaultStreamingState };
+
+vi.mock('@/hooks/use-streaming-search', () => ({
+  useStreamingSearch: () => mockStreamingState,
+}));
 
 // Mock MobileFilterSheet to avoid duplicate filter elements in tests
 vi.mock('@/components/organisms/mobile-filter-sheet', () => ({
@@ -79,14 +119,22 @@ function createQueryClient() {
 
 function renderWithProviders(ui: ReactNode) {
   const queryClient = createQueryClient();
-  return render(<QueryClientProvider client={queryClient}>{ui}</QueryClientProvider>);
+  return render(
+    <QueryClientProvider client={queryClient}>
+      <RealtimeEventsProvider enabled={false}>{ui}</RealtimeEventsProvider>
+    </QueryClientProvider>,
+  );
 }
 
 describe('ExplorePage', () => {
   beforeEach(() => {
     mockFetch.mockReset();
     mockRouterPush.mockReset();
+    mockStartStream.mockReset();
+    mockStopStream.mockReset();
+    mockClearResults.mockReset();
     mockSearchParams = new URLSearchParams();
+    mockStreamingState = { ...defaultStreamingState };
     global.fetch = mockFetch;
     mockFetch.mockResolvedValue({
       json: () =>
@@ -274,31 +322,39 @@ describe('ExplorePage', () => {
     });
   });
 
-  describe('URL query parameter', () => {
-    it('initializes with query from URL using POST /api/search with default active filter', async () => {
+  describe('URL query parameter with streaming', () => {
+    it('displays streaming results when query is in URL', async () => {
       mockSearchParams = new URLSearchParams('q=trading');
+
+      // Set up streaming state with results already loaded
+      mockStreamingState = {
+        ...defaultStreamingState,
+        results: mockAgents,
+        streamState: 'complete',
+        resultCount: 2,
+        expectedTotal: 2,
+      };
 
       renderWithProviders(<ExplorePage />);
 
+      // Check that agents from streaming results are displayed
       await waitFor(() => {
-        // When query is present, uses POST /api/search (semantic search)
-        // Default behavior includes active: true filter
-        expect(mockFetch).toHaveBeenCalledWith('/api/search', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ query: 'trading', limit: 20, filters: { active: true } }),
-        });
+        expect(screen.getByText('Test Agent 1')).toBeInTheDocument();
+        expect(screen.getByText('Test Agent 2')).toBeInTheDocument();
       });
     });
 
     it('populates search input with URL query', async () => {
       mockSearchParams = new URLSearchParams('q=my+agent');
 
-      renderWithProviders(<ExplorePage />);
+      // Set up streaming state
+      mockStreamingState = {
+        ...defaultStreamingState,
+        streamState: 'complete',
+        results: [],
+      };
 
-      await waitFor(() => {
-        expect(mockFetch).toHaveBeenCalled();
-      });
+      renderWithProviders(<ExplorePage />);
 
       const searchInput = screen.getByTestId('search-input-field');
       expect(searchInput).toHaveValue('my agent');
@@ -337,6 +393,140 @@ describe('ExplorePage', () => {
         // Params are serialized in a specific order by toSearchParams
         expect(mockFetch).toHaveBeenCalledWith('/api/agents?mcp=true&active=true&limit=20');
       });
+    });
+  });
+
+  describe('streaming search behavior', () => {
+    it('shows streaming indicator when streaming', async () => {
+      mockSearchParams = new URLSearchParams('q=trading');
+
+      mockStreamingState = {
+        ...defaultStreamingState,
+        results: [mockAgents[0]],
+        streamState: 'streaming',
+        isStreaming: true,
+        resultCount: 1,
+        expectedTotal: 2,
+      };
+
+      renderWithProviders(<ExplorePage />);
+
+      await waitFor(() => {
+        expect(screen.getByTestId('streaming-indicator')).toBeInTheDocument();
+      });
+    });
+
+    it('displays streaming progress', async () => {
+      mockSearchParams = new URLSearchParams('q=trading');
+
+      mockStreamingState = {
+        ...defaultStreamingState,
+        results: [mockAgents[0]],
+        streamState: 'streaming',
+        isStreaming: true,
+        resultCount: 1,
+        expectedTotal: 2,
+      };
+
+      renderWithProviders(<ExplorePage />);
+
+      await waitFor(() => {
+        expect(screen.getByTestId('streaming-progress')).toBeInTheDocument();
+        expect(screen.getByText('1/2')).toBeInTheDocument();
+      });
+    });
+
+    it('allows stopping the stream', async () => {
+      mockSearchParams = new URLSearchParams('q=trading');
+
+      mockStreamingState = {
+        ...defaultStreamingState,
+        results: [mockAgents[0]],
+        streamState: 'streaming',
+        isStreaming: true,
+        resultCount: 1,
+        expectedTotal: 2,
+      };
+
+      renderWithProviders(<ExplorePage />);
+
+      await waitFor(() => {
+        const stopButton = screen.getByTestId('streaming-stop-button');
+        fireEvent.click(stopButton);
+        expect(mockStopStream).toHaveBeenCalled();
+      });
+    });
+
+    it('shows HyDE query when available', async () => {
+      mockSearchParams = new URLSearchParams('q=trading');
+
+      mockStreamingState = {
+        ...defaultStreamingState,
+        results: mockAgents,
+        streamState: 'complete',
+        hydeQuery: 'Find trading bots and financial analysis agents',
+        resultCount: 2,
+        expectedTotal: 2,
+      };
+
+      renderWithProviders(<ExplorePage />);
+
+      await waitFor(() => {
+        expect(screen.getByTestId('hyde-query-display')).toBeInTheDocument();
+      });
+    });
+
+    it('clears results when query is cleared', async () => {
+      mockSearchParams = new URLSearchParams('q=trading');
+
+      mockStreamingState = {
+        ...defaultStreamingState,
+        results: mockAgents,
+        streamState: 'complete',
+        resultCount: 2,
+      };
+
+      renderWithProviders(<ExplorePage />);
+
+      const searchInput = screen.getByTestId('search-input-field');
+      fireEvent.change(searchInput, { target: { value: '' } });
+      fireEvent.keyDown(searchInput, { key: 'Enter' });
+
+      await waitFor(() => {
+        expect(mockClearResults).toHaveBeenCalled();
+      });
+    });
+
+    it('falls back to regular search when no text query', async () => {
+      mockSearchParams = new URLSearchParams('mcp=true');
+
+      renderWithProviders(<ExplorePage />);
+
+      await waitFor(() => {
+        // Should use regular GET /api/agents instead of streaming
+        expect(mockFetch).toHaveBeenCalledWith('/api/agents?mcp=true&active=true&limit=20');
+      });
+    });
+
+    it('does not show compose team button when streaming', async () => {
+      mockSearchParams = new URLSearchParams('q=trading');
+
+      mockStreamingState = {
+        ...defaultStreamingState,
+        results: mockAgents,
+        streamState: 'streaming',
+        isStreaming: true,
+        resultCount: 2,
+      };
+
+      renderWithProviders(<ExplorePage />);
+
+      await waitFor(() => {
+        expect(screen.getByTestId('streaming-indicator')).toBeInTheDocument();
+      });
+
+      // Compose button should not be visible during streaming
+      expect(screen.queryByTestId('compose-team-button')).not.toBeInTheDocument();
     });
   });
 });

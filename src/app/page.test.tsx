@@ -15,10 +15,20 @@ vi.mock('next/navigation', () => ({
   }),
 }));
 
-// Mock next/link
+// Mock next/link - preserve all props including data-testid
 vi.mock('next/link', () => ({
-  default: ({ children, href }: { children: React.ReactNode; href: string }) => (
-    <a href={href}>{children}</a>
+  default: ({
+    children,
+    href,
+    ...props
+  }: {
+    children: React.ReactNode;
+    href: string;
+    [key: string]: unknown;
+  }) => (
+    <a href={href} {...props}>
+      {children}
+    </a>
   ),
 }));
 
@@ -52,13 +62,94 @@ const mockStatsResponse = {
   },
 };
 
+const mockIntentsResponse = {
+  success: true,
+  data: [
+    {
+      id: 'code-review',
+      name: 'Code Review Workflow',
+      description: 'Automated code review pipeline',
+      category: 'development',
+      steps: [
+        {
+          order: 1,
+          name: 'Analyze',
+          description: 'Analyze code',
+          requiredRole: 'analyzer',
+          inputs: [],
+          outputs: [],
+        },
+      ],
+      requiredRoles: ['analyzer', 'reviewer'],
+    },
+    {
+      id: 'data-pipeline',
+      name: 'Data Pipeline',
+      description: 'ETL processing workflow',
+      category: 'automation',
+      steps: [
+        {
+          order: 1,
+          name: 'Extract',
+          description: 'Extract data',
+          requiredRole: 'extractor',
+          inputs: [],
+          outputs: [],
+        },
+      ],
+      requiredRoles: ['extractor', 'loader'],
+    },
+  ],
+};
+
+const mockEvaluationsResponse = {
+  success: true,
+  data: [
+    {
+      id: 'eval-1',
+      agentId: '11155111:123',
+      status: 'completed',
+      scores: { safety: 95, capability: 80, reliability: 85, performance: 70 },
+      benchmarks: [],
+      createdAt: new Date('2024-01-01'),
+      completedAt: new Date('2024-01-01'),
+    },
+    {
+      id: 'eval-2',
+      agentId: '11155111:456',
+      status: 'completed',
+      scores: { safety: 88, capability: 92, reliability: 78, performance: 85 },
+      benchmarks: [],
+      createdAt: new Date('2024-01-02'),
+      completedAt: new Date('2024-01-02'),
+    },
+  ],
+};
+
 describe('HomePage', () => {
   beforeEach(() => {
     mockPush.mockReset();
     mockFetch.mockReset();
     global.fetch = mockFetch;
-    mockFetch.mockResolvedValue({
-      json: () => Promise.resolve(mockStatsResponse),
+    mockFetch.mockImplementation((url: string) => {
+      if (url === '/api/stats') {
+        return Promise.resolve({
+          json: () => Promise.resolve(mockStatsResponse),
+        });
+      }
+      if (url.includes('/api/intents')) {
+        return Promise.resolve({
+          json: () => Promise.resolve(mockIntentsResponse),
+        });
+      }
+      if (url.includes('/api/evaluations')) {
+        return Promise.resolve({
+          json: () => Promise.resolve(mockEvaluationsResponse),
+        });
+      }
+      return Promise.resolve({
+        json: () => Promise.resolve({ success: false, error: 'Not found' }),
+      });
     });
   });
 
@@ -118,6 +209,226 @@ describe('HomePage', () => {
       renderWithProviders(<HomePage />);
       const link = screen.getByRole('link', { name: 'ERC-8004' });
       expect(link).toHaveAttribute('href', 'https://eips.ethereum.org/EIPS/eip-8004');
+    });
+  });
+
+  describe('feature highlights section', () => {
+    it('renders the features section', () => {
+      renderWithProviders(<HomePage />);
+      expect(screen.getByTestId('features-section')).toBeInTheDocument();
+    });
+
+    it('renders the Streaming Search feature card', () => {
+      renderWithProviders(<HomePage />);
+      expect(screen.getByText('Streaming Search')).toBeInTheDocument();
+      expect(screen.getByText("Real-time results as they're found")).toBeInTheDocument();
+    });
+
+    it('renders the Compose Teams feature card', () => {
+      renderWithProviders(<HomePage />);
+      expect(screen.getByText('Compose Teams')).toBeInTheDocument();
+      expect(screen.getByText('Build optimal agent teams for tasks')).toBeInTheDocument();
+    });
+
+    it('renders the Evaluations feature card', () => {
+      renderWithProviders(<HomePage />);
+      expect(screen.getByText('Evaluations')).toBeInTheDocument();
+      expect(screen.getByText('Benchmark agent performance')).toBeInTheDocument();
+    });
+
+    it('feature cards link to correct pages', () => {
+      renderWithProviders(<HomePage />);
+      const featureCards = screen.getAllByTestId('feature-card');
+      expect(featureCards[0]).toHaveAttribute('href', '/explore');
+      expect(featureCards[1]).toHaveAttribute('href', '/compose');
+      expect(featureCards[2]).toHaveAttribute('href', '/evaluate');
+    });
+  });
+
+  describe('compose CTA section', () => {
+    it('renders the compose CTA section', () => {
+      renderWithProviders(<HomePage />);
+      expect(screen.getByTestId('compose-cta-section')).toBeInTheDocument();
+    });
+
+    it('renders the BUILD YOUR DREAM TEAM heading', () => {
+      renderWithProviders(<HomePage />);
+      expect(screen.getByText('Build Your Dream Team')).toBeInTheDocument();
+    });
+
+    it('renders the compose CTA description', () => {
+      renderWithProviders(<HomePage />);
+      expect(
+        screen.getByText(/Describe your task and let AI find the perfect combination/),
+      ).toBeInTheDocument();
+    });
+
+    it('renders the Start Composing button', () => {
+      renderWithProviders(<HomePage />);
+      expect(screen.getByTestId('compose-cta-button')).toBeInTheDocument();
+      expect(screen.getByText('Start Composing')).toBeInTheDocument();
+    });
+
+    it('compose button links to /compose', () => {
+      renderWithProviders(<HomePage />);
+      expect(screen.getByTestId('compose-cta-button')).toHaveAttribute('href', '/compose');
+    });
+  });
+
+  describe('intents section', () => {
+    it('renders the intents section', () => {
+      renderWithProviders(<HomePage />);
+      expect(screen.getByTestId('intents-section')).toBeInTheDocument();
+    });
+
+    it('renders the Workflow Templates heading', () => {
+      renderWithProviders(<HomePage />);
+      expect(screen.getByText('Workflow Templates')).toBeInTheDocument();
+    });
+
+    it('renders the Browse all link', () => {
+      renderWithProviders(<HomePage />);
+      expect(screen.getByTestId('intents-browse-link')).toHaveAttribute('href', '/intents');
+    });
+
+    it('displays intent cards when data loads', async () => {
+      renderWithProviders(<HomePage />);
+
+      await waitFor(() => {
+        expect(screen.getByText('Code Review Workflow')).toBeInTheDocument();
+        expect(screen.getByText('Data Pipeline')).toBeInTheDocument();
+      });
+    });
+
+    it('shows loading skeletons initially', () => {
+      mockFetch.mockImplementation(() => new Promise(() => {})); // Never resolves
+      renderWithProviders(<HomePage />);
+
+      expect(screen.getAllByTestId('intent-skeleton')).toHaveLength(4);
+    });
+
+    it('shows empty state when no intents available', async () => {
+      mockFetch.mockImplementation((url: string) => {
+        if (url.includes('/api/intents')) {
+          return Promise.resolve({
+            json: () => Promise.resolve({ success: true, data: [] }),
+          });
+        }
+        if (url === '/api/stats') {
+          return Promise.resolve({
+            json: () => Promise.resolve(mockStatsResponse),
+          });
+        }
+        if (url.includes('/api/evaluations')) {
+          return Promise.resolve({
+            json: () => Promise.resolve(mockEvaluationsResponse),
+          });
+        }
+        return Promise.resolve({ json: () => Promise.resolve({ success: false }) });
+      });
+
+      renderWithProviders(<HomePage />);
+
+      await waitFor(() => {
+        expect(screen.getByTestId('intents-empty')).toBeInTheDocument();
+      });
+    });
+
+    it('navigates to intent detail on card click', async () => {
+      renderWithProviders(<HomePage />);
+
+      await waitFor(() => {
+        expect(screen.getByText('Code Review Workflow')).toBeInTheDocument();
+      });
+
+      const intentCard = screen.getAllByTestId('intent-card')[0];
+      fireEvent.click(intentCard);
+
+      expect(mockPush).toHaveBeenCalledWith('/intents/code-review');
+    });
+  });
+
+  describe('evaluations section', () => {
+    it('renders the evaluations section', () => {
+      renderWithProviders(<HomePage />);
+      expect(screen.getByTestId('evaluations-section')).toBeInTheDocument();
+    });
+
+    it('renders the Recent Evaluations heading', () => {
+      renderWithProviders(<HomePage />);
+      expect(screen.getByText('Recent Evaluations')).toBeInTheDocument();
+    });
+
+    it('renders the View all link', () => {
+      renderWithProviders(<HomePage />);
+      expect(screen.getByTestId('evaluations-browse-link')).toHaveAttribute('href', '/evaluate');
+    });
+
+    it('displays evaluation cards when data loads', async () => {
+      renderWithProviders(<HomePage />);
+
+      await waitFor(() => {
+        expect(screen.getAllByTestId('evaluation-card')).toHaveLength(2);
+      });
+    });
+
+    it('shows loading skeletons initially', () => {
+      mockFetch.mockImplementation(() => new Promise(() => {})); // Never resolves
+      renderWithProviders(<HomePage />);
+
+      expect(screen.getAllByTestId('evaluation-skeleton')).toHaveLength(3);
+    });
+
+    it('shows empty state when no evaluations available', async () => {
+      mockFetch.mockImplementation((url: string) => {
+        if (url.includes('/api/evaluations')) {
+          return Promise.resolve({
+            json: () => Promise.resolve({ success: true, data: [] }),
+          });
+        }
+        if (url === '/api/stats') {
+          return Promise.resolve({
+            json: () => Promise.resolve(mockStatsResponse),
+          });
+        }
+        if (url.includes('/api/intents')) {
+          return Promise.resolve({
+            json: () => Promise.resolve(mockIntentsResponse),
+          });
+        }
+        return Promise.resolve({ json: () => Promise.resolve({ success: false }) });
+      });
+
+      renderWithProviders(<HomePage />);
+
+      await waitFor(() => {
+        expect(screen.getByTestId('evaluations-empty')).toBeInTheDocument();
+      });
+    });
+
+    it('navigates to evaluation detail on card click', async () => {
+      renderWithProviders(<HomePage />);
+
+      await waitFor(() => {
+        expect(screen.getAllByTestId('evaluation-card')).toHaveLength(2);
+      });
+
+      const evalCard = screen.getAllByTestId('evaluation-card')[0];
+      fireEvent.click(evalCard);
+
+      expect(mockPush).toHaveBeenCalledWith('/evaluate/eval-1');
+    });
+  });
+
+  describe('stats section', () => {
+    it('renders the stats section', () => {
+      renderWithProviders(<HomePage />);
+      expect(screen.getByTestId('stats-section')).toBeInTheDocument();
+    });
+
+    it('renders the Platform Statistics label', () => {
+      renderWithProviders(<HomePage />);
+      expect(screen.getByText('Platform Statistics')).toBeInTheDocument();
     });
   });
 
@@ -225,8 +536,23 @@ describe('HomePage', () => {
     });
 
     it('handles error state', async () => {
-      mockFetch.mockResolvedValue({
-        json: () => Promise.resolve({ success: false, error: 'Failed to fetch' }),
+      mockFetch.mockImplementation((url: string) => {
+        if (url === '/api/stats') {
+          return Promise.resolve({
+            json: () => Promise.resolve({ success: false, error: 'Failed to fetch' }),
+          });
+        }
+        if (url.includes('/api/intents')) {
+          return Promise.resolve({
+            json: () => Promise.resolve(mockIntentsResponse),
+          });
+        }
+        if (url.includes('/api/evaluations')) {
+          return Promise.resolve({
+            json: () => Promise.resolve(mockEvaluationsResponse),
+          });
+        }
+        return Promise.resolve({ json: () => Promise.resolve({ success: false }) });
       });
 
       renderWithProviders(<HomePage />);

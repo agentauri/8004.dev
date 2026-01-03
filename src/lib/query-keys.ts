@@ -6,6 +6,7 @@
  * fragmentation from different object references with identical values.
  */
 
+import type { EvaluationStatus } from '@/types/agent';
 import type { SearchParams } from '@/types/search';
 
 /**
@@ -64,6 +65,23 @@ export const queryKeys = {
   // Chain stats
   chains: () => ['chains'] as const,
 
+  // Evaluations
+  evaluations: () => ['evaluations'] as const,
+  evaluation: (id: string) => [...queryKeys.evaluations(), id] as const,
+  agentEvaluations: (agentId: string) => [...queryKeys.evaluations(), 'agent', agentId] as const,
+  evaluationsByStatus: (status: EvaluationStatus) =>
+    [...queryKeys.evaluations(), 'status', status] as const,
+
+  // Events (for cache invalidation tracking)
+  events: () => ['events'] as const,
+  eventsByType: (type: string) => [...queryKeys.events(), type] as const,
+
+  // Intents
+  intents: () => ['intents'] as const,
+  intent: (id: string) => [...queryKeys.intents(), id] as const,
+  intentsByCategory: (category: string) => [...queryKeys.intents(), 'category', category] as const,
+  intentMatches: (id: string) => [...queryKeys.intents(), id, 'matches'] as const,
+
   // Platform stats
   stats: () => ['stats'] as const,
 
@@ -76,4 +94,9 @@ export const queryKeys = {
   similarAgents: () => [...queryKeys.all, 'similar'] as const,
   similar: (agentId: string, limit?: number) =>
     [...queryKeys.similarAgents(), agentId, stableSerialize({ limit })] as const,
+
+  // Teams / Composition
+  teams: () => ['teams'] as const,
+  composition: (id: string) => [...queryKeys.teams(), 'composition', id] as const,
+  composeTask: (task: string) => [...queryKeys.teams(), 'task', stableSerialize({ task })] as const,
 } as const;
