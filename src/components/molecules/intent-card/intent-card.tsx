@@ -83,8 +83,10 @@ export const IntentCard = memo(function IntentCard({
   onClick,
   className,
 }: IntentCardProps): React.JSX.Element {
-  const categoryColors = getCategoryColor(template.category);
-  const stepCount = template.steps.length;
+  const categoryColors = getCategoryColor(template.category ?? 'general');
+  const steps = template.steps ?? [];
+  const requiredRoles = template.requiredRoles ?? [];
+  const stepCount = steps.length;
 
   const cardContent = (
     <>
@@ -139,7 +141,7 @@ export const IntentCard = memo(function IntentCard({
           Required Roles
         </span>
         <div className="flex flex-wrap gap-1.5" data-testid="intent-roles">
-          {template.requiredRoles.slice(0, 4).map((role) => (
+          {requiredRoles.slice(0, 4).map((role) => (
             <span
               key={role}
               className="px-2 py-0.5 text-[0.625rem] bg-[var(--pixel-gray-800)] border border-[var(--pixel-gray-700)] text-[var(--pixel-gray-300)] font-mono uppercase"
@@ -147,9 +149,9 @@ export const IntentCard = memo(function IntentCard({
               {role}
             </span>
           ))}
-          {template.requiredRoles.length > 4 && (
+          {requiredRoles.length > 4 && (
             <span className="px-2 py-0.5 text-[0.625rem] text-[var(--pixel-gray-500)] font-mono">
-              +{template.requiredRoles.length - 4} more
+              +{requiredRoles.length - 4} more
             </span>
           )}
         </div>

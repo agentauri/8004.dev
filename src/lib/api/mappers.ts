@@ -404,12 +404,12 @@ export function mapBenchmarkResult(result: BackendBenchmarkResult): BenchmarkRes
 /**
  * Map backend evaluation scores to frontend EvaluationScores
  */
-export function mapEvaluationScores(scores: BackendEvaluationScores): EvaluationScores {
+export function mapEvaluationScores(scores?: BackendEvaluationScores): EvaluationScores {
   return {
-    safety: scores.safety,
-    capability: scores.capability,
-    reliability: scores.reliability,
-    performance: scores.performance,
+    safety: scores?.safety ?? 0,
+    capability: scores?.capability ?? 0,
+    reliability: scores?.reliability ?? 0,
+    performance: scores?.performance ?? 0,
   };
 }
 
@@ -421,10 +421,10 @@ export function mapEvaluation(evaluation: BackendEvaluation): Evaluation {
   return {
     id: evaluation.id,
     agentId: evaluation.agentId,
-    status: evaluation.status,
-    benchmarks: evaluation.benchmarks.map(mapBenchmarkResult),
+    status: evaluation.status ?? 'pending',
+    benchmarks: (evaluation.benchmarks ?? []).map(mapBenchmarkResult),
     scores: mapEvaluationScores(evaluation.scores),
-    createdAt: new Date(evaluation.createdAt),
+    createdAt: new Date(evaluation.createdAt ?? Date.now()),
     completedAt: evaluation.completedAt ? new Date(evaluation.completedAt) : undefined,
   };
 }
@@ -499,10 +499,10 @@ export function mapIntentTemplate(template: BackendIntentTemplate): IntentTempla
   return {
     id: template.id,
     name: template.name,
-    description: template.description,
-    category: template.category,
-    steps: template.steps.map(mapWorkflowStep),
-    requiredRoles: template.requiredRoles,
+    description: template.description ?? '',
+    category: template.category ?? 'general',
+    steps: (template.steps ?? []).map(mapWorkflowStep),
+    requiredRoles: template.requiredRoles ?? [],
     matchedAgents: template.matchedAgents,
   };
 }

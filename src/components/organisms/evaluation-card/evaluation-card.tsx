@@ -63,6 +63,7 @@ export const EvaluationCard = memo(function EvaluationCard({
   showAgent = false,
   className,
 }: EvaluationCardProps): React.JSX.Element {
+  const evaluationId = evaluation.id ?? 'unknown';
   const overallScore = calculateOverallScore(evaluation.scores);
   const isComplete = evaluation.status === 'completed';
 
@@ -72,7 +73,7 @@ export const EvaluationCard = memo(function EvaluationCard({
       <div className="flex items-start justify-between gap-3 mb-4">
         <div className="flex-1 min-w-0">
           <h3 className="font-[family-name:var(--font-pixel-heading)] text-[var(--pixel-gray-100)] text-sm truncate">
-            Evaluation #{evaluation.id.slice(0, 8)}
+            Evaluation #{evaluationId.slice(0, 8)}
           </h3>
           {showAgent && (
             <Link
@@ -165,7 +166,7 @@ export const EvaluationCard = memo(function EvaluationCard({
         role="button"
         tabIndex={0}
         data-testid="evaluation-card"
-        data-evaluation-id={evaluation.id}
+        data-evaluation-id={evaluationId}
         data-status={evaluation.status}
       >
         {cardContent}
@@ -177,7 +178,7 @@ export const EvaluationCard = memo(function EvaluationCard({
     <div
       className={cardClasses}
       data-testid="evaluation-card"
-      data-evaluation-id={evaluation.id}
+      data-evaluation-id={evaluationId}
       data-status={evaluation.status}
     >
       {cardContent}
