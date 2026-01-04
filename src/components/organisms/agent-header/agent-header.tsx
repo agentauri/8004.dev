@@ -1,3 +1,5 @@
+'use client';
+
 import { ArrowLeft, MessageSquare, Share2, ShieldCheck } from 'lucide-react';
 import Link from 'next/link';
 import type React from 'react';

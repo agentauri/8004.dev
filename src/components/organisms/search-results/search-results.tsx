@@ -1,3 +1,5 @@
+'use client';
+
 import { type JSX, useCallback, useState } from 'react';
 import { PixelExplorer, RefreshIndicator } from '@/components/atoms';
 import { Badge } from '@/components/atoms/badge';

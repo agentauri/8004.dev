@@ -1,3 +1,5 @@
+'use client';
+
 /**
  * Custom hook for SearchFilters event handlers
  *
