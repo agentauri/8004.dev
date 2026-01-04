@@ -227,16 +227,33 @@ export function createSSEClient<T>(url: string, options: SSEClientOptions<T>): S
    * Handle incoming message event
    */
   const handleMessage = (event: MessageEvent): void => {
-    // Check for completion signal
-    if (event.data === '[DONE]' || event.data === '') {
+    // Check for completion signal or empty/undefined data
+    if (
+      event.data === '[DONE]' ||
+      event.data === '' ||
+      event.data === undefined ||
+      event.data === null
+    ) {
       onComplete?.();
+      return;
+    }
+
+    // Handle string "undefined" or "null" as error (malformed backend response)
+    if (event.data === 'undefined' || event.data === 'null') {
+      onError?.(new Error('Received malformed SSE data from server'));
       return;
     }
 
     // Parse JSON data
     const data = safeJsonParse<T>(event.data);
     if (data === null) {
-      onError?.(new Error(`Failed to parse SSE message: ${event.data}`));
+      // Check if it looks like an HTML error page (common when endpoint doesn't exist)
+      const dataStr = String(event.data).trim();
+      if (dataStr.startsWith('<!DOCTYPE') || dataStr.startsWith('<html')) {
+        onError?.(new Error('SSE endpoint returned HTML instead of JSON - endpoint may not exist'));
+        return;
+      }
+      onError?.(new Error(`Failed to parse SSE message: ${dataStr.slice(0, 100)}`));
       return;
     }
 

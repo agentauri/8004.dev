@@ -93,16 +93,21 @@ function ExplorePageContent() {
   // Track if we have an active text query (for streaming vs regular search decision)
   const hasTextQuery = useMemo(() => !!urlQuery.trim(), [urlQuery]);
 
+  // Track if streaming has failed and we need to use fallback
+  const [streamingFailed, setStreamingFailed] = useState(false);
+
   // Cursor-based pagination state (only used for regular search)
   const [cursorState, setCursorState] = useState<CursorState>(INITIAL_CURSOR_STATE);
 
   // Track previous query for change detection
   const prevQueryRef = useRef(urlQuery);
 
-  // Reset cursor state when URL params change (query, filters, sort, pageSize)
+  // Reset cursor state and streaming failure state when URL params change (query, filters, sort, pageSize)
   // biome-ignore lint/correctness/useExhaustiveDependencies: resetSignal is an intentional change trigger
   useEffect(() => {
     setCursorState(INITIAL_CURSOR_STATE);
+    // Reset streaming failure to try streaming again with new params
+    setStreamingFailed(false);
   }, [resetSignal]);
 
   // Build search params from current state (using cursor-based pagination)
@@ -117,76 +122,85 @@ function ExplorePageContent() {
     [urlQuery, urlFilters, pageSize, cursorState.currentCursor],
   );
 
-  // Streaming search hook - enabled when there's a text query
+  // Streaming search hook - enabled when there's a text query and streaming hasn't failed
   const streaming = useStreamingSearch(searchParamsObj, {
-    enabled: hasTextQuery,
+    enabled: hasTextQuery && !streamingFailed,
     onComplete: () => {
       // Stream completed - results are now in streaming.results
     },
+    onError: (error) => {
+      // If streaming fails (e.g., SSE endpoint not available), fall back to regular search
+      console.warn('Streaming search failed, falling back to regular search:', error.message);
+      setStreamingFailed(true);
+    },
   });
 
-  // Regular search hook - enabled when there's NO text query (filter-only browsing)
+  // Regular search hook - enabled when there's NO text query OR streaming has failed
   const regular = useSearchAgents(searchParamsObj, {
-    enabled: !hasTextQuery,
+    enabled: !hasTextQuery || streamingFailed,
   });
+
+  // Determine if we should use streaming (has text query AND streaming hasn't failed)
+  const useStreaming = hasTextQuery && !streamingFailed;
 
   // Auto-start streaming when query changes
   useEffect(() => {
-    if (hasTextQuery && prevQueryRef.current !== urlQuery) {
+    if (hasTextQuery && !streamingFailed && prevQueryRef.current !== urlQuery) {
       // Query changed, start new stream
       streaming.startStream();
     }
     prevQueryRef.current = urlQuery;
-  }, [urlQuery, hasTextQuery, streaming.startStream]);
+  }, [urlQuery, hasTextQuery, streamingFailed, streaming.startStream]);
 
   // Also start stream when filters change while we have a query
   // biome-ignore lint/correctness/useExhaustiveDependencies: resetSignal is an intentional change trigger
   useEffect(() => {
-    if (hasTextQuery && streaming.streamState === 'idle') {
+    if (useStreaming && streaming.streamState === 'idle') {
       streaming.startStream();
     }
   }, [resetSignal]);
 
   // Determine the error to display
   const displayError = useMemo(() => {
-    if (hasTextQuery) {
+    if (useStreaming) {
       // For streaming, only show error if it's not an "empty query" error
       // (which would happen before user types anything)
-      if (streaming.error && streaming.error.code !== 'EMPTY_QUERY') {
+      // Note: We don't show SSE errors here since we fall back to regular search
+      if (streaming.error && streaming.error.code !== 'EMPTY_QUERY' && !streamingFailed) {
         return streaming.error.message;
       }
       return undefined;
     }
     return regular.error?.message;
-  }, [hasTextQuery, streaming.error, regular.error]);
+  }, [useStreaming, streaming.error, regular.error, streamingFailed]);
 
   // Transform and sort agents for display (client-side sorting)
   const agents = useMemo(() => {
     // Choose data source based on search mode
-    const sourceAgents = hasTextQuery ? streaming.results : regular.data?.agents;
+    const sourceAgents = useStreaming ? streaming.results : regular.data?.agents;
 
     if (!sourceAgents || sourceAgents.length === 0) return [];
 
     const sorted = sortAgents(sourceAgents, sortBy, sortOrder);
     return sorted.map(toAgentCardAgent);
-  }, [hasTextQuery, streaming.results, regular.data?.agents, sortBy, sortOrder]);
+  }, [useStreaming, streaming.results, regular.data?.agents, sortBy, sortOrder]);
 
   // Determine loading state
   const isLoading = useMemo(() => {
-    if (hasTextQuery) {
+    if (useStreaming) {
       // For streaming, we're "loading" only during initial connection
       return streaming.streamState === 'connecting';
     }
     return regular.isLoading;
-  }, [hasTextQuery, streaming.streamState, regular.isLoading]);
+  }, [useStreaming, streaming.streamState, regular.isLoading]);
 
   // Total count for display
   const totalCount = useMemo(() => {
-    if (hasTextQuery) {
+    if (useStreaming) {
       return streaming.expectedTotal ?? streaming.resultCount;
     }
     return regular.data?.total ?? 0;
-  }, [hasTextQuery, streaming.expectedTotal, streaming.resultCount, regular.data?.total]);
+  }, [useStreaming, streaming.expectedTotal, streaming.resultCount, regular.data?.total]);
 
   // Navigation handlers (only used for regular search)
   const handleNext = useCallback(() => {
@@ -239,12 +253,12 @@ function ExplorePageContent() {
 
   // Handle retry for streaming errors
   const handleRetry = useCallback(() => {
-    if (hasTextQuery) {
+    if (useStreaming) {
       streaming.startStream();
     } else {
       regular.manualRefresh?.();
     }
-  }, [hasTextQuery, streaming.startStream, regular.manualRefresh]);
+  }, [useStreaming, streaming.startStream, regular.manualRefresh]);
 
   return (
     <ExploreTemplate
@@ -258,30 +272,30 @@ function ExplorePageContent() {
       isLoading={isLoading}
       error={displayError}
       // Cursor-based pagination props (only for regular search)
-      pageNumber={hasTextQuery ? undefined : cursorState.pageNumber}
-      hasMore={hasTextQuery ? false : (regular.data?.hasMore ?? false)}
-      onNext={hasTextQuery ? undefined : handleNext}
-      onPrevious={hasTextQuery ? undefined : handlePrevious}
+      pageNumber={useStreaming ? undefined : cursorState.pageNumber}
+      hasMore={useStreaming ? false : (regular.data?.hasMore ?? false)}
+      onNext={useStreaming ? undefined : handleNext}
+      onPrevious={useStreaming ? undefined : handlePrevious}
       pageSize={pageSize}
       onPageSizeChange={setPageSize}
       sortBy={sortBy}
       sortOrder={sortOrder}
       onSortChange={setSort}
-      isRefreshing={hasTextQuery ? false : regular.isRefreshing}
-      lastUpdated={hasTextQuery ? undefined : regular.lastUpdated}
+      isRefreshing={useStreaming ? false : regular.isRefreshing}
+      lastUpdated={useStreaming ? undefined : regular.lastUpdated}
       onManualRefresh={handleRetry}
       // Streaming props
-      isStreaming={hasTextQuery ? streaming.isStreaming : false}
+      isStreaming={useStreaming ? streaming.isStreaming : false}
       streamProgress={
-        hasTextQuery
+        useStreaming
           ? {
               current: streaming.resultCount,
               expected: streaming.expectedTotal,
             }
           : undefined
       }
-      hydeQuery={hasTextQuery ? streaming.hydeQuery : null}
-      onStopStream={hasTextQuery ? streaming.stopStream : undefined}
+      hydeQuery={useStreaming ? streaming.hydeQuery : null}
+      onStopStream={useStreaming ? streaming.stopStream : undefined}
       // Compose team button (shown when we have results)
       showComposeButton={agents.length > 0}
     />
