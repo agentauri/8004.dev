@@ -131,13 +131,13 @@ export const WorkflowStep = memo(function WorkflowStep({
         {/* Inputs and Outputs */}
         <div className="flex flex-wrap gap-4 text-[0.625rem]">
           {/* Inputs */}
-          {step.inputs.length > 0 && (
+          {(step.inputs?.length ?? 0) > 0 && (
             <div data-testid="step-inputs">
               <span className="uppercase tracking-wider text-[var(--pixel-gray-500)] block mb-1">
                 Inputs
               </span>
               <div className="flex flex-wrap gap-1">
-                {step.inputs.map((input) => (
+                {step.inputs?.map((input) => (
                   <span
                     key={input}
                     className="px-1.5 py-0.5 bg-[var(--pixel-gray-700)] text-[var(--pixel-gray-300)] font-mono"
@@ -150,13 +150,13 @@ export const WorkflowStep = memo(function WorkflowStep({
           )}
 
           {/* Outputs */}
-          {step.outputs.length > 0 && (
+          {(step.outputs?.length ?? 0) > 0 && (
             <div data-testid="step-outputs">
               <span className="uppercase tracking-wider text-[var(--pixel-gray-500)] block mb-1">
                 Outputs
               </span>
               <div className="flex flex-wrap gap-1">
-                {step.outputs.map((output) => (
+                {step.outputs?.map((output) => (
                   <span
                     key={output}
                     className="px-1.5 py-0.5 bg-[var(--pixel-gold-coin)]/20 text-[var(--pixel-gold-coin)] font-mono"

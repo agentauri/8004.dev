@@ -483,12 +483,12 @@ export function mapTeamCompositions(compositions: BackendTeamComposition[]): Tea
  */
 export function mapWorkflowStep(step: BackendWorkflowStep): WorkflowStep {
   return {
-    order: step.order,
-    name: step.name,
-    description: step.description,
-    requiredRole: step.requiredRole,
-    inputs: step.inputs,
-    outputs: step.outputs,
+    order: step.order ?? 0,
+    name: step.name ?? '',
+    description: step.description ?? '',
+    requiredRole: step.requiredRole ?? '',
+    inputs: step.inputs ?? [],
+    outputs: step.outputs ?? [],
   };
 }
 

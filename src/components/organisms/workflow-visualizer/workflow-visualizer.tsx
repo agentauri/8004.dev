@@ -53,7 +53,7 @@ export const WorkflowVisualizer = memo(function WorkflowVisualizer({
     const allOutputs = new Set<string>();
 
     for (const step of sortedSteps) {
-      for (const output of step.outputs) {
+      for (const output of step.outputs ?? []) {
         allOutputs.add(output);
       }
     }
