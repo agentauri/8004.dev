@@ -66,12 +66,12 @@ function IntentDetailContent(): React.JSX.Element {
   const {
     mutate: matchAgents,
     isPending: isMatching,
-    data: matchedTemplate,
     error: matchError,
   } = useIntentMatches(id);
 
-  // Use matched template if available, otherwise use original template
-  const displayTemplate = matchedTemplate ?? template;
+  // Always use the template from the query cache - the mutation updates the cache
+  // with matchedAgents while preserving all other template data
+  const displayTemplate = template;
 
   // Build matched agents map from role to agent ID
   const matchedAgentsMap = useMemo(() => {

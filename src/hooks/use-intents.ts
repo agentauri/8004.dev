@@ -173,9 +173,18 @@ export function useIntentMatches(id: string): UseMutationResult<IntentTemplate, 
 
   return useMutation<IntentTemplate, Error, void>({
     mutationFn: () => matchIntentAgents(id),
-    onSuccess: (data) => {
-      // Update the intent query cache with matched agents
-      queryClient.setQueryData(queryKeys.intent(id), data);
+    onSuccess: (matchResult) => {
+      // Merge matched agents with existing template to preserve all original data
+      // This prevents cache corruption if the match endpoint returns incomplete data
+      queryClient.setQueryData<IntentTemplate | null>(queryKeys.intent(id), (existingTemplate) => {
+        if (!existingTemplate) return matchResult;
+
+        // Only update matchedAgents from the match result, preserve everything else
+        return {
+          ...existingTemplate,
+          matchedAgents: matchResult.matchedAgents,
+        };
+      });
 
       // Invalidate the matches query
       queryClient.invalidateQueries({

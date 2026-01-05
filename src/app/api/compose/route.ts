@@ -22,6 +22,7 @@ const VALID_CAPABILITIES = ['mcp', 'a2a', 'x402'];
 
 /**
  * Maps backend team composition to frontend format
+ * Handles missing/invalid data with sensible defaults
  */
 function mapTeamComposition(backend: BackendTeamComposition): {
   id: string;
@@ -36,18 +37,38 @@ function mapTeamComposition(backend: BackendTeamComposition): {
   reasoning: string;
   createdAt: Date;
 } {
+  // Safely parse createdAt - handle undefined, null, 0, and invalid dates
+  let createdAt = new Date();
+  if (backend.createdAt) {
+    const parsedDate = new Date(backend.createdAt);
+    // Check if date is valid and not epoch (Jan 1, 1970)
+    if (!Number.isNaN(parsedDate.getTime()) && parsedDate.getTime() > 0) {
+      createdAt = parsedDate;
+    }
+  }
+
+  // Safely get fitness score - handle undefined, null, NaN
+  const fitnessScore = Number.isFinite(backend.fitnessScore) ? backend.fitnessScore : 0;
+
+  // Safely map team members - handle undefined/null team array
+  const team = Array.isArray(backend.team)
+    ? backend.team.map((member) => ({
+        agentId: member?.agentId ?? '',
+        role: member?.role ?? 'Unknown Role',
+        contribution: member?.contribution ?? '',
+        compatibilityScore: Number.isFinite(member?.compatibilityScore)
+          ? member.compatibilityScore
+          : 0,
+      }))
+    : [];
+
   return {
-    id: backend.id,
-    task: backend.task,
-    team: backend.team.map((member) => ({
-      agentId: member.agentId,
-      role: member.role,
-      contribution: member.contribution,
-      compatibilityScore: member.compatibilityScore,
-    })),
-    fitnessScore: backend.fitnessScore,
-    reasoning: backend.reasoning,
-    createdAt: new Date(backend.createdAt),
+    id: backend.id ?? '',
+    task: backend.task ?? '',
+    team,
+    fitnessScore,
+    reasoning: backend.reasoning ?? 'No reasoning provided.',
+    createdAt,
   };
 }
 

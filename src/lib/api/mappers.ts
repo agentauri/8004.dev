@@ -494,11 +494,12 @@ export function mapWorkflowStep(step: BackendWorkflowStep): WorkflowStep {
 
 /**
  * Map backend intent template to frontend IntentTemplate
+ * Handles missing/undefined data with sensible defaults
  */
 export function mapIntentTemplate(template: BackendIntentTemplate): IntentTemplate {
   return {
-    id: template.id,
-    name: template.name,
+    id: template.id ?? '',
+    name: template.name ?? 'Unnamed Template',
     description: template.description ?? '',
     category: template.category ?? 'general',
     steps: (template.steps ?? []).map(mapWorkflowStep),

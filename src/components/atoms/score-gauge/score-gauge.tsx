@@ -84,7 +84,9 @@ export function ScoreGauge({
   showValue = true,
   className,
 }: ScoreGaugeProps): React.JSX.Element {
-  const clampedScore = Math.max(0, Math.min(100, score));
+  // Handle NaN, undefined, and null values - default to 0
+  const safeScore = Number.isFinite(score) ? score : 0;
+  const clampedScore = Math.max(0, Math.min(100, safeScore));
   const level = getScoreLevel(clampedScore);
   const config = SCORE_CONFIG[level];
   const sizeConfig = SIZE_CLASSES[size];
