@@ -99,4 +99,17 @@ export const queryKeys = {
   teams: () => ['teams'] as const,
   composition: (id: string) => [...queryKeys.teams(), 'composition', id] as const,
   composeTask: (task: string) => [...queryKeys.teams(), 'task', stableSerialize({ task })] as const,
+
+  // Leaderboard
+  leaderboard: () => ['leaderboard'] as const,
+  leaderboardList: (params: Record<string, unknown>) =>
+    [...queryKeys.leaderboard(), stableSerialize(params)] as const,
+
+  // Global feedbacks (cross-agent)
+  globalFeedbacks: () => ['feedbacks', 'global'] as const,
+  globalFeedbacksList: (params: Record<string, unknown>) =>
+    [...queryKeys.globalFeedbacks(), stableSerialize(params)] as const,
+
+  // Trending agents
+  trending: (period: string, limit: number) => ['trending', period, limit] as const,
 } as const;

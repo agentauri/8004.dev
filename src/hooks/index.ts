@@ -26,10 +26,12 @@ export {
   useIntentMatches,
   useIntents,
 } from './use-intents';
+export { useInfiniteLeaderboard, useLeaderboard } from './use-leaderboard';
 export {
   type RealtimeEventsContextValue,
   useRealtimeEvents,
 } from './use-realtime-events';
+export { useGlobalFeedbacks, useInfiniteGlobalFeedbacks } from './use-global-feedbacks';
 export { type UseRelatedAgentsOptions, useRelatedAgents } from './use-related-agents';
 export { useSearchAgents } from './use-search-agents';
 export { type UseSimilarAgentsOptions, useSimilarAgents } from './use-similar-agents';
@@ -46,6 +48,7 @@ export {
   useComposeTeam,
   useTeamComposition,
 } from './use-team-composition';
+export { useTrending } from './use-trending';
 export {
   type UrlSearchState,
   type UseUrlSearchParamsReturn,

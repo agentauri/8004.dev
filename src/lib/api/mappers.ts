@@ -621,3 +621,127 @@ export function mapRealtimeEvent(event: BackendRealtimeEvent): RealtimeEvent {
       };
   }
 }
+
+// ============================================================================
+// Leaderboard Mappers
+// ============================================================================
+
+import type {
+  BackendGlobalFeedback,
+  BackendLeaderboardEntry,
+  BackendTrendingAgent,
+} from '@/types/backend';
+import type { FeedbackScoreCategory, GlobalFeedback } from '@/types/feedback';
+import type { LeaderboardEntry } from '@/types/leaderboard';
+import type { TrendingAgent } from '@/types/trending';
+
+/**
+ * Map backend leaderboard entry to frontend LeaderboardEntry
+ * Adds rank position (must be calculated by caller)
+ */
+export function mapLeaderboardEntry(entry: BackendLeaderboardEntry, rank: number): LeaderboardEntry {
+  return {
+    rank,
+    agentId: entry.agentId,
+    chainId: entry.chainId,
+    tokenId: entry.tokenId,
+    name: entry.name || `Agent #${entry.tokenId}`,
+    description: entry.description || '',
+    image: entry.image,
+    score: entry.score ?? 0,
+    feedbackCount: entry.feedbackCount ?? 0,
+    trend: entry.trend ?? 'stable',
+    active: entry.active ?? false,
+    hasMcp: entry.hasMcp ?? false,
+    hasA2a: entry.hasA2a ?? false,
+    x402Support: entry.x402Support ?? false,
+    registeredAt: entry.registeredAt,
+  };
+}
+
+/**
+ * Map backend leaderboard entries to frontend with rank calculation
+ */
+export function mapLeaderboardEntries(
+  entries: BackendLeaderboardEntry[],
+  startRank: number = 1,
+): LeaderboardEntry[] {
+  return entries.map((entry, index) => mapLeaderboardEntry(entry, startRank + index));
+}
+
+// ============================================================================
+// Global Feedback Mappers
+// ============================================================================
+
+/**
+ * Map backend global feedback to frontend GlobalFeedback
+ */
+export function mapGlobalFeedback(feedback: BackendGlobalFeedback): GlobalFeedback {
+  return {
+    id: feedback.id,
+    score: feedback.score,
+    tags: feedback.tags ?? [],
+    context: feedback.context,
+    submitter: feedback.submitter,
+    timestamp: feedback.submittedAt,
+    transactionHash: feedback.txHash,
+    feedbackUri: feedback.easUid
+      ? `https://sepolia.easscan.org/attestation/view/${feedback.easUid}`
+      : undefined,
+    agentId: feedback.agentId,
+    agentName: feedback.agentName,
+    agentChainId: feedback.agentChainId,
+  };
+}
+
+/**
+ * Map backend global feedbacks array to frontend GlobalFeedback array
+ */
+export function mapGlobalFeedbacks(feedbacks: BackendGlobalFeedback[]): GlobalFeedback[] {
+  return feedbacks.map(mapGlobalFeedback);
+}
+
+/**
+ * Determine score category from numeric score
+ * - positive: 70-100
+ * - neutral: 40-69
+ * - negative: 0-39
+ */
+export function getScoreCategory(score: number): FeedbackScoreCategory {
+  if (score >= 70) return 'positive';
+  if (score >= 40) return 'neutral';
+  return 'negative';
+}
+
+// ============================================================================
+// Trending Mappers
+// ============================================================================
+
+/**
+ * Map backend trending agent to frontend TrendingAgent
+ */
+export function mapTrendingAgent(agent: BackendTrendingAgent): TrendingAgent {
+  return {
+    id: agent.agentId,
+    chainId: agent.chainId,
+    tokenId: agent.tokenId,
+    name: agent.name || `Agent #${agent.tokenId}`,
+    image: agent.image,
+    currentScore: agent.currentScore ?? 0,
+    previousScore: agent.previousScore ?? 0,
+    scoreChange: agent.scoreChange ?? 0,
+    percentageChange: agent.percentageChange ?? 0,
+    trend: agent.trend ?? 'stable',
+    isActive: agent.active ?? false,
+    hasMcp: agent.hasMcp ?? false,
+    hasA2a: agent.hasA2a ?? false,
+    x402Support: agent.x402Support ?? false,
+  };
+}
+
+/**
+ * Map backend trending agents array to frontend TrendingAgent array
+ */
+export function mapTrendingAgents(agents: BackendTrendingAgent[]): TrendingAgent[] {
+  return agents.map(mapTrendingAgent);
+}

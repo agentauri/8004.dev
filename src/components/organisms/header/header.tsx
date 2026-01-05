@@ -23,6 +23,8 @@ interface NavLink {
 
 const NAV_LINKS: NavLink[] = [
   { href: '/explore', label: 'Explore', testId: 'nav-explore' },
+  { href: '/leaderboard', label: 'Leaderboard', testId: 'nav-leaderboard' },
+  { href: '/feedbacks', label: 'Feedbacks', testId: 'nav-feedbacks' },
   { href: '/evaluate', label: 'Evaluate', testId: 'nav-evaluate' },
   { href: '/compose', label: 'Compose', testId: 'nav-compose' },
   { href: '/intents', label: 'Intents', testId: 'nav-intents' },

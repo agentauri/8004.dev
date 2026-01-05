@@ -574,3 +574,153 @@ export type BackendRealtimeEvent =
   | { type: 'agent.classified'; timestamp: string; data: BackendAgentClassifiedEvent }
   | { type: 'reputation.changed'; timestamp: string; data: BackendReputationChangedEvent }
   | { type: 'evaluation.completed'; timestamp: string; data: BackendEvaluationCompletedEvent };
+
+// ============================================================================
+// Leaderboard Types
+// ============================================================================
+
+/**
+ * Leaderboard entry from backend API
+ */
+export interface BackendLeaderboardEntry {
+  /** Agent identifier (format: "chainId:tokenId") */
+  agentId: string;
+  /** Chain ID */
+  chainId: number;
+  /** Token ID */
+  tokenId: string;
+  /** Agent display name */
+  name: string;
+  /** Agent description */
+  description: string;
+  /** Agent image URL */
+  image?: string;
+  /** Reputation score (0-100) */
+  score: number;
+  /** Number of feedback entries */
+  feedbackCount: number;
+  /** Reputation trend direction */
+  trend: 'up' | 'down' | 'stable';
+  /** Whether agent is active */
+  active: boolean | null;
+  /** Protocol support flags */
+  hasMcp: boolean | null;
+  hasA2a: boolean | null;
+  x402Support: boolean | null;
+  /** Registration timestamp */
+  registeredAt?: string;
+}
+
+/**
+ * Leaderboard API response from backend
+ */
+export interface BackendLeaderboardResponse {
+  data: BackendLeaderboardEntry[];
+  meta: {
+    total: number;
+    limit: number;
+    hasMore: boolean;
+    nextCursor?: string;
+    period: 'all' | '30d' | '7d' | '24h';
+    generatedAt: string;
+  };
+}
+
+// ============================================================================
+// Global Feedbacks Types
+// ============================================================================
+
+/**
+ * Global feedback entry from backend with agent information
+ */
+export interface BackendGlobalFeedback {
+  /** Feedback ID */
+  id: string;
+  /** Numeric score (0-100) */
+  score: number;
+  /** Feedback tags */
+  tags: string[];
+  /** Optional context/comment */
+  context?: string;
+  /** Submitter wallet address */
+  submitter: string;
+  /** Submission timestamp */
+  submittedAt: string;
+  /** Transaction hash */
+  txHash?: string;
+  /** EAS attestation UID */
+  easUid?: string;
+  /** Agent ID (format: chainId:tokenId) */
+  agentId: string;
+  /** Agent display name */
+  agentName: string;
+  /** Agent chain ID */
+  agentChainId: number;
+}
+
+/**
+ * Global feedbacks API response from backend
+ */
+export interface BackendGlobalFeedbacksResponse {
+  data: BackendGlobalFeedback[];
+  meta: {
+    total: number;
+    limit: number;
+    hasMore: boolean;
+    nextCursor?: string;
+  };
+  stats: {
+    total: number;
+    positive: number;
+    neutral: number;
+    negative: number;
+  };
+}
+
+// ============================================================================
+// Trending Types
+// ============================================================================
+
+/**
+ * Trending agent entry from backend
+ */
+export interface BackendTrendingAgent {
+  /** Agent identifier (format: "chainId:tokenId") */
+  agentId: string;
+  /** Chain ID */
+  chainId: number;
+  /** Token ID */
+  tokenId: string;
+  /** Agent display name */
+  name: string;
+  /** Agent image URL */
+  image?: string;
+  /** Current reputation score (0-100) */
+  currentScore: number;
+  /** Previous reputation score (before period) */
+  previousScore: number;
+  /** Absolute score change */
+  scoreChange: number;
+  /** Percentage change */
+  percentageChange: number;
+  /** Trend direction */
+  trend: 'up' | 'down' | 'stable';
+  /** Whether agent is active */
+  active: boolean | null;
+  /** Protocol support flags */
+  hasMcp: boolean | null;
+  hasA2a: boolean | null;
+  x402Support: boolean | null;
+}
+
+/**
+ * Trending agents API response from backend
+ */
+export interface BackendTrendingResponse {
+  data: {
+    agents: BackendTrendingAgent[];
+    period: '24h' | '7d' | '30d';
+    generatedAt: string;
+    nextRefreshAt?: string;
+  };
+}

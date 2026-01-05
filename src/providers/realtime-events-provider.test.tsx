@@ -447,4 +447,212 @@ describe('RealtimeEventsProvider', () => {
       }).toThrow('useRealtimeEventsContext must be used within a RealtimeEventsProvider');
     });
   });
+
+  describe('edge cases', () => {
+    it('handles connected event from server', async () => {
+      const { result } = renderHook(() => useRealtimeEventsContext(), {
+        wrapper: createWrapper(),
+      });
+
+      await act(async () => {
+        await vi.runAllTimersAsync();
+      });
+
+      const eventSource = MockEventSource.getLatest();
+
+      // Simulate server sending 'connected' event
+      await act(async () => {
+        eventSource?.dispatchEvent('connected', {});
+      });
+
+      expect(result.current.isConnected).toBe(true);
+    });
+
+    it('handles agent.classified event for cache invalidation', async () => {
+      const invalidateSpy = vi.spyOn(queryClient, 'invalidateQueries');
+
+      renderHook(() => useRealtimeEventsContext(), {
+        wrapper: createWrapper(),
+      });
+
+      await act(async () => {
+        await vi.runAllTimersAsync();
+      });
+
+      const eventSource = MockEventSource.getLatest();
+
+      await act(async () => {
+        eventSource?.dispatchEvent('agent.classified', {
+          agentId: '11155111:1',
+          skills: ['code_review'],
+          domains: ['development'],
+          confidence: 0.95,
+        });
+      });
+
+      expect(invalidateSpy).toHaveBeenCalledWith({
+        queryKey: queryKeys.detail('11155111:1'),
+      });
+      expect(invalidateSpy).toHaveBeenCalledWith({ queryKey: queryKeys.lists() });
+    });
+
+    it('ignores invalid event types', async () => {
+      const { result } = renderHook(() => useRealtimeEventsContext(), {
+        wrapper: createWrapper(),
+      });
+
+      await act(async () => {
+        await vi.runAllTimersAsync();
+      });
+
+      const eventSource = MockEventSource.getLatest();
+
+      // Send invalid event type
+      await act(async () => {
+        const handlers = eventSource?.listeners.get('invalid.event') || [];
+        if (handlers.length > 0) {
+          const event = new MessageEvent('invalid.event', { data: JSON.stringify({}) });
+          for (const handler of handlers) {
+            handler(event);
+          }
+        }
+      });
+
+      // Should not have added any events since event type is invalid
+      expect(result.current.eventCount).toBe(0);
+    });
+
+    it('handles invalid JSON in event data', async () => {
+      const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+
+      const { result } = renderHook(() => useRealtimeEventsContext(), {
+        wrapper: createWrapper(),
+      });
+
+      await act(async () => {
+        await vi.runAllTimersAsync();
+      });
+
+      const eventSource = MockEventSource.getLatest();
+      expect(eventSource).toBeDefined();
+
+      // Get the actual handlers and call with invalid JSON
+      const handlers = eventSource?.listeners.get('agent.created') || [];
+      expect(handlers.length).toBeGreaterThan(0);
+
+      await act(async () => {
+        const badEvent = new MessageEvent('agent.created', { data: 'invalid-json' });
+        for (const handler of handlers) {
+          handler(badEvent);
+        }
+      });
+
+      // Should not have added any events due to parse error
+      expect(result.current.eventCount).toBe(0);
+      expect(warnSpy).toHaveBeenCalled();
+    });
+
+    it('closes existing connection when reconnecting', async () => {
+      renderHook(() => useRealtimeEventsContext(), {
+        wrapper: createWrapper(),
+      });
+
+      await act(async () => {
+        await vi.runAllTimersAsync();
+      });
+
+      const firstEventSource = MockEventSource.getLatest();
+      expect(firstEventSource).toBeDefined();
+
+      // Verify first connection is established
+      expect(MockEventSource.instances).toHaveLength(1);
+
+      // Trigger error to cause reconnection
+      await act(async () => {
+        firstEventSource?.onerror?.();
+      });
+
+      // Wait for reconnect
+      await act(async () => {
+        await vi.advanceTimersByTimeAsync(1000);
+      });
+
+      // New connection should exist
+      expect(MockEventSource.instances).toHaveLength(1);
+    });
+
+    it('handles agent.updated without agentId', async () => {
+      const invalidateSpy = vi.spyOn(queryClient, 'invalidateQueries');
+
+      renderHook(() => useRealtimeEventsContext(), {
+        wrapper: createWrapper(),
+      });
+
+      await act(async () => {
+        await vi.runAllTimersAsync();
+      });
+
+      const eventSource = MockEventSource.getLatest();
+
+      await act(async () => {
+        eventSource?.dispatchEvent('agent.updated', {
+          changedFields: ['name'],
+        });
+      });
+
+      // Should still invalidate lists even without agentId
+      expect(invalidateSpy).toHaveBeenCalledWith({ queryKey: queryKeys.lists() });
+    });
+
+    it('handles reputation.changed without agentId', async () => {
+      const invalidateSpy = vi.spyOn(queryClient, 'invalidateQueries');
+
+      renderHook(() => useRealtimeEventsContext(), {
+        wrapper: createWrapper(),
+      });
+
+      await act(async () => {
+        await vi.runAllTimersAsync();
+      });
+
+      const eventSource = MockEventSource.getLatest();
+
+      await act(async () => {
+        eventSource?.dispatchEvent('reputation.changed', {
+          previousScore: 50,
+          newScore: 75,
+        });
+      });
+
+      // Should still invalidate lists even without agentId
+      expect(invalidateSpy).toHaveBeenCalledWith({ queryKey: queryKeys.lists() });
+    });
+
+    it('handles evaluation.completed without evaluationId', async () => {
+      const invalidateSpy = vi.spyOn(queryClient, 'invalidateQueries');
+
+      renderHook(() => useRealtimeEventsContext(), {
+        wrapper: createWrapper(),
+      });
+
+      await act(async () => {
+        await vi.runAllTimersAsync();
+      });
+
+      const eventSource = MockEventSource.getLatest();
+
+      await act(async () => {
+        eventSource?.dispatchEvent('evaluation.completed', {
+          agentId: '11155111:1',
+          overallScore: 85,
+          status: 'completed',
+        });
+      });
+
+      // Should still invalidate agent evaluations
+      expect(invalidateSpy).toHaveBeenCalledWith({
+        queryKey: queryKeys.agentEvaluations('11155111:1'),
+      });
+    });
+  });
 });
