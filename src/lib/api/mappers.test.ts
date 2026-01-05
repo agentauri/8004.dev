@@ -950,7 +950,10 @@ describe('mapTrendingAgent', () => {
 
 describe('mapTrendingAgents', () => {
   it('should map array of trending agents', () => {
-    const agents = [mockTrendingAgent, { ...mockTrendingAgent, agentId: '84532:15', tokenId: '15' }];
+    const agents = [
+      mockTrendingAgent,
+      { ...mockTrendingAgent, agentId: '84532:15', tokenId: '15' },
+    ];
     const result = mapTrendingAgents(agents);
 
     expect(result).toHaveLength(2);
