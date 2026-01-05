@@ -732,7 +732,7 @@ import {
 const mockLeaderboardEntry: BackendLeaderboardEntry = {
   agentId: '11155111:42',
   chainId: 11155111,
-  tokenId: 42,
+  tokenId: '42',
   name: 'CodeReview Pro',
   description: 'An AI code reviewer',
   image: 'https://example.com/image.png',
@@ -760,17 +760,17 @@ describe('mapLeaderboardEntry', () => {
 
   it('should handle missing name with fallback', () => {
     const entryNoName = { ...mockLeaderboardEntry, name: undefined };
-    const result = mapLeaderboardEntry(entryNoName as BackendLeaderboardEntry, 1);
+    const result = mapLeaderboardEntry(entryNoName as unknown as BackendLeaderboardEntry, 1);
 
     expect(result.name).toBe('Agent #42');
   });
 
   it('should default missing fields', () => {
-    const minimalEntry: BackendLeaderboardEntry = {
+    const minimalEntry = {
       agentId: '11155111:1',
       chainId: 11155111,
-      tokenId: 1,
-    };
+      tokenId: '1',
+    } as BackendLeaderboardEntry;
     const result = mapLeaderboardEntry(minimalEntry, 5);
 
     expect(result.score).toBe(0);
@@ -785,7 +785,7 @@ describe('mapLeaderboardEntries', () => {
   it('should map array with correct ranks', () => {
     const entries = [
       mockLeaderboardEntry,
-      { ...mockLeaderboardEntry, agentId: '84532:15', tokenId: 15 },
+      { ...mockLeaderboardEntry, agentId: '84532:15', tokenId: '15' },
     ];
     const result = mapLeaderboardEntries(entries);
 
@@ -850,7 +850,7 @@ describe('mapGlobalFeedback', () => {
 
   it('should default empty tags array', () => {
     const feedbackNoTags = { ...mockGlobalFeedback, tags: undefined };
-    const result = mapGlobalFeedback(feedbackNoTags as BackendGlobalFeedback);
+    const result = mapGlobalFeedback(feedbackNoTags as unknown as BackendGlobalFeedback);
 
     expect(result.tags).toEqual([]);
   });
@@ -895,7 +895,7 @@ describe('getScoreCategory', () => {
 const mockTrendingAgent: BackendTrendingAgent = {
   agentId: '11155111:42',
   chainId: 11155111,
-  tokenId: 42,
+  tokenId: '42',
   name: 'CodeReview Pro',
   image: 'https://example.com/image.png',
   currentScore: 92,
@@ -926,17 +926,17 @@ describe('mapTrendingAgent', () => {
 
   it('should handle missing name with fallback', () => {
     const agentNoName = { ...mockTrendingAgent, name: undefined };
-    const result = mapTrendingAgent(agentNoName as BackendTrendingAgent);
+    const result = mapTrendingAgent(agentNoName as unknown as BackendTrendingAgent);
 
     expect(result.name).toBe('Agent #42');
   });
 
   it('should default missing fields', () => {
-    const minimalAgent: BackendTrendingAgent = {
+    const minimalAgent = {
       agentId: '11155111:1',
       chainId: 11155111,
-      tokenId: 1,
-    };
+      tokenId: '1',
+    } as BackendTrendingAgent;
     const result = mapTrendingAgent(minimalAgent);
 
     expect(result.currentScore).toBe(0);
@@ -950,7 +950,7 @@ describe('mapTrendingAgent', () => {
 
 describe('mapTrendingAgents', () => {
   it('should map array of trending agents', () => {
-    const agents = [mockTrendingAgent, { ...mockTrendingAgent, agentId: '84532:15', tokenId: 15 }];
+    const agents = [mockTrendingAgent, { ...mockTrendingAgent, agentId: '84532:15', tokenId: '15' }];
     const result = mapTrendingAgents(agents);
 
     expect(result).toHaveLength(2);
@@ -1060,7 +1060,7 @@ import { mapBenchmarkResult, mapEvaluation, mapEvaluationScores, mapEvaluations 
 
 const mockBenchmarkResult: BackendBenchmarkResult = {
   name: 'Response Quality',
-  category: 'quality',
+  category: 'capability',
   score: 92,
   maxScore: 100,
   details: 'Excellent response accuracy',
@@ -1088,7 +1088,7 @@ describe('mapBenchmarkResult', () => {
     const result = mapBenchmarkResult(mockBenchmarkResult);
 
     expect(result.name).toBe('Response Quality');
-    expect(result.category).toBe('quality');
+    expect(result.category).toBe('capability');
     expect(result.score).toBe(92);
     expect(result.maxScore).toBe(100);
     expect(result.details).toBe('Excellent response accuracy');
@@ -1143,7 +1143,7 @@ describe('mapEvaluation', () => {
 
   it('should default status to pending', () => {
     const evalNoStatus = { ...mockEvaluation, status: undefined };
-    const result = mapEvaluation(evalNoStatus as BackendEvaluation);
+    const result = mapEvaluation(evalNoStatus as unknown as BackendEvaluation);
 
     expect(result.status).toBe('pending');
   });
@@ -1253,7 +1253,7 @@ const mockIntentTemplate: BackendIntentTemplate = {
   category: 'development',
   steps: [mockWorkflowStep],
   requiredRoles: ['code_analyzer', 'security_auditor'],
-  matchedAgents: 5,
+  matchedAgents: ['11155111:42', '84532:15', '11155111:88', '80002:23', '84532:67'],
 };
 
 describe('mapWorkflowStep', () => {
@@ -1269,7 +1269,7 @@ describe('mapWorkflowStep', () => {
   });
 
   it('should default missing fields', () => {
-    const minimalStep: BackendWorkflowStep = {};
+    const minimalStep = {} as BackendWorkflowStep;
     const result = mapWorkflowStep(minimalStep);
 
     expect(result.order).toBe(0);
@@ -1291,11 +1291,17 @@ describe('mapIntentTemplate', () => {
     expect(result.category).toBe('development');
     expect(result.steps).toHaveLength(1);
     expect(result.requiredRoles).toEqual(['code_analyzer', 'security_auditor']);
-    expect(result.matchedAgents).toBe(5);
+    expect(result.matchedAgents).toEqual([
+      '11155111:42',
+      '84532:15',
+      '11155111:88',
+      '80002:23',
+      '84532:67',
+    ]);
   });
 
   it('should default missing fields', () => {
-    const minimalTemplate: BackendIntentTemplate = {};
+    const minimalTemplate = {} as BackendIntentTemplate;
     const result = mapIntentTemplate(minimalTemplate);
 
     expect(result.id).toBe('');
@@ -1342,7 +1348,7 @@ import {
 const mockAgentCreatedEvent: BackendAgentCreatedEvent = {
   agentId: '11155111:42',
   chainId: 11155111,
-  tokenId: 42,
+  tokenId: '42',
   name: 'New Agent',
 };
 
@@ -1378,7 +1384,7 @@ describe('mapAgentCreatedEvent', () => {
 
     expect(result.agentId).toBe('11155111:42');
     expect(result.chainId).toBe(11155111);
-    expect(result.tokenId).toBe(42);
+    expect(result.tokenId).toBe('42');
     expect(result.name).toBe('New Agent');
   });
 });

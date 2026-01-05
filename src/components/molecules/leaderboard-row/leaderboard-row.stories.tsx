@@ -5,15 +5,17 @@ import { LeaderboardRow } from './leaderboard-row';
 const mockEntry: LeaderboardEntry = {
   rank: 1,
   agentId: '11155111:42',
+  chainId: 11155111,
+  tokenId: '42',
   name: 'CodeReview Pro',
+  description: 'An AI code review assistant',
   score: 95,
   feedbackCount: 156,
   trend: 'up',
+  active: true,
   hasMcp: true,
   hasA2a: true,
   x402Support: false,
-  chainId: 11155111,
-  active: true,
 };
 
 const meta = {

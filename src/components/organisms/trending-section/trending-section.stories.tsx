@@ -16,8 +16,9 @@ const queryClient = new QueryClient({
 const mockAgents: TrendingAgent[] = [
   {
     id: '11155111:42',
-    name: 'CodeReview Pro',
     chainId: 11155111,
+    tokenId: '42',
+    name: 'CodeReview Pro',
     currentScore: 92,
     previousScore: 78,
     scoreChange: 14,
@@ -30,8 +31,9 @@ const mockAgents: TrendingAgent[] = [
   },
   {
     id: '84532:15',
-    name: 'Trading Assistant',
     chainId: 84532,
+    tokenId: '15',
+    name: 'Trading Assistant',
     currentScore: 87,
     previousScore: 72,
     scoreChange: 15,
@@ -44,8 +46,9 @@ const mockAgents: TrendingAgent[] = [
   },
   {
     id: '11155111:88',
-    name: 'Data Analyzer',
     chainId: 11155111,
+    tokenId: '88',
+    name: 'Data Analyzer',
     currentScore: 85,
     previousScore: 74,
     scoreChange: 11,
@@ -58,8 +61,9 @@ const mockAgents: TrendingAgent[] = [
   },
   {
     id: '80002:23',
-    name: 'Content Writer',
     chainId: 80002,
+    tokenId: '23',
+    name: 'Content Writer',
     currentScore: 81,
     previousScore: 70,
     scoreChange: 11,
@@ -72,8 +76,9 @@ const mockAgents: TrendingAgent[] = [
   },
   {
     id: '84532:67',
-    name: 'Security Scanner',
     chainId: 84532,
+    tokenId: '67',
+    name: 'Security Scanner',
     currentScore: 79,
     previousScore: 68,
     scoreChange: 11,

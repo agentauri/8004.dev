@@ -14,17 +14,18 @@ vi.mock('next/link', () => ({
 
 const mockAgent: TrendingAgent = {
   id: '11155111:42',
-  name: 'CodeReview Pro',
   chainId: 11155111,
+  tokenId: '42',
+  name: 'CodeReview Pro',
   currentScore: 92,
   previousScore: 78,
   scoreChange: 14,
   percentageChange: 17.9,
   trend: 'up',
+  isActive: true,
   hasMcp: true,
   hasA2a: true,
   x402Support: false,
-  isActive: true,
 };
 
 describe('TrendingAgentCard', () => {

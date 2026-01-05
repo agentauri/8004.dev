@@ -38,7 +38,7 @@ describe('handleRouteError', () => {
   });
 
   it('should handle BackendError without status', async () => {
-    const error = new BackendError('Server error', 'SERVER_ERROR');
+    const error = new BackendError('Server error', 'SERVER_ERROR', 500);
     const response = handleRouteError(error, 'Fallback', 'FALLBACK_CODE');
 
     expect(response.status).toBe(500);
