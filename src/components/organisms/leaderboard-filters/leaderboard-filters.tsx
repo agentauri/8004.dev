@@ -9,7 +9,7 @@
 import { Filter, X } from 'lucide-react';
 import type React from 'react';
 import { useState } from 'react';
-import { type ChainId } from '@/components/atoms';
+import type { ChainId } from '@/components/atoms';
 import { ChainSelector, FilterGroup } from '@/components/molecules';
 import { cn } from '@/lib/utils';
 import type { LeaderboardFiltersState, LeaderboardPeriod } from '@/types/leaderboard';
@@ -143,10 +143,7 @@ export function LeaderboardFilters({
           <h3 className="text-[var(--pixel-gray-400)] text-xs uppercase tracking-wider mb-3">
             Chains
           </h3>
-          <ChainSelector
-            value={filters.chains as ChainId[]}
-            onChange={handleChainChange}
-          />
+          <ChainSelector value={filters.chains as ChainId[]} onChange={handleChainChange} />
         </div>
 
         {/* Protocol Filter */}

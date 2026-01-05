@@ -132,13 +132,17 @@ describe('FeedbackFeed', () => {
 
     it('shows loading text when isLoadingMore is true', () => {
       const onLoadMore = vi.fn();
-      render(<FeedbackFeed feedbacks={mockFeedbacks} hasMore onLoadMore={onLoadMore} isLoadingMore />);
+      render(
+        <FeedbackFeed feedbacks={mockFeedbacks} hasMore onLoadMore={onLoadMore} isLoadingMore />,
+      );
       expect(screen.getByText('Loading...')).toBeInTheDocument();
     });
 
     it('disables button when isLoadingMore is true', () => {
       const onLoadMore = vi.fn();
-      render(<FeedbackFeed feedbacks={mockFeedbacks} hasMore onLoadMore={onLoadMore} isLoadingMore />);
+      render(
+        <FeedbackFeed feedbacks={mockFeedbacks} hasMore onLoadMore={onLoadMore} isLoadingMore />,
+      );
       expect(screen.getByText('Loading...')).toBeDisabled();
     });
   });

@@ -63,11 +63,7 @@ function IntentDetailContent(): React.JSX.Element {
   const id = params.id;
 
   const { data: template, isLoading, error } = useIntent(id);
-  const {
-    mutate: matchAgents,
-    isPending: isMatching,
-    error: matchError,
-  } = useIntentMatches(id);
+  const { mutate: matchAgents, isPending: isMatching, error: matchError } = useIntentMatches(id);
 
   // Always use the template from the query cache - the mutation updates the cache
   // with matchedAgents while preserving all other template data

@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-webpack5';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { http, HttpResponse } from 'msw';
+import { HttpResponse, http } from 'msw';
 import type { TrendingAgent } from '@/types/trending';
 import { TrendingSection } from './trending-section';
 

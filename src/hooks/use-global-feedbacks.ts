@@ -71,10 +71,7 @@ async function fetchGlobalFeedbacks(options: GlobalFeedbackParams): Promise<Glob
  * });
  * ```
  */
-export function useGlobalFeedbacks({
-  enabled = true,
-  ...params
-}: UseGlobalFeedbacksOptions = {}) {
+export function useGlobalFeedbacks({ enabled = true, ...params }: UseGlobalFeedbacksOptions = {}) {
   return useQuery<GlobalFeedbackResult, Error>({
     queryKey: queryKeys.globalFeedbacksList(params),
     queryFn: () => fetchGlobalFeedbacks(params),

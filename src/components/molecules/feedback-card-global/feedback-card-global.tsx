@@ -5,12 +5,12 @@
  * Used in the global feedbacks feed.
  */
 
-import { Calendar, ExternalLink, ThumbsDown, ThumbsUp, Minus } from 'lucide-react';
+import { Calendar, ExternalLink, Minus, ThumbsDown, ThumbsUp } from 'lucide-react';
 import Link from 'next/link';
 import type React from 'react';
-import { type ChainId, ChainBadge, TrustScore, CopyButton } from '@/components/atoms';
+import { ChainBadge, type ChainId, CopyButton } from '@/components/atoms';
 import { cn } from '@/lib/utils';
-import type { GlobalFeedback, FeedbackScoreCategory } from '@/types/feedback';
+import type { FeedbackScoreCategory, GlobalFeedback } from '@/types/feedback';
 
 export interface FeedbackCardGlobalProps {
   /** Feedback data */
@@ -110,7 +110,9 @@ export function FeedbackCardGlobal({
         {/* Score Badge */}
         <div className={cn('flex items-center gap-2 px-3 py-1.5', scoreStyle.bgColor)}>
           <ScoreIcon size={16} className={scoreStyle.color} aria-hidden="true" />
-          <span className={cn('font-[family-name:var(--font-pixel-display)] text-lg', scoreStyle.color)}>
+          <span
+            className={cn('font-[family-name:var(--font-pixel-display)] text-lg', scoreStyle.color)}
+          >
             {feedback.score}
           </span>
         </div>
@@ -118,10 +120,7 @@ export function FeedbackCardGlobal({
         {/* Timestamp */}
         <div className="flex items-center gap-1 text-[var(--pixel-gray-500)]">
           <Calendar size={12} aria-hidden="true" />
-          <time
-            dateTime={feedback.timestamp}
-            className="text-[0.625rem] font-mono"
-          >
+          <time dateTime={feedback.timestamp} className="text-[0.625rem] font-mono">
             {formatTimestamp(feedback.timestamp)}
           </time>
         </div>
@@ -129,10 +128,7 @@ export function FeedbackCardGlobal({
 
       {/* Agent Info */}
       <div className="mb-3">
-        <Link
-          href={`/agent/${feedback.agentId}`}
-          className="group inline-flex items-center gap-2"
-        >
+        <Link href={`/agent/${feedback.agentId}`} className="group inline-flex items-center gap-2">
           <span className="font-[family-name:var(--font-pixel-heading)] text-sm text-[var(--pixel-gray-100)] group-hover:text-[var(--pixel-blue-sky)] transition-colors">
             {feedback.agentName}
           </span>
@@ -165,9 +161,7 @@ export function FeedbackCardGlobal({
 
       {/* Context */}
       {feedback.context && (
-        <p className="text-sm text-[var(--pixel-gray-300)] mb-3 line-clamp-2">
-          {feedback.context}
-        </p>
+        <p className="text-sm text-[var(--pixel-gray-300)] mb-3 line-clamp-2">{feedback.context}</p>
       )}
 
       {/* Footer: Submitter */}

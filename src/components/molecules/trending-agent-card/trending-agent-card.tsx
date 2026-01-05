@@ -8,7 +8,7 @@
 import { TrendingDown, TrendingUp } from 'lucide-react';
 import Link from 'next/link';
 import type React from 'react';
-import { type ChainId, ChainBadge } from '@/components/atoms';
+import { ChainBadge, type ChainId } from '@/components/atoms';
 import { CapabilityTag } from '@/components/molecules';
 import { cn } from '@/lib/utils';
 import type { TrendingAgent } from '@/types/trending';
@@ -72,7 +72,8 @@ export function TrendingAgentCard({
 }: TrendingAgentCardProps): React.JSX.Element {
   const rankStyle = getRankStyle(rank);
   const TrendIcon = agent.trend === 'down' ? TrendingDown : TrendingUp;
-  const trendColor = agent.trend === 'down' ? 'text-[var(--pixel-red-fire)]' : 'text-[var(--pixel-green-pipe)]';
+  const trendColor =
+    agent.trend === 'down' ? 'text-[var(--pixel-red-fire)]' : 'text-[var(--pixel-green-pipe)]';
 
   return (
     <Link

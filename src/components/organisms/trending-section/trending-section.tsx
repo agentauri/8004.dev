@@ -71,10 +71,7 @@ export function TrendingSection({
       {/* Section Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
         <div className="flex items-center gap-3">
-          <Flame
-            className="w-6 h-6 text-[var(--pixel-red-fire)]"
-            aria-hidden="true"
-          />
+          <Flame className="w-6 h-6 text-[var(--pixel-red-fire)]" aria-hidden="true" />
           <h2 className="font-[family-name:var(--font-pixel-heading)] text-xl text-[var(--pixel-gray-100)]">
             Trending Agents
           </h2>
@@ -152,11 +149,7 @@ export function TrendingSection({
       {!isLoading && !error && data && data.agents.length > 0 && (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
           {data.agents.map((agent, index) => (
-            <TrendingAgentCard
-              key={agent.id}
-              agent={agent}
-              rank={index + 1}
-            />
+            <TrendingAgentCard key={agent.id} agent={agent} rank={index + 1} />
           ))}
         </div>
       )}

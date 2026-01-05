@@ -7,7 +7,7 @@
 import { TrendingDown, TrendingUp } from 'lucide-react';
 import Link from 'next/link';
 import type React from 'react';
-import { type ChainId, ChainBadge } from '@/components/atoms';
+import { ChainBadge, type ChainId } from '@/components/atoms';
 import { CapabilityTag } from '@/components/molecules';
 import { cn } from '@/lib/utils';
 import type { LeaderboardEntry } from '@/types/leaderboard';
@@ -58,10 +58,7 @@ function getRankStyle(rank: number): { bg: string; text: string; glow: string } 
   }
 }
 
-export function LeaderboardRow({
-  entry,
-  className,
-}: LeaderboardRowProps): React.JSX.Element {
+export function LeaderboardRow({ entry, className }: LeaderboardRowProps): React.JSX.Element {
   const rankStyle = getRankStyle(entry.rank);
   const TrendIcon = entry.trend === 'down' ? TrendingDown : TrendingUp;
   const trendColor =
@@ -124,17 +121,13 @@ export function LeaderboardRow({
         <span className="font-mono text-sm text-[var(--pixel-gray-100)]">
           {entry.feedbackCount}
         </span>
-        <span className="text-[0.625rem] text-[var(--pixel-gray-500)] uppercase">
-          feedbacks
-        </span>
+        <span className="text-[0.625rem] text-[var(--pixel-gray-500)] uppercase">feedbacks</span>
       </div>
 
       {/* Trend - Hidden on mobile */}
       <div className={cn('hidden md:flex items-center justify-end gap-1', trendColor)}>
         <TrendIcon size={14} aria-hidden="true" />
-        <span className="font-mono text-xs">
-          {entry.trend === 'stable' ? '—' : entry.trend}
-        </span>
+        <span className="font-mono text-xs">{entry.trend === 'stable' ? '—' : entry.trend}</span>
       </div>
 
       {/* Score */}
@@ -142,9 +135,7 @@ export function LeaderboardRow({
         <span className="font-[family-name:var(--font-pixel-display)] text-xl text-[var(--pixel-gray-100)]">
           {entry.score}
         </span>
-        <span className="text-[0.625rem] text-[var(--pixel-gray-500)] uppercase">
-          score
-        </span>
+        <span className="text-[0.625rem] text-[var(--pixel-gray-500)] uppercase">score</span>
       </div>
     </Link>
   );

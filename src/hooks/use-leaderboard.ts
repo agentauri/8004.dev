@@ -72,10 +72,7 @@ async function fetchLeaderboard(options: LeaderboardParams): Promise<Leaderboard
  * });
  * ```
  */
-export function useLeaderboard({
-  enabled = true,
-  ...params
-}: UseLeaderboardOptions = {}) {
+export function useLeaderboard({ enabled = true, ...params }: UseLeaderboardOptions = {}) {
   return useQuery<LeaderboardResponse, Error>({
     queryKey: queryKeys.leaderboardList(params),
     queryFn: () => fetchLeaderboard(params),
@@ -108,10 +105,7 @@ export function useLeaderboard({
  * const entries = data?.pages.flatMap(page => page.entries) ?? [];
  * ```
  */
-export function useInfiniteLeaderboard({
-  enabled = true,
-  ...params
-}: UseLeaderboardOptions = {}) {
+export function useInfiniteLeaderboard({ enabled = true, ...params }: UseLeaderboardOptions = {}) {
   return useInfiniteQuery<LeaderboardResponse, Error>({
     queryKey: queryKeys.leaderboardList({ ...params, infinite: true }),
     queryFn: ({ pageParam }) =>

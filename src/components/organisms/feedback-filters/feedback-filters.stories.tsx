@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-webpack5';
 import { useState } from 'react';
-import type { GlobalFeedbackFilters, FeedbackStats } from '@/types/feedback';
+import type { FeedbackStats, GlobalFeedbackFilters } from '@/types/feedback';
 import { FeedbackFilters } from './feedback-filters';
 
 const defaultFilters: GlobalFeedbackFilters = {

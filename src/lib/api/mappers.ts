@@ -639,7 +639,10 @@ import type { TrendingAgent } from '@/types/trending';
  * Map backend leaderboard entry to frontend LeaderboardEntry
  * Adds rank position (must be calculated by caller)
  */
-export function mapLeaderboardEntry(entry: BackendLeaderboardEntry, rank: number): LeaderboardEntry {
+export function mapLeaderboardEntry(
+  entry: BackendLeaderboardEntry,
+  rank: number,
+): LeaderboardEntry {
   return {
     rank,
     agentId: entry.agentId,

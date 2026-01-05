@@ -182,10 +182,48 @@ export const LeaderboardTable: Story = {
   render: () => {
     const entries: LeaderboardEntry[] = [
       mockEntry,
-      { ...mockEntry, rank: 2, agentId: '84532:15', name: 'Trading Assistant', score: 92, feedbackCount: 203, chainId: 84532, hasA2a: false, x402Support: true },
-      { ...mockEntry, rank: 3, agentId: '11155111:88', name: 'Data Analyzer', score: 89, feedbackCount: 98, trend: 'stable', hasMcp: false },
-      { ...mockEntry, rank: 4, agentId: '80002:23', name: 'Content Writer', score: 87, feedbackCount: 145, chainId: 80002, x402Support: true },
-      { ...mockEntry, rank: 5, agentId: '84532:67', name: 'Security Scanner', score: 85, feedbackCount: 67, trend: 'down', chainId: 84532, hasA2a: false },
+      {
+        ...mockEntry,
+        rank: 2,
+        agentId: '84532:15',
+        name: 'Trading Assistant',
+        score: 92,
+        feedbackCount: 203,
+        chainId: 84532,
+        hasA2a: false,
+        x402Support: true,
+      },
+      {
+        ...mockEntry,
+        rank: 3,
+        agentId: '11155111:88',
+        name: 'Data Analyzer',
+        score: 89,
+        feedbackCount: 98,
+        trend: 'stable',
+        hasMcp: false,
+      },
+      {
+        ...mockEntry,
+        rank: 4,
+        agentId: '80002:23',
+        name: 'Content Writer',
+        score: 87,
+        feedbackCount: 145,
+        chainId: 80002,
+        x402Support: true,
+      },
+      {
+        ...mockEntry,
+        rank: 5,
+        agentId: '84532:67',
+        name: 'Security Scanner',
+        score: 85,
+        feedbackCount: 67,
+        trend: 'down',
+        chainId: 84532,
+        hasA2a: false,
+      },
     ];
 
     return (
@@ -194,8 +232,12 @@ export const LeaderboardTable: Story = {
         <div className="grid grid-cols-[4rem_1fr_auto] md:grid-cols-[4rem_1fr_8rem_6rem_auto] gap-4 items-center p-4 border-b-2 border-[var(--pixel-gray-700)] bg-[var(--pixel-gray-800)]">
           <span className="text-[var(--pixel-gray-400)] text-xs uppercase">Rank</span>
           <span className="text-[var(--pixel-gray-400)] text-xs uppercase">Agent</span>
-          <span className="hidden md:block text-[var(--pixel-gray-400)] text-xs uppercase text-right">Feedbacks</span>
-          <span className="hidden md:block text-[var(--pixel-gray-400)] text-xs uppercase text-right">Trend</span>
+          <span className="hidden md:block text-[var(--pixel-gray-400)] text-xs uppercase text-right">
+            Feedbacks
+          </span>
+          <span className="hidden md:block text-[var(--pixel-gray-400)] text-xs uppercase text-right">
+            Trend
+          </span>
           <span className="text-[var(--pixel-gray-400)] text-xs uppercase text-right">Score</span>
         </div>
         {/* Rows */}

@@ -1,10 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import {
-  validateAgentId,
-  validateSearchQuery,
-  validateLimit,
-  VALID_CHAIN_IDS,
-} from './validation';
+import { VALID_CHAIN_IDS, validateAgentId, validateLimit, validateSearchQuery } from './validation';
 
 describe('validateAgentId', () => {
   describe('valid cases', () => {

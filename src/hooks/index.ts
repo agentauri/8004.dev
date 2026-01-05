@@ -19,6 +19,7 @@ export {
   type UseFilterPresetsResult,
   useFilterPresets,
 } from './use-filter-presets';
+export { useGlobalFeedbacks, useInfiniteGlobalFeedbacks } from './use-global-feedbacks';
 export {
   type UseIntentOptions,
   type UseIntentsOptions,
@@ -31,7 +32,6 @@ export {
   type RealtimeEventsContextValue,
   useRealtimeEvents,
 } from './use-realtime-events';
-export { useGlobalFeedbacks, useInfiniteGlobalFeedbacks } from './use-global-feedbacks';
 export { type UseRelatedAgentsOptions, useRelatedAgents } from './use-related-agents';
 export { useSearchAgents } from './use-search-agents';
 export { type UseSimilarAgentsOptions, useSimilarAgents } from './use-similar-agents';

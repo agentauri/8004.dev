@@ -59,7 +59,10 @@ export function LeaderboardTable({
 }: LeaderboardTableProps): React.JSX.Element {
   return (
     <div
-      className={cn('bg-[var(--pixel-gray-dark)] border-2 border-[var(--pixel-gray-700)]', className)}
+      className={cn(
+        'bg-[var(--pixel-gray-dark)] border-2 border-[var(--pixel-gray-700)]',
+        className,
+      )}
       data-testid="leaderboard-table"
     >
       {/* Table Header */}
@@ -83,10 +86,7 @@ export function LeaderboardTable({
 
       {/* Error State */}
       {error && (
-        <div
-          className="p-8 text-center border-b border-[var(--pixel-gray-700)]"
-          role="alert"
-        >
+        <div className="p-8 text-center border-b border-[var(--pixel-gray-700)]" role="alert">
           <p className="text-[var(--pixel-red-fire)] font-[family-name:var(--font-pixel-body)]">
             {error}
           </p>
@@ -94,13 +94,10 @@ export function LeaderboardTable({
       )}
 
       {/* Loading State */}
-      {isLoading && (
-        <>
-          {Array.from({ length: 10 }).map((_, index) => (
-            <LeaderboardRowSkeleton key={`skeleton-${index}`} />
-          ))}
-        </>
-      )}
+      {isLoading &&
+        Array.from({ length: 10 }).map((_, index) => (
+          <LeaderboardRowSkeleton key={`skeleton-${index}`} />
+        ))}
 
       {/* Empty State */}
       {!isLoading && !error && entries.length === 0 && (

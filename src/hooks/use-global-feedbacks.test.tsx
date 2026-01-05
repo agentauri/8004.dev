@@ -140,7 +140,9 @@ describe('useGlobalFeedbacks', () => {
         expect(result.current.isSuccess).toBe(true);
       });
 
-      expect(mockFetch).toHaveBeenCalledWith('/api/feedbacks?startDate=2026-01-01&endDate=2026-01-31');
+      expect(mockFetch).toHaveBeenCalledWith(
+        '/api/feedbacks?startDate=2026-01-01&endDate=2026-01-31',
+      );
     });
 
     it('fetches feedbacks with agent search', async () => {

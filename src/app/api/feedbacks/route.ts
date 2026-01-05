@@ -6,13 +6,9 @@
  * Remove mock fallback once backend implements /api/v1/feedbacks
  */
 
-import { backendFetch, BackendError } from '@/lib/api/backend';
+import { BackendError, backendFetch } from '@/lib/api/backend';
 import { mapGlobalFeedbacks } from '@/lib/api/mappers';
-import {
-  handleRouteError,
-  parseIntParam,
-  successResponse,
-} from '@/lib/api/route-helpers';
+import { handleRouteError, parseIntParam, successResponse } from '@/lib/api/route-helpers';
 import type { BackendGlobalFeedback, BackendGlobalFeedbacksResponse } from '@/types/backend';
 import type { FeedbackScoreCategory, FeedbackStats } from '@/types/feedback';
 
@@ -26,17 +22,108 @@ function isValidCategory(value: string): value is FeedbackScoreCategory {
  * Generate mock feedbacks data for development/testing
  * TODO: Remove once backend implements /api/v1/feedbacks
  */
-function getMockFeedbacks(limit: number, scoreCategory?: FeedbackScoreCategory): { feedbacks: BackendGlobalFeedback[]; stats: FeedbackStats } {
+function getMockFeedbacks(
+  limit: number,
+  scoreCategory?: FeedbackScoreCategory,
+): { feedbacks: BackendGlobalFeedback[]; stats: FeedbackStats } {
   const now = new Date();
   const allFeedbacks: BackendGlobalFeedback[] = [
-    { id: 'fb_1', score: 92, tags: ['reliable', 'fast'], context: 'Excellent code review, caught several edge cases I missed.', submitter: '0x1234567890abcdef1234567890abcdef12345678', submittedAt: new Date(now.getTime() - 2 * 60 * 60 * 1000).toISOString(), txHash: '0xabc123', agentId: '11155111:42', agentName: 'CodeReview Pro', agentChainId: 11155111 },
-    { id: 'fb_2', score: 45, tags: ['slow'], context: 'Response was accurate but took longer than expected.', submitter: '0xabcdef1234567890abcdef1234567890abcdef12', submittedAt: new Date(now.getTime() - 5 * 60 * 60 * 1000).toISOString(), txHash: '0xdef456', agentId: '84532:15', agentName: 'Trading Assistant', agentChainId: 84532 },
-    { id: 'fb_3', score: 88, tags: ['accurate', 'helpful'], context: 'Great data analysis, very detailed insights.', submitter: '0x9876543210fedcba9876543210fedcba98765432', submittedAt: new Date(now.getTime() - 12 * 60 * 60 * 1000).toISOString(), txHash: '0x789abc', agentId: '11155111:88', agentName: 'Data Analyzer', agentChainId: 11155111 },
-    { id: 'fb_4', score: 25, tags: ['inaccurate'], context: 'Translation had several errors in technical terms.', submitter: '0xfedcba9876543210fedcba9876543210fedcba98', submittedAt: new Date(now.getTime() - 24 * 60 * 60 * 1000).toISOString(), txHash: '0xcde789', agentId: '80002:55', agentName: 'Translation Bot', agentChainId: 80002 },
-    { id: 'fb_5', score: 78, tags: ['creative'], context: 'Good content generation, needed minor editing.', submitter: '0x1111222233334444555566667777888899990000', submittedAt: new Date(now.getTime() - 36 * 60 * 60 * 1000).toISOString(), txHash: '0xfgh012', agentId: '80002:23', agentName: 'Content Writer', agentChainId: 80002 },
-    { id: 'fb_6', score: 95, tags: ['thorough', 'secure'], context: 'Found critical vulnerability that would have been costly.', submitter: '0xaaaabbbbccccddddeeeeffffgggg111122223333', submittedAt: new Date(now.getTime() - 48 * 60 * 60 * 1000).toISOString(), txHash: '0xijk345', agentId: '84532:67', agentName: 'Security Scanner', agentChainId: 84532 },
-    { id: 'fb_7', score: 55, tags: ['average'], context: 'Results were okay but nothing exceptional.', submitter: '0x4444555566667777888899990000aaaabbbbcccc', submittedAt: new Date(now.getTime() - 72 * 60 * 60 * 1000).toISOString(), txHash: '0xlmn678', agentId: '11155111:101', agentName: 'Research Assistant', agentChainId: 11155111 },
-    { id: 'fb_8', score: 82, tags: ['efficient'], context: 'Quick debugging, saved me hours of work.', submitter: '0xddddeeeeffffgggg111122223333444455556666', submittedAt: new Date(now.getTime() - 96 * 60 * 60 * 1000).toISOString(), txHash: '0xopq901', agentId: '11155111:77', agentName: 'Code Debugger', agentChainId: 11155111 },
+    {
+      id: 'fb_1',
+      score: 92,
+      tags: ['reliable', 'fast'],
+      context: 'Excellent code review, caught several edge cases I missed.',
+      submitter: '0x1234567890abcdef1234567890abcdef12345678',
+      submittedAt: new Date(now.getTime() - 2 * 60 * 60 * 1000).toISOString(),
+      txHash: '0xabc123',
+      agentId: '11155111:42',
+      agentName: 'CodeReview Pro',
+      agentChainId: 11155111,
+    },
+    {
+      id: 'fb_2',
+      score: 45,
+      tags: ['slow'],
+      context: 'Response was accurate but took longer than expected.',
+      submitter: '0xabcdef1234567890abcdef1234567890abcdef12',
+      submittedAt: new Date(now.getTime() - 5 * 60 * 60 * 1000).toISOString(),
+      txHash: '0xdef456',
+      agentId: '84532:15',
+      agentName: 'Trading Assistant',
+      agentChainId: 84532,
+    },
+    {
+      id: 'fb_3',
+      score: 88,
+      tags: ['accurate', 'helpful'],
+      context: 'Great data analysis, very detailed insights.',
+      submitter: '0x9876543210fedcba9876543210fedcba98765432',
+      submittedAt: new Date(now.getTime() - 12 * 60 * 60 * 1000).toISOString(),
+      txHash: '0x789abc',
+      agentId: '11155111:88',
+      agentName: 'Data Analyzer',
+      agentChainId: 11155111,
+    },
+    {
+      id: 'fb_4',
+      score: 25,
+      tags: ['inaccurate'],
+      context: 'Translation had several errors in technical terms.',
+      submitter: '0xfedcba9876543210fedcba9876543210fedcba98',
+      submittedAt: new Date(now.getTime() - 24 * 60 * 60 * 1000).toISOString(),
+      txHash: '0xcde789',
+      agentId: '80002:55',
+      agentName: 'Translation Bot',
+      agentChainId: 80002,
+    },
+    {
+      id: 'fb_5',
+      score: 78,
+      tags: ['creative'],
+      context: 'Good content generation, needed minor editing.',
+      submitter: '0x1111222233334444555566667777888899990000',
+      submittedAt: new Date(now.getTime() - 36 * 60 * 60 * 1000).toISOString(),
+      txHash: '0xfgh012',
+      agentId: '80002:23',
+      agentName: 'Content Writer',
+      agentChainId: 80002,
+    },
+    {
+      id: 'fb_6',
+      score: 95,
+      tags: ['thorough', 'secure'],
+      context: 'Found critical vulnerability that would have been costly.',
+      submitter: '0xaaaabbbbccccddddeeeeffffgggg111122223333',
+      submittedAt: new Date(now.getTime() - 48 * 60 * 60 * 1000).toISOString(),
+      txHash: '0xijk345',
+      agentId: '84532:67',
+      agentName: 'Security Scanner',
+      agentChainId: 84532,
+    },
+    {
+      id: 'fb_7',
+      score: 55,
+      tags: ['average'],
+      context: 'Results were okay but nothing exceptional.',
+      submitter: '0x4444555566667777888899990000aaaabbbbcccc',
+      submittedAt: new Date(now.getTime() - 72 * 60 * 60 * 1000).toISOString(),
+      txHash: '0xlmn678',
+      agentId: '11155111:101',
+      agentName: 'Research Assistant',
+      agentChainId: 11155111,
+    },
+    {
+      id: 'fb_8',
+      score: 82,
+      tags: ['efficient'],
+      context: 'Quick debugging, saved me hours of work.',
+      submitter: '0xddddeeeeffffgggg111122223333444455556666',
+      submittedAt: new Date(now.getTime() - 96 * 60 * 60 * 1000).toISOString(),
+      txHash: '0xopq901',
+      agentId: '11155111:77',
+      agentName: 'Code Debugger',
+      agentChainId: 11155111,
+    },
   ];
 
   // Filter by score category if provided
@@ -76,7 +163,8 @@ export async function GET(request: Request) {
 
     // Parse score category filter
     const categoryParam = searchParams.get('scoreCategory');
-    const scoreCategory = categoryParam && isValidCategory(categoryParam) ? categoryParam : undefined;
+    const scoreCategory =
+      categoryParam && isValidCategory(categoryParam) ? categoryParam : undefined;
 
     // Parse chain filters (comma-separated)
     const chainsParam = searchParams.get('chains');

@@ -6,10 +6,10 @@
  * Remove mock fallback once backend implements /api/v1/trending
  */
 
-import { backendFetch, BackendError } from '@/lib/api/backend';
+import { BackendError, backendFetch } from '@/lib/api/backend';
 import { mapTrendingAgents } from '@/lib/api/mappers';
 import { handleRouteError, parseIntParam, successResponse } from '@/lib/api/route-helpers';
-import type { BackendTrendingResponse, BackendTrendingAgent } from '@/types/backend';
+import type { BackendTrendingAgent, BackendTrendingResponse } from '@/types/backend';
 
 const VALID_PERIODS = ['24h', '7d', '30d'] as const;
 type ValidPeriod = (typeof VALID_PERIODS)[number];

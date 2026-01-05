@@ -6,10 +6,10 @@
 
 'use client';
 
-import { Filter, ThumbsDown, ThumbsUp, Minus, X } from 'lucide-react';
+import { Filter, Minus, ThumbsDown, ThumbsUp, X } from 'lucide-react';
 import type React from 'react';
 import { useState } from 'react';
-import { type ChainId } from '@/components/atoms';
+import type { ChainId } from '@/components/atoms';
 import { ChainSelector } from '@/components/molecules';
 import { cn } from '@/lib/utils';
 import type { FeedbackScoreCategory, FeedbackStats, GlobalFeedbackFilters } from '@/types/feedback';
@@ -147,7 +147,10 @@ export function FeedbackFilters({
                   )}
                   aria-pressed={isSelected}
                 >
-                  <Icon size={12} className={isSelected ? 'text-[var(--pixel-blue-sky)]' : option.color} />
+                  <Icon
+                    size={12}
+                    className={isSelected ? 'text-[var(--pixel-blue-sky)]' : option.color}
+                  />
                   {option.label}
                 </button>
               );
@@ -160,10 +163,7 @@ export function FeedbackFilters({
           <h3 className="text-[var(--pixel-gray-400)] text-xs uppercase tracking-wider mb-3">
             Chains
           </h3>
-          <ChainSelector
-            value={(filters.chains ?? []) as ChainId[]}
-            onChange={handleChainChange}
-          />
+          <ChainSelector value={(filters.chains ?? []) as ChainId[]} onChange={handleChainChange} />
         </div>
 
         {/* Clear Filters */}

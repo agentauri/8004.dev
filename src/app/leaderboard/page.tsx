@@ -31,14 +31,8 @@ export default function LeaderboardPage() {
     limit: 20,
   };
 
-  const {
-    data,
-    isLoading,
-    error,
-    fetchNextPage,
-    hasNextPage,
-    isFetchingNextPage,
-  } = useInfiniteLeaderboard(queryParams);
+  const { data, isLoading, error, fetchNextPage, hasNextPage, isFetchingNextPage } =
+    useInfiniteLeaderboard(queryParams);
 
   // Flatten paginated entries
   const entries = data?.pages.flatMap((page) => page.entries) ?? [];
@@ -56,10 +50,7 @@ export default function LeaderboardPage() {
         {/* Page Header */}
         <header className="mb-8">
           <div className="flex items-center gap-3 mb-2">
-            <Trophy
-              className="w-8 h-8 text-[var(--pixel-gold-coin)]"
-              aria-hidden="true"
-            />
+            <Trophy className="w-8 h-8 text-[var(--pixel-gold-coin)]" aria-hidden="true" />
             <h1 className="font-[family-name:var(--font-pixel-display)] text-2xl md:text-3xl text-[var(--pixel-gray-100)]">
               Leaderboard
             </h1>

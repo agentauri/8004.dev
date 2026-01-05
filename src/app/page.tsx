@@ -5,7 +5,12 @@ import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { PixelExplorer } from '@/components/atoms';
 import { FeatureCard, IntentCard, SearchInput } from '@/components/molecules';
-import { EvaluationCard, MCPConnectModal, StatsGrid, TrendingSection } from '@/components/organisms';
+import {
+  EvaluationCard,
+  MCPConnectModal,
+  StatsGrid,
+  TrendingSection,
+} from '@/components/organisms';
 import { useEvaluations, useIntents, useStats } from '@/hooks';
 
 // Icon components for feature cards
@@ -189,11 +194,7 @@ export default function HomePage() {
         </section>
 
         {/* Trending Agents */}
-        <TrendingSection
-          initialPeriod="7d"
-          limit={5}
-          className="w-full max-w-4xl mx-auto mt-16"
-        />
+        <TrendingSection initialPeriod="7d" limit={5} className="w-full max-w-4xl mx-auto mt-16" />
 
         {/* Compose a Team CTA */}
         <section

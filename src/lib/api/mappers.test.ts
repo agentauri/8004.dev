@@ -714,13 +714,17 @@ describe('mappers', () => {
 // Leaderboard Mapper Tests
 // ============================================================================
 
-import type { BackendLeaderboardEntry, BackendGlobalFeedback, BackendTrendingAgent } from '@/types/backend';
+import type {
+  BackendGlobalFeedback,
+  BackendLeaderboardEntry,
+  BackendTrendingAgent,
+} from '@/types/backend';
 import {
-  mapLeaderboardEntry,
-  mapLeaderboardEntries,
+  getScoreCategory,
   mapGlobalFeedback,
   mapGlobalFeedbacks,
-  getScoreCategory,
+  mapLeaderboardEntries,
+  mapLeaderboardEntry,
   mapTrendingAgent,
   mapTrendingAgents,
 } from './mappers';
@@ -779,7 +783,10 @@ describe('mapLeaderboardEntry', () => {
 
 describe('mapLeaderboardEntries', () => {
   it('should map array with correct ranks', () => {
-    const entries = [mockLeaderboardEntry, { ...mockLeaderboardEntry, agentId: '84532:15', tokenId: 15 }];
+    const entries = [
+      mockLeaderboardEntry,
+      { ...mockLeaderboardEntry, agentId: '84532:15', tokenId: 15 },
+    ];
     const result = mapLeaderboardEntries(entries);
 
     expect(result).toHaveLength(2);
@@ -957,15 +964,11 @@ describe('mapTrendingAgents', () => {
 // ============================================================================
 
 import type {
-  BackendStreamMetadata,
   BackendStreamError,
   BackendStreamEvent,
+  BackendStreamMetadata,
 } from '@/types/backend';
-import {
-  mapStreamMetadata,
-  mapStreamError,
-  mapStreamEvent,
-} from './mappers';
+import { mapStreamError, mapStreamEvent, mapStreamMetadata } from './mappers';
 
 const mockStreamMetadata: BackendStreamMetadata = {
   hydeQuery: 'code review agent',
@@ -1050,15 +1053,10 @@ describe('mapStreamEvent', () => {
 
 import type {
   BackendBenchmarkResult,
-  BackendEvaluationScores,
   BackendEvaluation,
+  BackendEvaluationScores,
 } from '@/types/backend';
-import {
-  mapBenchmarkResult,
-  mapEvaluationScores,
-  mapEvaluation,
-  mapEvaluations,
-} from './mappers';
+import { mapBenchmarkResult, mapEvaluation, mapEvaluationScores, mapEvaluations } from './mappers';
 
 const mockBenchmarkResult: BackendBenchmarkResult = {
   name: 'Response Quality',
@@ -1166,15 +1164,8 @@ describe('mapEvaluations', () => {
 // Team Composition Mapper Tests
 // ============================================================================
 
-import type {
-  BackendTeamMember,
-  BackendTeamComposition,
-} from '@/types/backend';
-import {
-  mapTeamMember,
-  mapTeamComposition,
-  mapTeamCompositions,
-} from './mappers';
+import type { BackendTeamComposition, BackendTeamMember } from '@/types/backend';
+import { mapTeamComposition, mapTeamCompositions, mapTeamMember } from './mappers';
 
 const mockTeamMember: BackendTeamMember = {
   agentId: '11155111:42',
@@ -1243,15 +1234,8 @@ describe('mapTeamCompositions', () => {
 // Intent Template Mapper Tests
 // ============================================================================
 
-import type {
-  BackendWorkflowStep,
-  BackendIntentTemplate,
-} from '@/types/backend';
-import {
-  mapWorkflowStep,
-  mapIntentTemplate,
-  mapIntentTemplates,
-} from './mappers';
+import type { BackendIntentTemplate, BackendWorkflowStep } from '@/types/backend';
+import { mapIntentTemplate, mapIntentTemplates, mapWorkflowStep } from './mappers';
 
 const mockWorkflowStep: BackendWorkflowStep = {
   order: 1,
@@ -1339,20 +1323,20 @@ describe('mapIntentTemplates', () => {
 // ============================================================================
 
 import type {
+  BackendAgentClassifiedEvent,
   BackendAgentCreatedEvent,
   BackendAgentUpdatedEvent,
-  BackendAgentClassifiedEvent,
-  BackendReputationChangedEvent,
   BackendEvaluationCompletedEvent,
   BackendRealtimeEvent,
+  BackendReputationChangedEvent,
 } from '@/types/backend';
 import {
+  mapAgentClassifiedEvent,
   mapAgentCreatedEvent,
   mapAgentUpdatedEvent,
-  mapAgentClassifiedEvent,
-  mapReputationChangedEvent,
   mapEvaluationCompletedEvent,
   mapRealtimeEvent,
+  mapReputationChangedEvent,
 } from './mappers';
 
 const mockAgentCreatedEvent: BackendAgentCreatedEvent = {
@@ -1464,7 +1448,10 @@ describe('mapRealtimeEvent', () => {
     const result = mapRealtimeEvent(event);
 
     expect(result.type).toBe('agent.updated');
-    expect((result.data as { changedFields: string[] }).changedFields).toEqual(['name', 'description']);
+    expect((result.data as { changedFields: string[] }).changedFields).toEqual([
+      'name',
+      'description',
+    ]);
   });
 
   it('should map agent.classified event', () => {

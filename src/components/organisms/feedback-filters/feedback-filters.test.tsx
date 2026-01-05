@@ -1,6 +1,6 @@
 import { fireEvent, render, screen } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
-import type { GlobalFeedbackFilters, FeedbackStats } from '@/types/feedback';
+import type { FeedbackStats, GlobalFeedbackFilters } from '@/types/feedback';
 import { FeedbackFilters } from './feedback-filters';
 
 const defaultFilters: GlobalFeedbackFilters = {
@@ -115,7 +115,10 @@ describe('FeedbackFilters', () => {
       const onFiltersChange = vi.fn();
       render(<FeedbackFilters filters={defaultFilters} onFiltersChange={onFiltersChange} />);
       fireEvent.click(screen.getByText('Positive'));
-      expect(onFiltersChange).toHaveBeenCalledWith({ ...defaultFilters, scoreCategory: 'positive' });
+      expect(onFiltersChange).toHaveBeenCalledWith({
+        ...defaultFilters,
+        scoreCategory: 'positive',
+      });
     });
 
     it('clears category when All is clicked', () => {

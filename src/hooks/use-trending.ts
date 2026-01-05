@@ -54,11 +54,7 @@ async function fetchTrending(
  * }
  * ```
  */
-export function useTrending({
-  period = '7d',
-  limit = 5,
-  enabled = true,
-}: UseTrendingOptions = {}) {
+export function useTrending({ period = '7d', limit = 5, enabled = true }: UseTrendingOptions = {}) {
   return useQuery<TrendingAgentsResponse, Error>({
     queryKey: queryKeys.trending(period, limit),
     queryFn: () => fetchTrending(period, limit),

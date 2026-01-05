@@ -20,17 +20,11 @@ const DEFAULT_FILTERS: GlobalFeedbackFilters = {
 export default function FeedbacksPage() {
   const [filters, setFilters] = useState<GlobalFeedbackFilters>(DEFAULT_FILTERS);
 
-  const {
-    data,
-    isLoading,
-    error,
-    fetchNextPage,
-    hasNextPage,
-    isFetchingNextPage,
-  } = useInfiniteGlobalFeedbacks({
-    ...filters,
-    limit: 20,
-  });
+  const { data, isLoading, error, fetchNextPage, hasNextPage, isFetchingNextPage } =
+    useInfiniteGlobalFeedbacks({
+      ...filters,
+      limit: 20,
+    });
 
   // Flatten paginated feedbacks
   const feedbacks = data?.pages.flatMap((page) => page.feedbacks) ?? [];
@@ -48,10 +42,7 @@ export default function FeedbacksPage() {
         {/* Page Header */}
         <header className="mb-8">
           <div className="flex items-center gap-3 mb-2">
-            <MessageSquare
-              className="w-8 h-8 text-[var(--pixel-blue-sky)]"
-              aria-hidden="true"
-            />
+            <MessageSquare className="w-8 h-8 text-[var(--pixel-blue-sky)]" aria-hidden="true" />
             <h1 className="font-[family-name:var(--font-pixel-display)] text-2xl md:text-3xl text-[var(--pixel-gray-100)]">
               Global Feedbacks
             </h1>
