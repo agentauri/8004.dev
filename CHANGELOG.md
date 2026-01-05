@@ -8,17 +8,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- **Team Composition page** (`/compose`) - Build optimal agent teams for tasks
+- **Intent Templates pages** (`/intents`, `/intents/[id]`) - Browse and use workflow templates
+- **Evaluate page** (`/evaluate`) - Evaluation dashboard (backend in development)
+- Similar Agents endpoint integration for "Related Agents" section
+- MCP Connect modal with multi-client support (Claude Code, Claude Desktop, Cursor)
 - Health score display with status badges and warnings
 - Last updated timestamp for agent data
-- Repository documentation for public release (LICENSE, CONTRIBUTING, etc.)
-- Missing component index.ts files for barrel exports
-- Test coverage for `useSimilarAgents`, `useStats`, and `useUrlSearchParams` hooks
+- New hooks: `useCompose`, `useIntents`, `useIntentMatches`
+- Comprehensive SEO optimization
 
 ### Changed
-- Updated package.json with complete metadata for npm
+- Updated test suite to 3035 tests with ~97% coverage
+- Improved cache management with defensive defaults
+- Enhanced API mappers with null/undefined handling
 
 ### Fixed
-- Component organization improvements
+- Compose page NaN fitness score display
+- Intent detail page content clearing on "Match Agents" click
+- API response handling for empty/null data
+- Cache merge strategy for intent templates
 
 ## [1.0.0] - 2024-12-01
 

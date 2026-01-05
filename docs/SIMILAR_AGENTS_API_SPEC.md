@@ -2,8 +2,11 @@
 
 **Version**: 1.0
 **Date**: 2025-12-18
-**Status**: Proposed
+**Status**: ✅ IMPLEMENTED
 **Author**: Frontend Team
+**Last Updated**: 2026-01-05
+
+> **Note**: This endpoint has been implemented by the backend team. The frontend now uses this endpoint for the "Related Agents" section on agent detail pages.
 
 ---
 

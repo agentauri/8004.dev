@@ -1,8 +1,10 @@
 # PRD: Frontend Integration with New API Features
 
 **Date**: 2026-01-03
+**Last Updated**: 2026-01-05
 **For**: 8004.dev Frontend Team
 **Backend API Docs**: https://agentauri.github.io/api.8004.dev/
+**Status**: ✅ Core features implemented
 
 ---
 
@@ -36,27 +38,24 @@ The backend API (api.8004.dev) has introduced several new features that the fron
 
 ## New API Features Requiring Integration
 
-### 1. Streaming Search (HIGH PRIORITY)
+### 1. Streaming Search (PENDING - Backend Not Ready)
 **Endpoint**: `POST /api/v1/search/stream`
 **Type**: Server-Sent Events (SSE)
+**Status**: ⏳ Waiting for backend SSE endpoint
 
 **What it does**: Returns search results progressively with HyDE expansion and LLM reranking.
 
-**Frontend Requirements**:
+**Frontend Requirements** (when backend is ready):
 - [ ] Add SSE client support in `src/lib/api/`
 - [ ] Create `useStreamingSearch()` hook with progressive result rendering
 - [ ] Update `SearchResults` organism to show results as they arrive
 - [ ] Add loading states for each search phase (embedding → vector search → reranking)
 - [ ] Show search metadata (HyDE query, reranking scores)
 
-**Files to modify**:
-- `src/hooks/use-search-agents.ts` - Add streaming option
-- `src/components/organisms/search-results/` - Progressive rendering
-- `src/app/api/search/stream/route.ts` - New API route
-
 ---
 
-### 2. Registry-as-Evaluator (NEW SECTION)
+### 2. Registry-as-Evaluator (PARTIAL - Backend 404)
+**Status**: ⚠️ Frontend implemented, backend returns 404
 **Endpoints**:
 - `GET /api/v1/evaluate/info` - Evaluation capabilities
 - `GET /api/v1/evaluate/benchmarks` - Available benchmarks
@@ -65,88 +64,65 @@ The backend API (api.8004.dev) has introduced several new features that the fron
 
 **What it does**: Evaluates agents against benchmarks (safety, capability, reliability, performance).
 
-**Frontend Requirements**:
-- [ ] **NEW PAGE**: `/evaluate` - Evaluation dashboard
-- [ ] **NEW PAGE**: `/agent/[agentId]/evaluate` - Agent evaluation detail
-- [ ] Create `EvaluationSection` organism for agent detail page
-- [ ] Create `BenchmarkCard` molecule for displaying benchmark results
-- [ ] Create `RadarChart` atom for multi-dimensional scores
-- [ ] Add "Evaluate" button on agent detail page
-- [ ] Show evaluation status (pending/complete) with progress
-
-**New files**:
-```
-src/app/evaluate/page.tsx
-src/app/evaluate/layout.tsx
-src/components/organisms/evaluation-section/
-src/components/molecules/benchmark-card/
-src/components/molecules/evaluation-radar/
-src/hooks/use-evaluation.ts
-src/hooks/use-benchmarks.ts
-src/app/api/evaluate/route.ts
-src/app/api/evaluate/[agentId]/route.ts
-```
+**Frontend Implementation**:
+- [x] **NEW PAGE**: `/evaluate` - Evaluation dashboard (shows error state)
+- [x] API route: `src/app/api/evaluate/route.ts`
+- [ ] **NEW PAGE**: `/agent/[agentId]/evaluate` - Agent evaluation detail (pending backend)
+- [ ] Create `EvaluationSection` organism for agent detail page (pending backend)
+- [ ] Create `BenchmarkCard` molecule (pending backend)
+- [ ] Create `RadarChart` atom (pending backend)
 
 ---
 
-### 3. Team Composition (NEW SECTION)
+### 3. Team Composition ✅ IMPLEMENTED
+**Status**: ✅ Fully implemented and tested
 **Endpoints**:
-- `POST /api/v1/compose` - Build agent team
-- `GET /api/v1/compose/info` - Composition info
+- `POST /api/v1/compose` - Build agent team ✅
 
 **What it does**: Given a task description, finds optimal team of agents with complementary skills.
 
-**Frontend Requirements**:
-- [ ] **NEW PAGE**: `/compose` - Team builder interface
-- [ ] Create `TeamComposer` organism with task input
-- [ ] Create `TeamResult` organism showing assembled team
-- [ ] Create `AgentRole` molecule for team member display
-- [ ] Create `FitnessScore` atom for team fitness visualization
-- [ ] Add link to compose from header navigation
+**Frontend Implementation**:
+- [x] **NEW PAGE**: `/compose` - Team builder interface
+- [x] Task input form with validation
+- [x] Team results display with agent roles
+- [x] Fitness score visualization with defensive NaN handling
+- [x] Link in header navigation
+- [x] API route: `src/app/api/compose/route.ts`
+- [x] Hook: `src/hooks/use-compose.ts`
 
-**New files**:
-```
-src/app/compose/page.tsx
-src/components/organisms/team-composer/
-src/components/organisms/team-result/
-src/components/molecules/agent-role/
-src/hooks/use-compose.ts
-src/app/api/compose/route.ts
-```
+**Bug fixes applied**:
+- Fixed NaN fitness score display (2026-01-05)
+- Added defensive defaults for empty team responses
 
 ---
 
-### 4. Intent Templates (NEW SECTION)
+### 4. Intent Templates ✅ IMPLEMENTED
+**Status**: ✅ Fully implemented and tested
 **Endpoints**:
-- `GET /api/v1/intents` - List templates
-- `GET /api/v1/intents/categories` - Template categories
-- `GET /api/v1/intents/:templateId` - Get template
-- `POST /api/v1/intents/:templateId/match` - Match agents to template
+- `GET /api/v1/intents` - List templates ✅
+- `GET /api/v1/intents/:templateId` - Get template ✅
+- `POST /api/v1/intents/:templateId/match` - Match agents to template ✅
 
 **What it does**: Pre-built workflow templates for common multi-agent tasks.
 
-**Frontend Requirements**:
-- [ ] **NEW PAGE**: `/intents` - Intent template gallery
-- [ ] **NEW PAGE**: `/intents/[templateId]` - Template detail with matching agents
-- [ ] Create `IntentCard` molecule for template preview
-- [ ] Create `IntentMatcher` organism for agent matching UI
-- [ ] Create `WorkflowVisualization` component for template steps
-- [ ] Add "Browse Intents" link to navigation
+**Frontend Implementation**:
+- [x] **NEW PAGE**: `/intents` - Intent template gallery
+- [x] **NEW PAGE**: `/intents/[id]` - Template detail with matching agents
+- [x] Intent card component for template preview
+- [x] Workflow visualization for template steps
+- [x] Agent matching functionality
+- [x] Link in header navigation
+- [x] API routes: `src/app/api/intents/route.ts`, `src/app/api/intents/[id]/route.ts`
+- [x] Hooks: `src/hooks/use-intents.ts`
 
-**New files**:
-```
-src/app/intents/page.tsx
-src/app/intents/[templateId]/page.tsx
-src/components/organisms/intent-gallery/
-src/components/molecules/intent-card/
-src/hooks/use-intents.ts
-src/hooks/use-intent-match.ts
-src/app/api/intents/route.ts
-```
+**Bug fixes applied**:
+- Fixed "Match Agents" button clearing template content (2026-01-05)
+- Improved cache merge strategy to preserve existing template data
 
 ---
 
-### 5. Real-time Events (ENHANCEMENT)
+### 5. Real-time Events (PENDING - Backend Not Ready)
+**Status**: ⏳ Waiting for backend SSE endpoint
 **Endpoint**: `GET /api/v1/events`
 **Type**: Server-Sent Events (SSE)
 
@@ -157,19 +133,13 @@ src/app/api/intents/route.ts
 - `reputation_change` - Reputation score updated
 - `evaluation_complete` - Evaluation finished
 
-**Frontend Requirements**:
+**Frontend Requirements** (when backend is ready):
 - [ ] Create `useEvents()` hook for SSE subscription
 - [ ] Add real-time notification system
 - [ ] Show "New agents" badge on explore page
 - [ ] Auto-refresh agent detail on updates
 - [ ] Create `EventToast` atom for notifications
 - [ ] Add event indicator to header
-
-**Files to modify**:
-- `src/hooks/use-events.ts` - New SSE hook
-- `src/components/atoms/event-toast/` - Notification component
-- `src/components/organisms/header/` - Add event indicator
-- `src/app/providers.tsx` - Add EventProvider
 
 ---
 
@@ -410,9 +380,25 @@ Key pages:
 
 ---
 
-## Questions for Frontend Team
+## Decisions Made
 
-1. Should streaming search be the default or opt-in?
-2. Where should the Compose/Intents links go in navigation?
-3. Do we need a dedicated Evaluation dashboard or just per-agent?
-4. What notification style fits the retro theme?
+| Question | Decision |
+|----------|----------|
+| Streaming search default? | Opt-in when backend is ready |
+| Compose/Intents navigation? | ✅ Header main navigation |
+| Evaluation dashboard? | ✅ Separate `/evaluate` page + per-agent tab (when backend ready) |
+| Notification style? | Pixel-art toast notifications (when backend ready) |
+
+---
+
+## Implementation Summary
+
+| Feature | Status | Notes |
+|---------|--------|-------|
+| Streaming Search | ⏳ Pending | Backend SSE not ready |
+| Evaluations | ⚠️ Partial | Frontend ready, backend 404 |
+| Team Composition | ✅ Done | Fully functional |
+| Intent Templates | ✅ Done | Fully functional |
+| Real-time Events | ⏳ Pending | Backend SSE not ready |
+
+*Last updated: 2026-01-05*
