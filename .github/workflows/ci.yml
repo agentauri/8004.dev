@@ -378,6 +378,7 @@ jobs:
       - name: Run E2E tests
         run: pnpm exec playwright test --project=chromium --shard=${{ matrix.shard }}/3 --reporter=blob
         env:
+          BACKEND_API_KEY: ${{ secrets.BACKEND_API_KEY }}
           SEPOLIA_RPC_URL: ${{ secrets.SEPOLIA_RPC_URL || 'https://eth-sepolia.public.blastapi.io' }}
           BASE_SEPOLIA_RPC_URL: ${{ secrets.BASE_SEPOLIA_RPC_URL || 'https://sepolia.base.org' }}
           POLYGON_AMOY_RPC_URL: ${{ secrets.POLYGON_AMOY_RPC_URL || 'https://rpc-amoy.polygon.technology' }}
