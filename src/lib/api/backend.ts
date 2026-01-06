@@ -157,9 +157,9 @@ export async function backendFetch<T>(
 
   const url = buildUrl(endpoint, params);
 
-  // Set up timeout with AbortController
+  // Set up timeout with AbortController (0 or undefined = no timeout)
   const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), timeout);
+  const timeoutId = timeout > 0 ? setTimeout(() => controller.abort(), timeout) : null;
 
   const fetchOptions: RequestInit & { next?: BackendFetchOptions['next'] } = {
     method,
@@ -188,7 +188,7 @@ export async function backendFetch<T>(
   try {
     response = await fetch(url, fetchOptions);
   } catch (error) {
-    clearTimeout(timeoutId);
+    if (timeoutId) clearTimeout(timeoutId);
     // Handle abort/timeout error
     if (error instanceof Error && error.name === 'AbortError') {
       throw new BackendError(`Request timeout after ${timeout}ms`, 'TIMEOUT_ERROR', 408);
@@ -201,7 +201,7 @@ export async function backendFetch<T>(
     );
   }
 
-  clearTimeout(timeoutId);
+  if (timeoutId) clearTimeout(timeoutId);
 
   let data: BackendResponse<T> | BackendErrorResponse;
 
