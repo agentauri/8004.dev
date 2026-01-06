@@ -25,7 +25,12 @@ test.describe('Explore Page', () => {
   });
 
   test('displays agent cards when results available', async ({ page }) => {
-    await page.waitForTimeout(1000);
+    // Wait for either agent cards or no results message
+    await page
+      .locator('[data-testid="agent-card"], [data-testid="search-results"][data-state="empty"]')
+      .first()
+      .waitFor({ state: 'visible', timeout: 10000 })
+      .catch(() => {});
 
     const agentCards = page.getByTestId('agent-card');
     const noResults = page.getByText(/no agents found/i);

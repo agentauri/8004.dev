@@ -19,7 +19,7 @@ test.describe('Agent Detail Page', () => {
 
   test('displays back to explore link', async ({ page }) => {
     await page.goto(`/agent/${testAgentId}`);
-    await page.waitForTimeout(1000);
+    await page.waitForLoadState('domcontentloaded');
 
     const backLink = page.getByRole('link', { name: /back to explore/i });
     if (await backLink.isVisible().catch(() => false)) {
@@ -29,7 +29,7 @@ test.describe('Agent Detail Page', () => {
 
   test('back link navigates to explore page', async ({ page }) => {
     await page.goto(`/agent/${testAgentId}`);
-    await page.waitForTimeout(1000);
+    await page.waitForLoadState('domcontentloaded');
 
     const backLink = page.getByRole('link', { name: /back to explore/i });
     if (await backLink.isVisible().catch(() => false)) {
@@ -40,7 +40,7 @@ test.describe('Agent Detail Page', () => {
 
   test('displays agent information when available', async ({ page }) => {
     await page.goto(`/agent/${testAgentId}`);
-    await page.waitForTimeout(1000);
+    await page.waitForLoadState('domcontentloaded');
 
     const header = page.getByTestId('agent-header');
     if (await header.isVisible().catch(() => false)) {
@@ -52,14 +52,14 @@ test.describe('Agent Detail Page', () => {
 test.describe('Agent Detail Page - Invalid Agent', () => {
   test('handles invalid agent ID gracefully', async ({ page }) => {
     await page.goto('/agent/invalid-id');
-    await page.waitForTimeout(1000);
+    await page.waitForLoadState('domcontentloaded');
     const hasContent = await page.locator('body').textContent();
     expect(hasContent).toBeTruthy();
   });
 
   test('handles non-existent agent gracefully', async ({ page }) => {
     await page.goto('/agent/11155111:999999999');
-    await page.waitForTimeout(1000);
+    await page.waitForLoadState('domcontentloaded');
     const hasContent = await page.locator('body').textContent();
     expect(hasContent).toBeTruthy();
   });

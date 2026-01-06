@@ -14,6 +14,7 @@ export interface IntentCardProps {
 
 /**
  * Get category color classes based on category name
+ * Text colors are WCAG 2.1 AA compliant (4.5:1 contrast ratio on dark backgrounds)
  */
 function getCategoryColor(category: string): {
   bg: string;
@@ -24,29 +25,29 @@ function getCategoryColor(category: string): {
 
   if (categoryLower.includes('automation') || categoryLower.includes('auto')) {
     return {
-      bg: 'bg-[var(--pixel-green-pipe)]/20',
-      text: 'text-[var(--pixel-green-pipe)]',
+      bg: 'bg-[#00D800]/20',
+      text: 'text-[#4ADE80]', // Brighter green for better contrast
       glow: 'shadow-[0_0_8px_var(--glow-green)]',
     };
   }
   if (categoryLower.includes('development') || categoryLower.includes('dev')) {
     return {
-      bg: 'bg-[var(--pixel-blue-sky)]/20',
-      text: 'text-[var(--pixel-blue-sky)]',
+      bg: 'bg-[#5C94FC]/20',
+      text: 'text-[#93C5FD]', // Brighter blue for better contrast
       glow: 'shadow-[0_0_8px_var(--glow-blue)]',
     };
   }
   if (categoryLower.includes('security') || categoryLower.includes('audit')) {
     return {
-      bg: 'bg-[var(--pixel-red-fire)]/20',
-      text: 'text-[var(--pixel-red-fire)]',
+      bg: 'bg-[#FC5454]/20',
+      text: 'text-[#FCA5A5]', // Brighter red for better contrast
       glow: 'shadow-[0_0_8px_var(--glow-red)]',
     };
   }
   if (categoryLower.includes('analysis') || categoryLower.includes('data')) {
     return {
-      bg: 'bg-[var(--pixel-gold-coin)]/20',
-      text: 'text-[var(--pixel-gold-coin)]',
+      bg: 'bg-[#FCC03C]/20',
+      text: 'text-[#FCD34D]', // Brighter gold for better contrast
       glow: 'shadow-[0_0_8px_var(--glow-gold)]',
     };
   }
@@ -54,7 +55,7 @@ function getCategoryColor(category: string): {
   // Default purple for other categories
   return {
     bg: 'bg-[#9C54FC]/20',
-    text: 'text-[#9C54FC]',
+    text: 'text-[#C4B5FD]', // Brighter purple for better contrast
     glow: 'shadow-[0_0_8px_rgba(156,84,252,0.5)]',
   };
 }

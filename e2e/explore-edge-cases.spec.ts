@@ -41,9 +41,6 @@ test.describe('Explore Page Edge Cases', () => {
   test.describe('Special Characters', () => {
     test('Query with special characters', async ({ page }) => {
       await page.goto('/explore?q=test%20%26%20agent');
-      // Should not error
-      await page.waitForTimeout(1000);
-
       // Page should load without errors
       const heading = page.getByRole('heading', { level: 1 });
       await expect(heading).toBeVisible();
@@ -51,9 +48,6 @@ test.describe('Explore Page Edge Cases', () => {
 
     test('Query with unicode characters', async ({ page }) => {
       await page.goto('/explore?q=%E3%82%A8%E3%83%BC%E3%82%B8%E3%82%A7%E3%83%B3%E3%83%88');
-      // Should not error
-      await page.waitForTimeout(1000);
-
       // Page should load without errors
       const heading = page.getByRole('heading', { level: 1 });
       await expect(heading).toBeVisible();
@@ -61,9 +55,6 @@ test.describe('Explore Page Edge Cases', () => {
 
     test('Query with emoji', async ({ page }) => {
       await page.goto('/explore?q=%F0%9F%A4%96');
-      // Should not error
-      await page.waitForTimeout(1000);
-
       // Page should load without errors
       const heading = page.getByRole('heading', { level: 1 });
       await expect(heading).toBeVisible();
@@ -103,7 +94,6 @@ test.describe('Explore Page Edge Cases', () => {
     test('Very long query string', async ({ page }) => {
       const longQuery = 'a'.repeat(500);
       await page.goto(`/explore?q=${longQuery}`);
-      await page.waitForTimeout(1000);
 
       // Should not crash
       const heading = page.getByRole('heading', { level: 1 });
@@ -126,7 +116,6 @@ test.describe('Explore Page Edge Cases', () => {
 
     test('Invalid boolean values handled', async ({ page }) => {
       await page.goto('/explore?mcp=maybe&active=yes');
-      await page.waitForTimeout(1000);
 
       // Should not crash
       const heading = page.getByRole('heading', { level: 1 });
@@ -145,7 +134,6 @@ test.describe('Explore Page Edge Cases', () => {
 
     test('Negative reputation values handled', async ({ page }) => {
       await page.goto('/explore?minRep=-10&maxRep=150');
-      await page.waitForTimeout(1000);
 
       // Should not crash
       const heading = page.getByRole('heading', { level: 1 });
@@ -169,7 +157,6 @@ test.describe('Explore Page Edge Cases', () => {
     test('Active and inactive both in URL', async ({ page }) => {
       // This is invalid - should handle gracefully
       await page.goto('/explore?active=true&active=false');
-      await page.waitForTimeout(1000);
 
       // Should not crash
       const heading = page.getByRole('heading', { level: 1 });
@@ -232,7 +219,6 @@ test.describe('Explore Page Edge Cases', () => {
 
     test('Invalid page number handled', async ({ page }) => {
       await page.goto('/explore?page=-1');
-      await page.waitForTimeout(1000);
 
       // Should not crash
       const heading = page.getByRole('heading', { level: 1 });

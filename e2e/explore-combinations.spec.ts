@@ -155,7 +155,8 @@ test.describe('Explore Page Filter Persistence', () => {
     );
     if (await clearButton.isVisible().catch(() => false)) {
       await clearButton.click();
-      await page.waitForTimeout(500);
+      // Wait for URL to update after clearing filters
+      await page.waitForURL(/\/explore(?:\?|$)/, { timeout: 5000 }).catch(() => {});
 
       // URL should be clean
       const url = page.url();
@@ -186,7 +187,12 @@ test.describe('Explore Page Results Validation', () => {
 
     // Apply restrictive filter
     await page.goto('/explore?mcp=true&a2a=true&x402=true');
-    await page.waitForTimeout(500);
+    // Wait for either results or empty state
+    await page
+      .locator('[data-testid="agent-card"], [data-testid="search-results"][data-state="empty"]')
+      .first()
+      .waitFor({ state: 'visible', timeout: 5000 })
+      .catch(() => {});
 
     // Should have fewer or equal results
     const filteredCards = page.locator('[data-testid="agent-card"]');

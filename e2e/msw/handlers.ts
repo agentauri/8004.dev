@@ -68,6 +68,60 @@ export const handlers = [
     });
   }),
 
+  // Streaming search endpoint (POST) - Returns SSE events
+  http.post(`${BACKEND_API_URL}/api/v1/search/stream`, async ({ request }) => {
+    const body = (await request.json()) as {
+      query?: string;
+      limit?: number;
+      filters?: {
+        chainIds?: number[];
+        mcp?: boolean;
+        a2a?: boolean;
+        minReputation?: number;
+      };
+    };
+
+    const query = body.query || '';
+    const limit = body.limit || 20;
+    const filters = body.filters;
+
+    const results = filterBackendAgents(query, filters).slice(0, limit);
+
+    // Build SSE response
+    const encoder = new TextEncoder();
+    const stream = new ReadableStream({
+      start(controller) {
+        // Send metadata event first
+        const metaEvent = `data: ${JSON.stringify({
+          type: 'meta',
+          data: { query, total: results.length, hydeQuery: `Enhanced: ${query}` },
+        })}\n\n`;
+        controller.enqueue(encoder.encode(metaEvent));
+
+        // Send each result as a separate event
+        for (const result of results) {
+          const resultEvent = `data: ${JSON.stringify({ type: 'result', data: result })}\n\n`;
+          controller.enqueue(encoder.encode(resultEvent));
+        }
+
+        // Send done event
+        const doneEvent = `data: ${JSON.stringify({ type: 'done' })}\n\n`;
+        controller.enqueue(encoder.encode(doneEvent));
+
+        controller.close();
+      },
+    });
+
+    return new HttpResponse(stream, {
+      status: 200,
+      headers: {
+        'Content-Type': 'text/event-stream',
+        'Cache-Control': 'no-cache',
+        Connection: 'keep-alive',
+      },
+    });
+  }),
+
   // Agents list endpoint (GET)
   http.get(`${BACKEND_API_URL}/api/v1/agents`, ({ request }) => {
     const url = new URL(request.url);

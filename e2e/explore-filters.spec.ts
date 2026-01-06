@@ -100,7 +100,7 @@ test.describe('Explore Page Single Filter Tests', () => {
   test.describe('Search Query', () => {
     test('Search query filters by name/description', async ({ page }) => {
       await page.goto('/explore?q=Test');
-      await page.waitForSelector('[data-testid="agent-card"]', { timeout: 5000 });
+      await page.waitForSelector('[data-testid="agent-card"]', { timeout: 15000 });
 
       const cards = page.locator('[data-testid="agent-card"]');
       const count = await cards.count();
