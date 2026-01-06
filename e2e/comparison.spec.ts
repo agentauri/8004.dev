@@ -23,7 +23,7 @@ test.describe('Compare Page', () => {
       await page.waitForSelector('[data-testid="compare-empty"]', { timeout: 10000 });
 
       // Link text is "Browse Agents" with href="/explore"
-      const exploreLink = page.locator('a[href="/explore"]');
+      const exploreLink = page.getByRole('link', { name: 'Browse Agents' });
       await expect(exploreLink).toBeVisible();
     });
   });
