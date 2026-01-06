@@ -66,14 +66,16 @@ test.describe('Explore Page Filters', () => {
   });
 
   test('can toggle MCP filter', async ({ page }) => {
-    const mcpFilter = page.getByRole('button', { name: /mcp/i });
+    // Use sidebar-specific selector to avoid matching the "Connect MCP" nav button
+    const mcpFilter = page.getByTestId('explore-sidebar').getByRole('button', { name: /mcp/i });
     if (await mcpFilter.isVisible().catch(() => false)) {
       await mcpFilter.click();
     }
   });
 
   test('can toggle A2A filter', async ({ page }) => {
-    const a2aFilter = page.getByRole('button', { name: /a2a/i });
+    // Use sidebar-specific selector for consistency
+    const a2aFilter = page.getByTestId('explore-sidebar').getByRole('button', { name: /a2a/i });
     if (await a2aFilter.isVisible().catch(() => false)) {
       await a2aFilter.click();
     }
