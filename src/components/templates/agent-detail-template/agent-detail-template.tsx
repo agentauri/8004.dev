@@ -162,7 +162,7 @@ export function AgentDetailTemplate({
   // Loading state
   if (isLoading) {
     return (
-      <div
+      <main
         className={cn('min-h-screen bg-pixel-grid p-6 md:p-8', className)}
         data-testid="agent-detail-template"
       >
@@ -174,14 +174,14 @@ export function AgentDetailTemplate({
             </p>
           </div>
         </div>
-      </div>
+      </main>
     );
   }
 
   // Error state
   if (error) {
     return (
-      <div
+      <main
         className={cn('min-h-screen bg-pixel-grid p-6 md:p-8', className)}
         data-testid="agent-detail-template"
       >
@@ -193,14 +193,14 @@ export function AgentDetailTemplate({
             </p>
           </div>
         </div>
-      </div>
+      </main>
     );
   }
 
   // Not found state
   if (!agent) {
     return (
-      <div
+      <main
         className={cn('min-h-screen bg-pixel-grid p-6 md:p-8', className)}
         data-testid="agent-detail-template"
       >
@@ -212,7 +212,7 @@ export function AgentDetailTemplate({
             </p>
           </div>
         </div>
-      </div>
+      </main>
     );
   }
 
@@ -373,7 +373,7 @@ export function AgentDetailTemplate({
   };
 
   return (
-    <div
+    <main
       className={cn('min-h-screen bg-pixel-grid p-6 md:p-8', className)}
       data-testid="agent-detail-template"
     >
@@ -488,6 +488,6 @@ export function AgentDetailTemplate({
           {renderTabContent()}
         </div>
       </div>
-    </div>
+    </main>
   );
 }

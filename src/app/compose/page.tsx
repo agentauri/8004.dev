@@ -136,7 +136,7 @@ function ComposePageContent(): React.JSX.Element {
  */
 export default function ComposePage(): React.JSX.Element {
   return (
-    <div className="space-y-8">
+    <main className="space-y-8 px-4 py-8">
       {/* Header */}
       <div className="text-center">
         <h1 className="font-[family-name:var(--font-pixel-display)] text-2xl md:text-3xl text-[var(--pixel-gray-100)] shadow-[0_0_20px_var(--glow-gold)]">
@@ -160,6 +160,6 @@ export default function ComposePage(): React.JSX.Element {
       >
         <ComposePageContent />
       </Suspense>
-    </div>
+    </main>
   );
 }

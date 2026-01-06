@@ -19,6 +19,9 @@ test.describe('Compare Page', () => {
     test('shows link to explore page in empty state', async ({ page }) => {
       await page.goto('/compare');
 
+      // Wait for loading to complete (empty state shows after loading)
+      await page.waitForSelector('[data-testid="compare-empty"]', { timeout: 10000 });
+
       // Link text is "Browse Agents" with href="/explore"
       const exploreLink = page.locator('a[href="/explore"]');
       await expect(exploreLink).toBeVisible();
