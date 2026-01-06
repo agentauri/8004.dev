@@ -237,6 +237,143 @@ export const handlers = [
       data: mockBackendTaxonomy,
     });
   }),
+
+  // Leaderboard endpoint
+  http.get(`${BACKEND_API_URL}/api/v1/leaderboard`, () => {
+    // Return mock leaderboard data
+    return HttpResponse.json({
+      success: true,
+      data: {
+        data: [
+          {
+            agentId: '11155111:42',
+            chainId: 11155111,
+            tokenId: '42',
+            name: 'CodeReview Pro',
+            description: 'An AI code review assistant',
+            score: 95,
+            feedbackCount: 156,
+            trend: 'up',
+            active: true,
+            hasMcp: true,
+            hasA2a: true,
+            x402Support: false,
+          },
+          {
+            agentId: '84532:15',
+            chainId: 84532,
+            tokenId: '15',
+            name: 'Trading Assistant',
+            description: 'Automated trading helper',
+            score: 92,
+            feedbackCount: 203,
+            trend: 'up',
+            active: true,
+            hasMcp: true,
+            hasA2a: false,
+            x402Support: true,
+          },
+          {
+            agentId: '11155111:88',
+            chainId: 11155111,
+            tokenId: '88',
+            name: 'Data Analyzer',
+            description: 'Data analysis specialist',
+            score: 89,
+            feedbackCount: 98,
+            trend: 'stable',
+            active: true,
+            hasMcp: false,
+            hasA2a: true,
+            x402Support: false,
+          },
+        ],
+        meta: {
+          total: 3,
+          hasMore: false,
+          period: 'all',
+          generatedAt: new Date().toISOString(),
+        },
+      },
+    });
+  }),
+
+  // Feedbacks endpoint
+  http.get(`${BACKEND_API_URL}/api/v1/feedbacks`, () => {
+    const now = new Date();
+    return HttpResponse.json({
+      success: true,
+      data: {
+        data: [
+          {
+            id: 'fb_1',
+            score: 92,
+            tags: ['reliable', 'fast'],
+            context: 'Excellent code review',
+            submitter: '0x1234567890abcdef1234567890abcdef12345678',
+            submittedAt: new Date(now.getTime() - 2 * 60 * 60 * 1000).toISOString(),
+            txHash: '0xabc123',
+            agentId: '11155111:42',
+            agentName: 'CodeReview Pro',
+            agentChainId: 11155111,
+          },
+          {
+            id: 'fb_2',
+            score: 45,
+            tags: ['slow'],
+            context: 'Response was accurate but slow',
+            submitter: '0xabcdef1234567890abcdef1234567890abcdef12',
+            submittedAt: new Date(now.getTime() - 5 * 60 * 60 * 1000).toISOString(),
+            txHash: '0xdef456',
+            agentId: '84532:15',
+            agentName: 'Trading Assistant',
+            agentChainId: 84532,
+          },
+        ],
+        meta: {
+          total: 2,
+          hasMore: false,
+        },
+        stats: {
+          total: 2,
+          positive: 1,
+          neutral: 1,
+          negative: 0,
+        },
+      },
+    });
+  }),
+
+  // Compose endpoint
+  http.post(`${BACKEND_API_URL}/api/v1/compose`, async ({ request }) => {
+    const body = (await request.json()) as { task?: string; maxTeamSize?: number };
+    const task = body.task || 'Default task';
+
+    return HttpResponse.json({
+      success: true,
+      data: {
+        id: 'comp_mock_1',
+        task,
+        team: [
+          {
+            agentId: '11155111:1',
+            role: 'Lead Developer',
+            contribution: 'Handles main development tasks',
+            compatibilityScore: 95,
+          },
+          {
+            agentId: '11155111:2',
+            role: 'Code Reviewer',
+            contribution: 'Reviews code quality',
+            compatibilityScore: 88,
+          },
+        ],
+        fitnessScore: 91,
+        reasoning: 'Selected agents based on complementary skills for the task.',
+        createdAt: new Date().toISOString(),
+      },
+    });
+  }),
 ];
 
 /**

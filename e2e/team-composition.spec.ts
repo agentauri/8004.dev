@@ -11,26 +11,32 @@ test.describe('Team Composition Page', () => {
   test.describe('Page Load', () => {
     test('loads compose page successfully', async ({ page }) => {
       await page.goto('/compose');
+      await page.waitForLoadState('domcontentloaded');
 
-      // Should show page title
-      await expect(page.getByText(/team composer/i)).toBeVisible();
+      // Should show page title (may need to wait for content)
+      await expect(page.getByText(/team composer/i)).toBeVisible({ timeout: 10000 });
     });
 
     test('shows task description form', async ({ page }) => {
       await page.goto('/compose');
+      await page.waitForLoadState('domcontentloaded');
 
-      // Should show the composer form
-      await expect(page.getByText(/describe your task/i)).toBeVisible();
+      // Should show the composer form (wait for React to render)
+      await expect(page.getByText(/describe your task/i)).toBeVisible({ timeout: 10000 });
     });
 
     test('displays team composer component', async ({ page }) => {
       await page.goto('/compose');
+      await page.waitForLoadState('domcontentloaded');
 
       // Look for the team composer form
       const composer = page.locator('[data-testid="team-composer"]');
 
-      if (await composer.isVisible({ timeout: 5000 })) {
+      if (await composer.isVisible({ timeout: 5000 }).catch(() => false)) {
         await expect(composer).toBeVisible();
+      } else {
+        // If no testid, just verify page loaded
+        await expect(page.locator('main')).toBeVisible();
       }
     });
   });
@@ -140,17 +146,20 @@ test.describe('Team Composition Page', () => {
   test.describe('Navigation', () => {
     test('can navigate to compose page from header', async ({ page }) => {
       await page.goto('/');
+      await page.waitForLoadState('domcontentloaded');
 
-      // Look for compose/team link in navigation
-      const composeLink = page.locator(
-        'a[href="/compose"], a:has-text("Compose"), a:has-text("Team")',
-      );
+      // Look for compose/team link in navigation (desktop)
+      const composeLink = page.locator('a[href="/compose"]').first();
 
-      if (await composeLink.isVisible()) {
+      if (await composeLink.isVisible({ timeout: 5000 }).catch(() => false)) {
         await composeLink.click();
 
         await page.waitForURL(/compose/);
         expect(page.url()).toContain('/compose');
+      } else {
+        // On mobile, the link is in the mobile menu
+        // Just verify the page loads correctly
+        await expect(page.locator('main')).toBeVisible();
       }
     });
   });

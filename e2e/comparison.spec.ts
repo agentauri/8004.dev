@@ -19,7 +19,8 @@ test.describe('Compare Page', () => {
     test('shows link to explore page in empty state', async ({ page }) => {
       await page.goto('/compare');
 
-      const exploreLink = page.getByRole('link', { name: /explore/i });
+      // Link text is "Browse Agents" with href="/explore"
+      const exploreLink = page.locator('a[href="/explore"]');
       await expect(exploreLink).toBeVisible();
     });
   });
@@ -36,7 +37,8 @@ test.describe('Compare Page', () => {
     });
 
     test('shows agent details in comparison table', async ({ page }) => {
-      await page.goto('/compare?agents=11155111:1');
+      // Compare table requires at least 2 agents
+      await page.goto('/compare?agents=11155111:1,11155111:2');
 
       await page.waitForSelector('[data-testid="compare-table"]', { timeout: 10000 });
 
