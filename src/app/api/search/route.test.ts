@@ -14,6 +14,7 @@ vi.mock('@/lib/api/backend', () => ({
       this.name = 'BackendError';
     }
   },
+  shouldUseMockData: vi.fn().mockReturnValue(false),
 }));
 
 // Mock mappers

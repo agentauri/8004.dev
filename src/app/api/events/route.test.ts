@@ -7,6 +7,7 @@ vi.mock('@/lib/api/backend', async () => {
   return {
     ...actual,
     backendFetch: vi.fn(),
+    shouldUseMockData: vi.fn().mockReturnValue(false),
   };
 });
 
