@@ -194,6 +194,89 @@ export const WithOnClick: Story = {
   },
 };
 
+export const WithBookmarkButton: Story = {
+  args: {
+    agent: baseAgent,
+    isBookmarked: false,
+    onBookmarkToggle: () => alert('Bookmark toggled!'),
+  },
+};
+
+export const Bookmarked: Story = {
+  args: {
+    agent: baseAgent,
+    isBookmarked: true,
+    onBookmarkToggle: () => alert('Bookmark toggled!'),
+  },
+};
+
+export const WithCompareCheckbox: Story = {
+  args: {
+    agent: baseAgent,
+    isSelectedForCompare: false,
+    onCompareToggle: () => alert('Compare toggled!'),
+  },
+};
+
+export const SelectedForCompare: Story = {
+  args: {
+    agent: baseAgent,
+    isSelectedForCompare: true,
+    onCompareToggle: () => alert('Compare toggled!'),
+  },
+};
+
+export const CompareDisabled: Story = {
+  args: {
+    agent: baseAgent,
+    isSelectedForCompare: false,
+    isCompareDisabled: true,
+    onCompareToggle: () => alert('Compare toggled!'),
+  },
+  parameters: {
+    docs: {
+      description: {
+        story: 'When max agents are selected, the checkbox is disabled for unselected agents.',
+      },
+    },
+  },
+};
+
+export const WithWatchButton: Story = {
+  args: {
+    agent: baseAgent,
+    isWatched: false,
+    onWatchToggle: () => alert('Watch toggled!'),
+  },
+};
+
+export const Watched: Story = {
+  args: {
+    agent: baseAgent,
+    isWatched: true,
+    onWatchToggle: () => alert('Watch toggled!'),
+  },
+};
+
+export const WithAllActions: Story = {
+  args: {
+    agent: baseAgent,
+    isBookmarked: false,
+    onBookmarkToggle: () => alert('Bookmark toggled!'),
+    isSelectedForCompare: false,
+    onCompareToggle: () => alert('Compare toggled!'),
+    isWatched: false,
+    onWatchToggle: () => alert('Watch toggled!'),
+  },
+  parameters: {
+    docs: {
+      description: {
+        story: 'Card with bookmark, compare, and watch actions enabled.',
+      },
+    },
+  },
+};
+
 export const GridLayout: Story = {
   args: {
     agent: baseAgent,

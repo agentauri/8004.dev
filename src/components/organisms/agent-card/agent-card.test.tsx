@@ -253,4 +253,287 @@ describe('AgentCard', () => {
       expect(screen.getByTestId('agent-card')).toHaveAttribute('tabIndex', '0');
     });
   });
+
+  describe('bookmark functionality', () => {
+    it('does not render bookmark button when onBookmarkToggle is not provided', () => {
+      render(<AgentCard agent={mockAgent} />);
+      expect(screen.queryByTestId('bookmark-button')).not.toBeInTheDocument();
+    });
+
+    it('renders bookmark button when onBookmarkToggle is provided', () => {
+      const onBookmarkToggle = vi.fn();
+      render(<AgentCard agent={mockAgent} onBookmarkToggle={onBookmarkToggle} />);
+      expect(screen.getByTestId('bookmark-button')).toBeInTheDocument();
+    });
+
+    it('renders bookmark button with correct bookmarked state', () => {
+      const onBookmarkToggle = vi.fn();
+      render(
+        <AgentCard agent={mockAgent} isBookmarked={true} onBookmarkToggle={onBookmarkToggle} />,
+      );
+      const button = screen.getByTestId('bookmark-button');
+      expect(button).toHaveAttribute('data-bookmarked', 'true');
+    });
+
+    it('renders bookmark button with correct unbookmarked state', () => {
+      const onBookmarkToggle = vi.fn();
+      render(
+        <AgentCard agent={mockAgent} isBookmarked={false} onBookmarkToggle={onBookmarkToggle} />,
+      );
+      const button = screen.getByTestId('bookmark-button');
+      expect(button).toHaveAttribute('data-bookmarked', 'false');
+    });
+
+    it('defaults isBookmarked to false when not provided', () => {
+      const onBookmarkToggle = vi.fn();
+      render(<AgentCard agent={mockAgent} onBookmarkToggle={onBookmarkToggle} />);
+      const button = screen.getByTestId('bookmark-button');
+      expect(button).toHaveAttribute('data-bookmarked', 'false');
+    });
+
+    it('calls onBookmarkToggle when bookmark button is clicked', () => {
+      const onBookmarkToggle = vi.fn();
+      render(<AgentCard agent={mockAgent} onBookmarkToggle={onBookmarkToggle} />);
+      fireEvent.click(screen.getByTestId('bookmark-button'));
+      expect(onBookmarkToggle).toHaveBeenCalledTimes(1);
+    });
+
+    it('does not trigger card navigation when bookmark button is clicked', () => {
+      const onClick = vi.fn();
+      const onBookmarkToggle = vi.fn();
+      render(<AgentCard agent={mockAgent} onClick={onClick} onBookmarkToggle={onBookmarkToggle} />);
+      fireEvent.click(screen.getByTestId('bookmark-button'));
+      expect(onBookmarkToggle).toHaveBeenCalledTimes(1);
+      expect(onClick).not.toHaveBeenCalled();
+    });
+
+    it('has correct aria-label for unbookmarked state', () => {
+      const onBookmarkToggle = vi.fn();
+      render(
+        <AgentCard agent={mockAgent} isBookmarked={false} onBookmarkToggle={onBookmarkToggle} />,
+      );
+      const button = screen.getByTestId('bookmark-button');
+      expect(button).toHaveAttribute('aria-label', 'Add Test Agent to bookmarks');
+    });
+
+    it('has correct aria-label for bookmarked state', () => {
+      const onBookmarkToggle = vi.fn();
+      render(
+        <AgentCard agent={mockAgent} isBookmarked={true} onBookmarkToggle={onBookmarkToggle} />,
+      );
+      const button = screen.getByTestId('bookmark-button');
+      expect(button).toHaveAttribute('aria-label', 'Remove Test Agent from bookmarks');
+    });
+  });
+
+  describe('compare functionality', () => {
+    it('does not render compare checkbox when onCompareToggle is not provided', () => {
+      render(<AgentCard agent={mockAgent} />);
+      expect(screen.queryByTestId('compare-checkbox')).not.toBeInTheDocument();
+    });
+
+    it('renders compare checkbox when onCompareToggle is provided', () => {
+      const onCompareToggle = vi.fn();
+      render(<AgentCard agent={mockAgent} onCompareToggle={onCompareToggle} />);
+      expect(screen.getByTestId('compare-checkbox')).toBeInTheDocument();
+    });
+
+    it('renders compare checkbox with correct selected state', () => {
+      const onCompareToggle = vi.fn();
+      render(
+        <AgentCard
+          agent={mockAgent}
+          isSelectedForCompare={true}
+          onCompareToggle={onCompareToggle}
+        />,
+      );
+      const checkbox = screen.getByTestId('compare-checkbox');
+      expect(checkbox).toHaveAttribute('data-checked', 'true');
+    });
+
+    it('renders compare checkbox with correct unselected state', () => {
+      const onCompareToggle = vi.fn();
+      render(
+        <AgentCard
+          agent={mockAgent}
+          isSelectedForCompare={false}
+          onCompareToggle={onCompareToggle}
+        />,
+      );
+      const checkbox = screen.getByTestId('compare-checkbox');
+      expect(checkbox).toHaveAttribute('data-checked', 'false');
+    });
+
+    it('defaults isSelectedForCompare to false when not provided', () => {
+      const onCompareToggle = vi.fn();
+      render(<AgentCard agent={mockAgent} onCompareToggle={onCompareToggle} />);
+      const checkbox = screen.getByTestId('compare-checkbox');
+      expect(checkbox).toHaveAttribute('data-checked', 'false');
+    });
+
+    it('calls onCompareToggle when compare checkbox is clicked', () => {
+      const onCompareToggle = vi.fn();
+      render(<AgentCard agent={mockAgent} onCompareToggle={onCompareToggle} />);
+      fireEvent.click(screen.getByTestId('compare-checkbox'));
+      expect(onCompareToggle).toHaveBeenCalledTimes(1);
+    });
+
+    it('does not trigger card navigation when compare checkbox is clicked', () => {
+      const onClick = vi.fn();
+      const onCompareToggle = vi.fn();
+      render(<AgentCard agent={mockAgent} onClick={onClick} onCompareToggle={onCompareToggle} />);
+      fireEvent.click(screen.getByTestId('compare-checkbox'));
+      expect(onCompareToggle).toHaveBeenCalledTimes(1);
+      expect(onClick).not.toHaveBeenCalled();
+    });
+
+    it('renders compare checkbox as disabled when isCompareDisabled is true and not selected', () => {
+      const onCompareToggle = vi.fn();
+      render(
+        <AgentCard
+          agent={mockAgent}
+          isSelectedForCompare={false}
+          isCompareDisabled={true}
+          onCompareToggle={onCompareToggle}
+        />,
+      );
+      const checkbox = screen.getByTestId('compare-checkbox');
+      expect(checkbox).toBeDisabled();
+    });
+
+    it('renders compare checkbox as enabled when isCompareDisabled is true but already selected', () => {
+      const onCompareToggle = vi.fn();
+      render(
+        <AgentCard
+          agent={mockAgent}
+          isSelectedForCompare={true}
+          isCompareDisabled={true}
+          onCompareToggle={onCompareToggle}
+        />,
+      );
+      const checkbox = screen.getByTestId('compare-checkbox');
+      expect(checkbox).not.toBeDisabled();
+    });
+
+    it('has correct aria-label for unselected state', () => {
+      const onCompareToggle = vi.fn();
+      render(
+        <AgentCard
+          agent={mockAgent}
+          isSelectedForCompare={false}
+          onCompareToggle={onCompareToggle}
+        />,
+      );
+      const checkbox = screen.getByTestId('compare-checkbox');
+      expect(checkbox).toHaveAttribute('aria-label', 'Add Test Agent to comparison');
+    });
+
+    it('has correct aria-label for selected state', () => {
+      const onCompareToggle = vi.fn();
+      render(
+        <AgentCard
+          agent={mockAgent}
+          isSelectedForCompare={true}
+          onCompareToggle={onCompareToggle}
+        />,
+      );
+      const checkbox = screen.getByTestId('compare-checkbox');
+      expect(checkbox).toHaveAttribute('aria-label', 'Remove Test Agent from comparison');
+    });
+
+    it('renders both compare checkbox and bookmark button when both handlers provided', () => {
+      const onCompareToggle = vi.fn();
+      const onBookmarkToggle = vi.fn();
+      render(
+        <AgentCard
+          agent={mockAgent}
+          onCompareToggle={onCompareToggle}
+          onBookmarkToggle={onBookmarkToggle}
+        />,
+      );
+      expect(screen.getByTestId('compare-checkbox')).toBeInTheDocument();
+      expect(screen.getByTestId('bookmark-button')).toBeInTheDocument();
+    });
+  });
+
+  describe('watch functionality', () => {
+    it('does not render watch button when onWatchToggle is not provided', () => {
+      render(<AgentCard agent={mockAgent} />);
+      expect(screen.queryByTestId('watch-button')).not.toBeInTheDocument();
+    });
+
+    it('renders watch button when onWatchToggle is provided', () => {
+      const onWatchToggle = vi.fn();
+      render(<AgentCard agent={mockAgent} onWatchToggle={onWatchToggle} />);
+      expect(screen.getByTestId('watch-button')).toBeInTheDocument();
+    });
+
+    it('renders watch button with correct watched state', () => {
+      const onWatchToggle = vi.fn();
+      render(<AgentCard agent={mockAgent} isWatched={true} onWatchToggle={onWatchToggle} />);
+      const button = screen.getByTestId('watch-button');
+      expect(button).toHaveAttribute('data-watched', 'true');
+    });
+
+    it('renders watch button with correct unwatched state', () => {
+      const onWatchToggle = vi.fn();
+      render(<AgentCard agent={mockAgent} isWatched={false} onWatchToggle={onWatchToggle} />);
+      const button = screen.getByTestId('watch-button');
+      expect(button).toHaveAttribute('data-watched', 'false');
+    });
+
+    it('defaults isWatched to false when not provided', () => {
+      const onWatchToggle = vi.fn();
+      render(<AgentCard agent={mockAgent} onWatchToggle={onWatchToggle} />);
+      const button = screen.getByTestId('watch-button');
+      expect(button).toHaveAttribute('data-watched', 'false');
+    });
+
+    it('calls onWatchToggle when watch button is clicked', () => {
+      const onWatchToggle = vi.fn();
+      render(<AgentCard agent={mockAgent} onWatchToggle={onWatchToggle} />);
+      fireEvent.click(screen.getByTestId('watch-button'));
+      expect(onWatchToggle).toHaveBeenCalledTimes(1);
+    });
+
+    it('does not trigger card navigation when watch button is clicked', () => {
+      const onClick = vi.fn();
+      const onWatchToggle = vi.fn();
+      render(<AgentCard agent={mockAgent} onClick={onClick} onWatchToggle={onWatchToggle} />);
+      fireEvent.click(screen.getByTestId('watch-button'));
+      expect(onWatchToggle).toHaveBeenCalledTimes(1);
+      expect(onClick).not.toHaveBeenCalled();
+    });
+
+    it('has correct aria-label for unwatched state', () => {
+      const onWatchToggle = vi.fn();
+      render(<AgentCard agent={mockAgent} isWatched={false} onWatchToggle={onWatchToggle} />);
+      const button = screen.getByTestId('watch-button');
+      expect(button).toHaveAttribute('aria-label', 'Start watching Test Agent');
+    });
+
+    it('has correct aria-label for watched state', () => {
+      const onWatchToggle = vi.fn();
+      render(<AgentCard agent={mockAgent} isWatched={true} onWatchToggle={onWatchToggle} />);
+      const button = screen.getByTestId('watch-button');
+      expect(button).toHaveAttribute('aria-label', 'Stop watching Test Agent');
+    });
+
+    it('renders all action buttons when all handlers provided', () => {
+      const onCompareToggle = vi.fn();
+      const onBookmarkToggle = vi.fn();
+      const onWatchToggle = vi.fn();
+      render(
+        <AgentCard
+          agent={mockAgent}
+          onCompareToggle={onCompareToggle}
+          onBookmarkToggle={onBookmarkToggle}
+          onWatchToggle={onWatchToggle}
+        />,
+      );
+      expect(screen.getByTestId('compare-checkbox')).toBeInTheDocument();
+      expect(screen.getByTestId('bookmark-button')).toBeInTheDocument();
+      expect(screen.getByTestId('watch-button')).toBeInTheDocument();
+    });
+  });
 });

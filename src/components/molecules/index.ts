@@ -10,6 +10,8 @@ export type { ChainSelectorProps } from './chain-selector';
 export { ChainSelector } from './chain-selector';
 export type { CodeBlockProps } from './code-block';
 export { CodeBlock } from './code-block';
+export type { CompareBarAgent, CompareBarProps } from './compare-bar';
+export { CompareBar } from './compare-bar';
 export type { EndpointItemProps, EndpointType } from './endpoint-item';
 export { EndpointItem } from './endpoint-item';
 export type { EvaluationScoresProps } from './evaluation-scores';

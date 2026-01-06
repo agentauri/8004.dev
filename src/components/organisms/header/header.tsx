@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import type React from 'react';
 import { useCallback, useState } from 'react';
-import { EventBadge, PixelExplorer } from '@/components/atoms';
+import { EventBadge, PixelExplorer, ThemeToggle } from '@/components/atoms';
 import { EventPanel } from '@/components/organisms/event-panel';
 import { MCPConnectModal } from '@/components/organisms/mcp-connect-modal';
 import { useRealtimeEvents } from '@/hooks';
@@ -114,6 +114,9 @@ export function Header({ className }: HeaderProps): React.JSX.Element {
           <EventBadge count={eventCount} isConnected={isConnected} onClick={toggleEventPanel} />
         </div>
 
+        {/* Theme Toggle (Desktop) */}
+        <ThemeToggle data-testid="theme-toggle-desktop" />
+
         {/* MCP Connect Button */}
         <button
           type="button"
@@ -138,6 +141,9 @@ export function Header({ className }: HeaderProps): React.JSX.Element {
         <div className="relative" data-testid="event-badge-container-mobile">
           <EventBadge count={eventCount} isConnected={isConnected} onClick={toggleEventPanel} />
         </div>
+
+        {/* Theme Toggle (Mobile) */}
+        <ThemeToggle data-testid="theme-toggle-mobile" />
 
         {/* Hamburger Menu Button */}
         <button

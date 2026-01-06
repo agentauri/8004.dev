@@ -2,6 +2,8 @@
 
 export type { AgentDetailTemplateProps } from './agent-detail-template';
 export { AgentDetailTemplate } from './agent-detail-template';
+export type { CompareTemplateProps } from './compare-template';
+export { CompareTemplate } from './compare-template';
 export type { ExploreTemplateProps } from './explore-template';
 export { ExploreTemplate } from './explore-template';
 export type { MainLayoutProps } from './main-layout';

@@ -3,7 +3,12 @@
 import dynamic from 'next/dynamic';
 import Link from 'next/link';
 import type React from 'react';
-import type { SortField, SortOrder } from '@/components/molecules';
+import {
+  CompareBar,
+  type CompareBarAgent,
+  type SortField,
+  type SortOrder,
+} from '@/components/molecules';
 import { Header, SearchBar, type SearchFiltersState } from '@/components/organisms';
 import type { AgentCardAgent } from '@/components/organisms/agent-card';
 import { MobileFilterSheet } from '@/components/organisms/mobile-filter-sheet';
@@ -104,6 +109,15 @@ export interface ExploreTemplateProps {
   onStopStream?: () => void;
   /** Whether to show the compose team button */
   showComposeButton?: boolean;
+  // Agent comparison props
+  /** Agents selected for comparison */
+  compareAgents?: CompareBarAgent[];
+  /** URL for the compare page */
+  compareUrl?: string;
+  /** Callback when an agent is removed from comparison */
+  onRemoveCompareAgent?: (agentId: string) => void;
+  /** Callback to clear all compared agents */
+  onClearCompareAgents?: () => void;
 }
 
 /**
@@ -156,6 +170,11 @@ export function ExploreTemplate({
   hydeQuery,
   onStopStream,
   showComposeButton = false,
+  // Compare props
+  compareAgents,
+  compareUrl,
+  onRemoveCompareAgent,
+  onClearCompareAgents,
 }: ExploreTemplateProps): React.JSX.Element {
   return (
     <div className={cn('flex flex-col h-screen', className)} data-testid="explore-template">
@@ -246,6 +265,20 @@ export function ExploreTemplate({
           </div>
         </main>
       </div>
+
+      {/* Compare Bar */}
+      {compareAgents &&
+        compareAgents.length > 0 &&
+        onRemoveCompareAgent &&
+        onClearCompareAgents &&
+        compareUrl && (
+          <CompareBar
+            agents={compareAgents}
+            onRemove={onRemoveCompareAgent}
+            onClearAll={onClearCompareAgents}
+            compareUrl={compareUrl}
+          />
+        )}
     </div>
   );
 }

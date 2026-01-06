@@ -2,7 +2,9 @@ import Link from 'next/link';
 import { type JSX, memo } from 'react';
 import {
   AgentAvatar,
+  BookmarkButton,
   type ChainId,
+  CompareCheckbox,
   CopyButton,
   RelevanceScore,
   type TrendDirection,
@@ -10,6 +12,7 @@ import {
   ValidationBadge,
   type ValidationStatus,
   type ValidationType,
+  WatchButton,
 } from '@/components/atoms';
 import { AgentBadges, CapabilityTag, type CapabilityType } from '@/components/molecules';
 import { cn } from '@/lib/utils';
@@ -72,6 +75,20 @@ export interface AgentCardProps {
   onClick?: () => void;
   /** Optional additional class names */
   className?: string;
+  /** Whether the agent is bookmarked */
+  isBookmarked?: boolean;
+  /** Callback when bookmark toggle is clicked */
+  onBookmarkToggle?: () => void;
+  /** Whether the agent is selected for comparison */
+  isSelectedForCompare?: boolean;
+  /** Callback when compare checkbox is clicked */
+  onCompareToggle?: () => void;
+  /** Whether selection is disabled (e.g., max agents reached) */
+  isCompareDisabled?: boolean;
+  /** Whether the agent is being watched */
+  isWatched?: boolean;
+  /** Callback when watch toggle is clicked */
+  onWatchToggle?: () => void;
 }
 
 /**
@@ -96,6 +113,13 @@ export const AgentCard = memo(function AgentCard({
   agent,
   onClick,
   className,
+  isBookmarked,
+  onBookmarkToggle,
+  isSelectedForCompare,
+  onCompareToggle,
+  isCompareDisabled,
+  isWatched,
+  onWatchToggle,
 }: AgentCardProps): JSX.Element {
   // Agent ID is in format "chainId:tokenId" (e.g., "11155111:123")
   const agentId = agent.id;
@@ -118,6 +142,35 @@ export const AgentCard = memo(function AgentCard({
             </span>
             <CopyButton text={agentId} size="xs" label="Copy agent ID" />
           </div>
+        </div>
+
+        {/* Action buttons */}
+        <div className="flex items-center gap-1 shrink-0">
+          {onCompareToggle && (
+            <CompareCheckbox
+              checked={isSelectedForCompare ?? false}
+              onChange={onCompareToggle}
+              disabled={isCompareDisabled && !isSelectedForCompare}
+              label={`${isSelectedForCompare ? 'Remove' : 'Add'} ${agent.name} ${isSelectedForCompare ? 'from' : 'to'} comparison`}
+              size="sm"
+            />
+          )}
+          {onBookmarkToggle && (
+            <BookmarkButton
+              isBookmarked={isBookmarked ?? false}
+              onToggle={onBookmarkToggle}
+              size="sm"
+              label={`${isBookmarked ? 'Remove' : 'Add'} ${agent.name} ${isBookmarked ? 'from' : 'to'} bookmarks`}
+            />
+          )}
+          {onWatchToggle && (
+            <WatchButton
+              isWatched={isWatched ?? false}
+              onToggle={onWatchToggle}
+              size="sm"
+              label={`${isWatched ? 'Stop' : 'Start'} watching ${agent.name}`}
+            />
+          )}
         </div>
       </div>
 

@@ -34,6 +34,17 @@ vi.mock('@/hooks', () => ({
   }),
 }));
 
+// Mock useThemeContext hook
+vi.mock('@/providers', () => ({
+  useThemeContext: () => ({
+    theme: 'dark',
+    resolvedTheme: 'dark',
+    setTheme: vi.fn(),
+    toggleTheme: vi.fn(),
+    isLoaded: true,
+  }),
+}));
+
 describe('Header', () => {
   describe('rendering', () => {
     it('renders header element', () => {

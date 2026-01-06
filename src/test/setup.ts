@@ -1,6 +1,9 @@
 import '@testing-library/jest-dom/vitest';
 import { vi } from 'vitest';
 
+// Re-export test utilities for convenience
+export * from './utils';
+
 // Mock Next.js router
 vi.mock('next/navigation', () => ({
   useRouter: () => ({

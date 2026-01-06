@@ -20,8 +20,18 @@ vi.mock('@/components/organisms', async (importOriginal) => {
 
 // Mock next/link
 vi.mock('next/link', () => ({
-  default: ({ children, href }: { children: React.ReactNode; href: string }) => (
-    <a href={href}>{children}</a>
+  default: ({
+    children,
+    href,
+    ...props
+  }: {
+    children: React.ReactNode;
+    href: string;
+    [key: string]: unknown;
+  }) => (
+    <a href={href} {...props}>
+      {children}
+    </a>
   ),
 }));
 
@@ -294,5 +304,136 @@ describe('ExploreTemplate', () => {
 
     // Note: Positive rendering tests are handled by integration tests in page.test.tsx
     // as they require full component tree with providers
+  });
+
+  describe('compare bar', () => {
+    const compareAgents = [
+      { id: '11155111:123', name: 'Agent 1' },
+      { id: '84532:456', name: 'Agent 2' },
+    ];
+
+    it('does not render compare bar when no agents selected', () => {
+      render(<ExploreTemplate {...defaultProps} />);
+      expect(screen.queryByTestId('compare-bar')).not.toBeInTheDocument();
+    });
+
+    it('does not render compare bar when compareAgents is empty', () => {
+      render(
+        <ExploreTemplate
+          {...defaultProps}
+          compareAgents={[]}
+          compareUrl="/compare"
+          onRemoveCompareAgent={vi.fn()}
+          onClearCompareAgents={vi.fn()}
+        />,
+      );
+      expect(screen.queryByTestId('compare-bar')).not.toBeInTheDocument();
+    });
+
+    it('renders compare bar when agents are selected', () => {
+      render(
+        <ExploreTemplate
+          {...defaultProps}
+          compareAgents={compareAgents}
+          compareUrl="/compare?agents=11155111:123,84532:456"
+          onRemoveCompareAgent={vi.fn()}
+          onClearCompareAgents={vi.fn()}
+        />,
+      );
+      expect(screen.getByTestId('compare-bar')).toBeInTheDocument();
+    });
+
+    it('shows selected agent count', () => {
+      render(
+        <ExploreTemplate
+          {...defaultProps}
+          compareAgents={compareAgents}
+          compareUrl="/compare?agents=11155111:123,84532:456"
+          onRemoveCompareAgent={vi.fn()}
+          onClearCompareAgents={vi.fn()}
+        />,
+      );
+      expect(screen.getByText('2/4')).toBeInTheDocument();
+    });
+
+    it('calls onRemoveCompareAgent when agent is removed', () => {
+      const onRemoveCompareAgent = vi.fn();
+      render(
+        <ExploreTemplate
+          {...defaultProps}
+          compareAgents={compareAgents}
+          compareUrl="/compare"
+          onRemoveCompareAgent={onRemoveCompareAgent}
+          onClearCompareAgents={vi.fn()}
+        />,
+      );
+      fireEvent.click(screen.getByTestId('compare-bar-remove-11155111:123'));
+      expect(onRemoveCompareAgent).toHaveBeenCalledWith('11155111:123');
+    });
+
+    it('calls onClearCompareAgents when clear is clicked', () => {
+      const onClearCompareAgents = vi.fn();
+      render(
+        <ExploreTemplate
+          {...defaultProps}
+          compareAgents={compareAgents}
+          compareUrl="/compare"
+          onRemoveCompareAgent={vi.fn()}
+          onClearCompareAgents={onClearCompareAgents}
+        />,
+      );
+      fireEvent.click(screen.getByTestId('compare-bar-clear'));
+      expect(onClearCompareAgents).toHaveBeenCalledTimes(1);
+    });
+
+    it('has correct compare URL', () => {
+      render(
+        <ExploreTemplate
+          {...defaultProps}
+          compareAgents={compareAgents}
+          compareUrl="/compare?agents=11155111:123,84532:456"
+          onRemoveCompareAgent={vi.fn()}
+          onClearCompareAgents={vi.fn()}
+        />,
+      );
+      const compareButton = screen.getByTestId('compare-bar-compare-button');
+      expect(compareButton).toHaveAttribute('href', '/compare?agents=11155111:123,84532:456');
+    });
+
+    it('does not render compare bar when onRemoveCompareAgent is missing', () => {
+      render(
+        <ExploreTemplate
+          {...defaultProps}
+          compareAgents={compareAgents}
+          compareUrl="/compare"
+          onClearCompareAgents={vi.fn()}
+        />,
+      );
+      expect(screen.queryByTestId('compare-bar')).not.toBeInTheDocument();
+    });
+
+    it('does not render compare bar when onClearCompareAgents is missing', () => {
+      render(
+        <ExploreTemplate
+          {...defaultProps}
+          compareAgents={compareAgents}
+          compareUrl="/compare"
+          onRemoveCompareAgent={vi.fn()}
+        />,
+      );
+      expect(screen.queryByTestId('compare-bar')).not.toBeInTheDocument();
+    });
+
+    it('does not render compare bar when compareUrl is missing', () => {
+      render(
+        <ExploreTemplate
+          {...defaultProps}
+          compareAgents={compareAgents}
+          onRemoveCompareAgent={vi.fn()}
+          onClearCompareAgents={vi.fn()}
+        />,
+      );
+      expect(screen.queryByTestId('compare-bar')).not.toBeInTheDocument();
+    });
   });
 });

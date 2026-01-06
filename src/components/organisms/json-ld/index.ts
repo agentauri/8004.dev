@@ -11,5 +11,6 @@ export {
   HomeBreadcrumb,
   TaxonomyBreadcrumb,
 } from './breadcrumb-json-ld';
+export { EvaluationJsonLd } from './evaluation-json-ld';
 export { OrganizationJsonLd } from './organization-json-ld';
 export { WebsiteJsonLd } from './website-json-ld';

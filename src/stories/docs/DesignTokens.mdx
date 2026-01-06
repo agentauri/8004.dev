@@ -1,0 +1,308 @@
+import { Meta } from '@storybook/addon-docs/blocks';
+import { ColorGrid, FontSample, SpacingBox, AnimationDemo } from '../components';
+import {
+  COLOR_TOKENS,
+  TYPOGRAPHY_TOKENS,
+  SPACING_TOKENS,
+  ANIMATION_TOKENS,
+  getColorsByCategory,
+} from '../utils/design-tokens';
+
+<Meta title="Documentation/Design Tokens" />
+
+# Design Tokens Overview
+
+Agent Explorer's design system is built on a foundation of **design tokens** - the atomic building blocks that define our visual language. This 80s retro pixel art aesthetic is inspired by NES/Sega era games while maintaining enterprise-grade usability.
+
+## Quick Reference
+
+| Category | Count | Purpose |
+|----------|-------|---------|
+| Colors | 20 | Primary, grayscale, chain-specific, glow effects |
+| Typography | 4 | Display, heading, body, UI fonts |
+| Spacing | 11 | Consistent spacing based on 4px grid |
+| Animations | 4 | Pixel-perfect transitions and effects |
+
+---
+
+## Color Palette
+
+### Primary Colors
+
+Our action and accent colors, inspired by classic 8-bit games.
+
+<ColorGrid colors={getColorsByCategory('primary')} />
+
+### Usage
+
+```css
+/* Primary action button */
+.btn-primary {
+  background: var(--pixel-blue-sky);
+  color: var(--pixel-black);
+}
+
+/* Error state */
+.error {
+  color: var(--pixel-red-fire);
+}
+
+/* Success indicator */
+.success {
+  color: var(--pixel-green-pipe);
+}
+
+/* Highlight */
+.highlight {
+  color: var(--pixel-gold-coin);
+}
+```
+
+### Dark Theme Grayscale
+
+<ColorGrid colors={getColorsByCategory('dark')} />
+
+### Chain Colors
+
+Each blockchain network has a unique identifying color.
+
+<ColorGrid colors={getColorsByCategory('chain')} />
+
+### CRT Glow Effects
+
+Semi-transparent colors for the signature retro glow effects.
+
+<ColorGrid colors={getColorsByCategory('glow')} />
+
+```css
+/* Applying glow effects */
+.card:hover {
+  box-shadow: 0 0 20px var(--glow-blue);
+}
+
+.active-indicator {
+  box-shadow: 0 0 12px var(--glow-green);
+}
+
+.premium-badge {
+  box-shadow: 0 0 16px var(--glow-gold);
+}
+```
+
+---
+
+## Typography
+
+Our typography system uses four distinct font families for different use cases.
+
+| Font | Variable | Usage |
+|------|----------|-------|
+| Press Start 2P | `--font-pixel-display` | Page titles, hero text |
+| Silkscreen | `--font-pixel-heading` | Card titles, badges, labels |
+| JetBrains Mono | `--font-pixel-body` | Descriptions, addresses, code |
+| Inter | `--font-sans` | Form inputs, long text |
+
+### Implementation
+
+```tsx
+// Display font for titles
+<h1 className="font-[family-name:var(--font-pixel-display)]">
+  AGENT EXPLORER
+</h1>
+
+// Heading font for section titles
+<h2 className="font-[family-name:var(--font-pixel-heading)]">
+  Featured Agents
+</h2>
+
+// Body font for descriptions
+<p className="font-[family-name:var(--font-pixel-body)]">
+  0x1234...5678
+</p>
+
+// UI font for forms
+<input className="font-sans" />
+```
+
+---
+
+## Spacing Scale
+
+Our spacing system is based on a **4px grid** for consistent rhythm throughout the interface.
+
+| Token | Value | Pixels | Usage |
+|-------|-------|--------|-------|
+| 0 | 0 | 0px | No spacing |
+| 1 | 0.25rem | 4px | Tight spacing |
+| 2 | 0.5rem | 8px | Default gap |
+| 3 | 0.75rem | 12px | Card padding |
+| 4 | 1rem | 16px | Section gap |
+| 6 | 1.5rem | 24px | Large gap |
+| 8 | 2rem | 32px | Section padding |
+| 12 | 3rem | 48px | Page sections |
+| 16 | 4rem | 64px | Major sections |
+
+### Guidelines
+
+- Use **multiples of 4px** for all spacing
+- **gap-2** (8px) for tight layouts
+- **gap-4** (16px) for standard layouts
+- **p-4** to **p-6** for card padding
+- **py-8** to **py-16** for section spacing
+
+---
+
+## Animations
+
+Agent Explorer uses **pixel-perfect animations** that respect the retro aesthetic while providing smooth user feedback.
+
+### Animation Principles
+
+1. Use `steps()` timing for authentic 8-bit feel
+2. Keep duration under **300ms** for interactions
+3. Use **transform** and **opacity** only for performance
+4. Respect `prefers-reduced-motion`
+
+### Available Animations
+
+| Name | Class | Duration | Description |
+|------|-------|----------|-------------|
+| Pulse Glow | `animate-pulse-glow` | 2s | Subtle pulsing glow for active states |
+| Blink | `animate-blink` | 1s | 8-bit style cursor blink |
+| Fade In | `animate-fade-in` | 150ms | Quick fade in for modals |
+| Slide Up | `animate-slide-up` | 200ms | Slide up entrance |
+
+### Implementation
+
+```tsx
+// Pulsing glow for active elements
+<div className="animate-pulse-glow">Active Agent</div>
+
+// Blinking cursor effect
+<span className="animate-blink">_</span>
+
+// Modal entrance
+<dialog className="animate-fade-in">
+  Content
+</dialog>
+
+// Slide up notification
+<div className="animate-slide-up">
+  New agent registered!
+</div>
+```
+
+### Reduced Motion Support
+
+```css
+@media (prefers-reduced-motion: reduce) {
+  .animate-pulse-glow,
+  .animate-blink {
+    animation: none;
+  }
+}
+```
+
+---
+
+## Component Patterns
+
+### Buttons
+
+```tsx
+// Primary button
+<button className="
+  px-4 py-2
+  border-2 border-[var(--pixel-blue-sky)]
+  text-[var(--pixel-blue-sky)]
+  hover:bg-[var(--pixel-blue-sky)]
+  hover:text-[var(--pixel-black)]
+  transition-colors
+">
+  Primary Action
+</button>
+```
+
+### Cards
+
+```tsx
+// Standard card
+<div className="
+  p-4
+  bg-[var(--pixel-gray-800)]
+  border-2 border-[var(--pixel-gray-700)]
+  hover:border-[var(--pixel-blue-sky)]
+  hover:shadow-[0_0_12px_var(--glow-blue)]
+  transition-all
+">
+  Card content
+</div>
+```
+
+### Badges
+
+```tsx
+// Status badge
+<span className="
+  px-2 py-0.5
+  text-xs uppercase
+  font-[family-name:var(--font-pixel-body)]
+  border border-[var(--pixel-green-pipe)]
+  text-[var(--pixel-green-pipe)]
+">
+  ACTIVE
+</span>
+```
+
+---
+
+## CSS Custom Properties Reference
+
+All design tokens are available as CSS custom properties in `globals.css`:
+
+```css
+:root {
+  /* Primary Colors */
+  --pixel-blue-sky: #5C94FC;
+  --pixel-red-fire: #FC5454;
+  --pixel-green-pipe: #00D800;
+  --pixel-gold-coin: #FCC03C;
+
+  /* Dark Theme */
+  --pixel-black: #000000;
+  --pixel-gray-dark: #1A1A1A;
+  --pixel-gray-800: #2A2A2A;
+  --pixel-gray-700: #3A3A3A;
+  --pixel-gray-600: #4A4A4A;
+  --pixel-gray-500: #6A6A6A;
+  --pixel-gray-400: #9A9A9A;
+  --pixel-gray-300: #BABABA;
+  --pixel-gray-200: #DADADA;
+  --pixel-white: #FFFFFF;
+
+  /* Chain Colors */
+  --chain-sepolia: #FC5454;
+  --chain-base: #5C94FC;
+  --chain-polygon: #9C54FC;
+
+  /* Glow Effects */
+  --glow-blue: rgba(59, 113, 201, 0.5);
+  --glow-green: rgba(0, 216, 0, 0.5);
+  --glow-gold: rgba(252, 192, 60, 0.5);
+
+  /* Typography */
+  --font-pixel-display: 'Press Start 2P', cursive;
+  --font-pixel-heading: 'Silkscreen', cursive;
+  --font-pixel-body: 'JetBrains Mono', monospace;
+  --font-sans: 'Inter', sans-serif;
+}
+```
+
+---
+
+## Related Documentation
+
+- [Colors](/docs/documentation-design-tokens-colors--docs) - Detailed color palette
+- [Typography](/docs/documentation-typography--docs) - Font usage guidelines
+- [Spacing](/docs/documentation-spacing--docs) - Spacing scale reference
+- [Animations](/docs/documentation-animations--docs) - Animation patterns

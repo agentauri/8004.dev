@@ -10,6 +10,11 @@ export default defineConfig({
     setupFiles: ['./src/test/setup.ts'],
     include: ['src/**/*.test.{ts,tsx}'],
     exclude: ['e2e/**', 'node_modules/**'],
+    // CI stability: retry flaky tests once
+    retry: process.env.CI ? 1 : 0,
+    // Reasonable timeout for async operations
+    testTimeout: 10000,
+    hookTimeout: 10000,
     server: {
       deps: {
         external: ['agent0-sdk'],

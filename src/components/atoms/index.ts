@@ -6,8 +6,12 @@ export type { AgentMascotProps, MascotAnimation, MascotSize } from './agent-masc
 export { AgentMascot } from './agent-mascot';
 export type { BadgeProps, BadgeVariant } from './badge';
 export { Badge } from './badge';
+export type { BookmarkButtonProps } from './bookmark-button';
+export { BookmarkButton } from './bookmark-button';
 export type { ChainBadgeProps, ChainId } from './chain-badge';
 export { ChainBadge } from './chain-badge';
+export type { CompareCheckboxProps } from './compare-checkbox';
+export { CompareCheckbox } from './compare-checkbox';
 export type { CopyButtonProps } from './copy-button';
 export { CopyButton } from './copy-button';
 export type { DistributionBarProps } from './distribution-bar';
@@ -18,6 +22,8 @@ export type { EvaluationStatusBadgeProps } from './evaluation-status-badge';
 export { EvaluationStatusBadge } from './evaluation-status-badge';
 export type { EventBadgeProps } from './event-badge';
 export { EventBadge } from './event-badge';
+export type { FeatureGateProps } from './feature-gate';
+export { FeatureGate } from './feature-gate';
 export type { FeedbackTagsProps } from './feedback-tags';
 export { FeedbackTags } from './feedback-tags';
 export type { HealthBadgeProps, HealthLevel } from './health-badge';
@@ -46,6 +52,8 @@ export type { SwitchProps } from './switch';
 export { Switch } from './switch';
 export type { TaxonomyBadgeProps } from './taxonomy-badge';
 export { TaxonomyBadge } from './taxonomy-badge';
+export type { ThemeToggleProps } from './theme-toggle';
+export { ThemeToggle } from './theme-toggle';
 export type { ToggleSwitchProps } from './toggle-switch';
 export { ToggleSwitch } from './toggle-switch';
 export type { TreeNodeIndicatorProps } from './tree-node-indicator';
@@ -60,3 +68,5 @@ export type {
   ValidationType,
 } from './validation-badge/validation-badge';
 export { ValidationBadge } from './validation-badge/validation-badge';
+export type { WatchButtonProps } from './watch-button';
+export { WatchButton } from './watch-button';

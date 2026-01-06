@@ -3,7 +3,23 @@
  */
 
 export { useAgentDetail } from './use-agent-detail';
+export {
+  type BookmarkedAgent,
+  MAX_BOOKMARKS,
+  MAX_SAVED_SEARCHES,
+  type SavedSearch,
+  type SavedSearchFilters,
+  type UseBookmarksResult,
+  useBookmarks,
+} from './use-bookmarks';
 export { type ChainCounts, useChainCounts } from './use-chain-counts';
+export {
+  COMPARE_PARAM_KEY,
+  MAX_COMPARE_AGENTS,
+  MIN_COMPARE_AGENTS,
+  type UseCompareAgentsReturn,
+  useCompareAgents,
+} from './use-compare-agents';
 export {
   type CreateEvaluationInput,
   type UseAgentEvaluationsOptions,
@@ -14,6 +30,7 @@ export {
   useEvaluation,
   useEvaluations,
 } from './use-evaluations';
+export { useFeatureFlag, useFeatureFlagToggle } from './use-feature-flag';
 export {
   type FilterState,
   type UseFilterPresetsResult,
@@ -27,7 +44,22 @@ export {
   useIntentMatches,
   useIntents,
 } from './use-intents';
+export {
+  CATEGORY_LABELS,
+  formatKeyCombo,
+  groupShortcutsByCategory,
+  type KeyboardShortcut,
+  type ShortcutCategory,
+  type UseKeyboardShortcutsOptions,
+  type UseKeyboardShortcutsResult,
+  useKeyboardShortcuts,
+} from './use-keyboard-shortcuts';
 export { useInfiniteLeaderboard, useLeaderboard } from './use-leaderboard';
+export {
+  type UseLocalStorageOptions,
+  type UseLocalStorageResult,
+  useLocalStorage,
+} from './use-local-storage';
 export {
   type RealtimeEventsContextValue,
   useRealtimeEvents,
@@ -48,9 +80,17 @@ export {
   useComposeTeam,
   useTeamComposition,
 } from './use-team-composition';
+export { type Theme, type UseThemeReturn, useTheme } from './use-theme';
 export { useTrending } from './use-trending';
 export {
   type UrlSearchState,
   type UseUrlSearchParamsReturn,
   useUrlSearchParams,
 } from './use-url-search-params';
+export {
+  MAX_WATCHED_AGENTS,
+  type UseWatchlistResult,
+  useWatchlist,
+  type WatchChangeType,
+  type WatchedAgent,
+} from './use-watchlist';

@@ -1,7 +1,7 @@
 'use client';
 
 import type React from 'react';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { cn } from '@/lib/utils';
 import type { RealtimeEvent, RealtimeEventType } from '@/types/agent';
 
@@ -101,12 +101,12 @@ export function EventNotification({
   const config = EVENT_TYPE_CONFIG[event.type];
 
   // Handle dismiss with animation
-  const handleDismiss = () => {
+  const handleDismiss = useCallback(() => {
     setIsExiting(true);
     setTimeout(() => {
       onDismiss?.();
     }, 150); // Match animation duration
-  };
+  }, [onDismiss]);
 
   // Auto-dismiss after timeout
   useEffect(() => {
