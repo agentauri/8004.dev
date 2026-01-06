@@ -21,7 +21,7 @@
  * - chainId: Single chain filter (deprecated, use chains instead)
  */
 
-import { backendFetch } from '@/lib/api/backend';
+import { backendFetch, shouldUseMockData } from '@/lib/api/backend';
 import { mapAgentsToSummaries } from '@/lib/api/mappers';
 import {
   handleRouteError,
@@ -30,6 +30,88 @@ import {
   successResponse,
 } from '@/lib/api/route-helpers';
 import type { BackendAgent } from '@/types/backend';
+
+/**
+ * Generate mock agents for development/testing when backend is not available
+ */
+function getMockAgents(limit: number): BackendAgent[] {
+  const mockAgents: BackendAgent[] = [
+    {
+      id: '11155111:1',
+      chainId: 11155111,
+      tokenId: '1',
+      name: 'CodeReview Pro',
+      description:
+        'An AI-powered code review assistant that helps developers improve code quality.',
+      active: true,
+      hasMcp: true,
+      hasA2a: true,
+      x402Support: false,
+      supportedTrust: [],
+    },
+    {
+      id: '84532:2',
+      chainId: 84532,
+      tokenId: '2',
+      name: 'Trading Assistant',
+      description: 'Automated trading helper for cryptocurrency markets.',
+      active: true,
+      hasMcp: true,
+      hasA2a: false,
+      x402Support: true,
+      supportedTrust: [],
+    },
+    {
+      id: '11155111:3',
+      chainId: 11155111,
+      tokenId: '3',
+      name: 'Data Analyzer',
+      description: 'Data analysis specialist for business intelligence.',
+      active: true,
+      hasMcp: false,
+      hasA2a: true,
+      x402Support: false,
+      supportedTrust: [],
+    },
+    {
+      id: '80002:4',
+      chainId: 80002,
+      tokenId: '4',
+      name: 'Content Writer',
+      description: 'AI content creator for marketing and blogs.',
+      active: true,
+      hasMcp: true,
+      hasA2a: true,
+      x402Support: true,
+      supportedTrust: [],
+    },
+    {
+      id: '84532:5',
+      chainId: 84532,
+      tokenId: '5',
+      name: 'Security Scanner',
+      description: 'Security vulnerability scanner for web applications.',
+      active: true,
+      hasMcp: true,
+      hasA2a: false,
+      x402Support: false,
+      supportedTrust: [],
+    },
+    {
+      id: '11155111:6',
+      chainId: 11155111,
+      tokenId: '6',
+      name: 'Research Assistant',
+      description: 'Research and analysis helper for academic work.',
+      active: true,
+      hasMcp: true,
+      hasA2a: true,
+      x402Support: false,
+      supportedTrust: [],
+    },
+  ];
+  return mockAgents.slice(0, limit);
+}
 
 interface BackendAgentsResponse {
   data: BackendAgent[];
@@ -125,17 +207,47 @@ export async function GET(request: Request) {
     const order = searchParams.get('order');
     if (order) backendParams.order = order;
 
-    // Execute search via backend
-    const response = await backendFetch<BackendAgentsResponse['data']>('/api/v1/agents', {
-      params: backendParams,
-      next: { revalidate: 60 }, // Cache for 1 minute
-    });
+    // Execute search via backend with fallback to mock data
+    let data: BackendAgent[] = [];
+    let meta: BackendAgentsResponse['meta'] = {
+      total: 0,
+      limit: 20,
+      hasMore: false,
+    };
+
+    try {
+      const response = await backendFetch<BackendAgentsResponse['data']>('/api/v1/agents', {
+        params: backendParams,
+        next: { revalidate: 60 }, // Cache for 1 minute
+      });
+      data = response.data;
+      meta = {
+        total: response.meta?.total ?? data.length,
+        limit: response.meta?.limit ?? 20,
+        hasMore: response.meta?.hasMore ?? false,
+        nextCursor: response.meta?.nextCursor,
+      };
+    } catch (error) {
+      // Fallback to mock data if backend not configured or endpoint not available
+      if (shouldUseMockData(error)) {
+        console.warn('Backend /api/v1/agents not available, using mock data');
+        const limit = backendParams.limit ? Number(backendParams.limit) : 20;
+        data = getMockAgents(limit);
+        meta = {
+          total: data.length,
+          limit,
+          hasMore: false,
+        };
+      } else {
+        throw error;
+      }
+    }
 
     // Map backend agents to frontend format
-    const agents = mapAgentsToSummaries(response.data);
+    const agents = mapAgentsToSummaries(data);
 
     return successResponse(agents, {
-      meta: response.meta,
+      meta,
       headers: { 'Cache-Control': 's-maxage=60, stale-while-revalidate=300' },
     });
   } catch (error) {

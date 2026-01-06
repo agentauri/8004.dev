@@ -259,3 +259,23 @@ export async function isBackendHealthy(): Promise<boolean> {
 export function getBackendUrl(): string | undefined {
   return getApiUrl();
 }
+
+/**
+ * Check if the backend API is properly configured
+ * Returns true only if both API URL and API key are set
+ */
+export function isBackendConfigured(): boolean {
+  return Boolean(getApiUrl() && getApiKey());
+}
+
+/**
+ * Check if an error should trigger a fallback to mock data
+ * This includes:
+ * - CONFIG_ERROR: API key not configured
+ * - 401: Invalid/missing API key
+ * - 404: Endpoint not found
+ */
+export function shouldUseMockData(error: unknown): boolean {
+  if (!(error instanceof BackendError)) return false;
+  return error.code === 'CONFIG_ERROR' || error.status === 401 || error.status === 404;
+}

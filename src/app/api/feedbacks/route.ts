@@ -6,7 +6,7 @@
  * Remove mock fallback once backend implements /api/v1/feedbacks
  */
 
-import { BackendError, backendFetch } from '@/lib/api/backend';
+import { backendFetch, shouldUseMockData } from '@/lib/api/backend';
 import { mapGlobalFeedbacks } from '@/lib/api/mappers';
 import { handleRouteError, parseIntParam, successResponse } from '@/lib/api/route-helpers';
 import type { BackendGlobalFeedback, BackendGlobalFeedbacksResponse } from '@/types/backend';
@@ -220,8 +220,8 @@ export async function GET(request: Request) {
       meta = response.data?.meta;
       stats = response.data?.stats ?? stats;
     } catch (error) {
-      // Fallback to mock data if backend endpoint not available
-      if (error instanceof BackendError && error.status === 404) {
+      // Fallback to mock data if backend not configured or endpoint not available
+      if (shouldUseMockData(error)) {
         console.warn('Backend /api/v1/feedbacks not available, using mock data');
         const mockData = getMockFeedbacks(limit, scoreCategory);
         feedbacks = mockData.feedbacks;

@@ -6,7 +6,7 @@
  * Remove mock fallback once backend implements /api/v1/leaderboard
  */
 
-import { BackendError, backendFetch } from '@/lib/api/backend';
+import { backendFetch, shouldUseMockData } from '@/lib/api/backend';
 import { mapLeaderboardEntries } from '@/lib/api/mappers';
 import {
   handleRouteError,
@@ -237,8 +237,8 @@ export async function GET(request: Request) {
       entries = response.data?.data ?? [];
       meta = response.data?.meta;
     } catch (error) {
-      // Fallback to mock data if backend endpoint not available
-      if (error instanceof BackendError && error.status === 404) {
+      // Fallback to mock data if backend not configured or endpoint not available
+      if (shouldUseMockData(error)) {
         console.warn('Backend /api/v1/leaderboard not available, using mock data');
         entries = getMockLeaderboardEntries(limit);
       } else {
