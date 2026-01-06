@@ -80,35 +80,28 @@ describe('IntentCard', () => {
   });
 
   describe('category colors', () => {
+    // Note: Colors are WCAG 2.1 AA compliant (brighter variants for dark backgrounds)
     it('applies development category colors', () => {
       render(<IntentCard template={mockTemplate} />);
-      expect(screen.getByTestId('intent-category-badge')).toHaveClass(
-        'text-[var(--pixel-blue-sky)]',
-      );
+      expect(screen.getByTestId('intent-category-badge')).toHaveClass('text-[#93C5FD]');
     });
 
     it('applies automation category colors', () => {
       const autoTemplate = { ...mockTemplate, category: 'automation' };
       render(<IntentCard template={autoTemplate} />);
-      expect(screen.getByTestId('intent-category-badge')).toHaveClass(
-        'text-[var(--pixel-green-pipe)]',
-      );
+      expect(screen.getByTestId('intent-category-badge')).toHaveClass('text-[#4ADE80]');
     });
 
     it('applies security category colors', () => {
       const securityTemplate = { ...mockTemplate, category: 'security' };
       render(<IntentCard template={securityTemplate} />);
-      expect(screen.getByTestId('intent-category-badge')).toHaveClass(
-        'text-[var(--pixel-red-fire)]',
-      );
+      expect(screen.getByTestId('intent-category-badge')).toHaveClass('text-[#FCA5A5]');
     });
 
     it('applies analysis category colors', () => {
       const analysisTemplate = { ...mockTemplate, category: 'data-analysis' };
       render(<IntentCard template={analysisTemplate} />);
-      expect(screen.getByTestId('intent-category-badge')).toHaveClass(
-        'text-[var(--pixel-gold-coin)]',
-      );
+      expect(screen.getByTestId('intent-category-badge')).toHaveClass('text-[#FCD34D]');
     });
   });
 
