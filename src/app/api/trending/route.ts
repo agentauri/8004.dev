@@ -9,7 +9,61 @@
 import { BackendError, backendFetch } from '@/lib/api/backend';
 import { mapTrendingAgents } from '@/lib/api/mappers';
 import { handleRouteError, parseIntParam, successResponse } from '@/lib/api/route-helpers';
-import type { BackendTrendingAgent, BackendTrendingResponse } from '@/types/backend';
+import type { BackendTrendingAgent } from '@/types/backend';
+
+/**
+ * Backend trending entry structure (actual BE response)
+ */
+interface BETrendingEntry {
+  agent: {
+    id: string;
+    name: string;
+    image?: string;
+    chainId: number;
+  };
+  currentScore: number;
+  previousScore: number;
+  change: number;
+  changePercent: number;
+  trend: 'up' | 'down' | 'stable';
+}
+
+/**
+ * Backend trending response structure (actual BE response)
+ */
+interface BETrendingResponse {
+  success: boolean;
+  data: BETrendingEntry[];
+  meta: {
+    period: string;
+    dataAvailable: boolean;
+    message?: string;
+  };
+}
+
+/**
+ * Transform BE trending entry to FE expected format
+ */
+function transformBETrendingEntry(entry: BETrendingEntry): BackendTrendingAgent {
+  const [, tokenId] = entry.agent.id.split(':');
+  return {
+    agentId: entry.agent.id,
+    chainId: entry.agent.chainId,
+    tokenId: tokenId ?? '0',
+    name: entry.agent.name,
+    image: entry.agent.image,
+    currentScore: entry.currentScore,
+    previousScore: entry.previousScore,
+    scoreChange: entry.change,
+    percentageChange: entry.changePercent,
+    trend: entry.trend,
+    // These fields are not available from BE trending endpoint
+    active: null,
+    hasMcp: null,
+    hasA2a: null,
+    x402Support: null,
+  };
+}
 
 const VALID_PERIODS = ['24h', '7d', '30d'] as const;
 type ValidPeriod = (typeof VALID_PERIODS)[number];
@@ -117,20 +171,23 @@ export async function GET(request: Request) {
 
     let agents: BackendTrendingAgent[] = [];
     let generatedAt = new Date().toISOString();
-    let nextRefreshAt: string | undefined;
+    const nextRefreshAt = new Date(Date.now() + 5 * 60 * 1000).toISOString(); // 5 min cache
 
     try {
-      const response = await backendFetch<BackendTrendingResponse['data']>('/api/v1/trending', {
+      // Fetch from BE - note: BE returns different structure than FE expects
+      const response = await backendFetch<BETrendingResponse>('/api/v1/trending', {
         params: { period, limit },
         next: { revalidate: 300 }, // Cache for 5 minutes
       });
 
-      agents = response.data?.agents ?? [];
-      generatedAt = response.data?.generatedAt ?? generatedAt;
-      nextRefreshAt = response.data?.nextRefreshAt;
+      // Transform BE response to FE expected format
+      if (response.data && Array.isArray(response.data)) {
+        agents = response.data.map(transformBETrendingEntry);
+      }
+      generatedAt = new Date().toISOString();
     } catch (error) {
-      // Fallback to mock data if backend endpoint not available
-      if (error instanceof BackendError && error.status === 404) {
+      // Fallback to mock data if backend endpoint not available or returns error
+      if (error instanceof BackendError && (error.status === 404 || error.status === 500)) {
         console.warn('Backend /api/v1/trending not available, using mock data');
         agents = getMockTrendingAgents(limit);
       } else {

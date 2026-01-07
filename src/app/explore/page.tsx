@@ -188,11 +188,19 @@ function ExplorePageContent() {
   // Determine loading state
   const isLoading = useMemo(() => {
     if (useStreaming) {
-      // For streaming, we're "loading" only during initial connection
-      return streaming.streamState === 'connecting';
+      // For streaming, we're "loading" when:
+      // 1. Idle with no results (before stream starts)
+      // 2. Connecting to the stream
+      // 3. Streaming but no results yet (connection established, waiting for first result)
+      const hasNoResults = streaming.results.length === 0;
+      const isIdle = streaming.streamState === 'idle';
+      const isConnecting = streaming.streamState === 'connecting';
+      const isStreamingWithNoResults = streaming.streamState === 'streaming' && hasNoResults;
+
+      return (isIdle && hasNoResults) || isConnecting || isStreamingWithNoResults;
     }
     return regular.isLoading;
-  }, [useStreaming, streaming.streamState, regular.isLoading]);
+  }, [useStreaming, streaming.streamState, streaming.results.length, regular.isLoading]);
 
   // Total count for display
   const totalCount = useMemo(() => {

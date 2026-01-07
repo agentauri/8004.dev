@@ -221,6 +221,11 @@ export function useStreamingSearch(
         // Transition to streaming state on first result
         setStreamState('streaming');
 
+        // Skip duplicate results (backend may send same agent multiple times)
+        if (accumulatedResults.some((r) => r.id === result.id)) {
+          return;
+        }
+
         // Add result to state
         setResults((prev) => [...prev, result]);
         accumulatedResults = [...accumulatedResults, result];

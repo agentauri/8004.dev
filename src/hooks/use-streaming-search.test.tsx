@@ -302,6 +302,43 @@ describe('useStreamingSearch', () => {
       expect(onResult).toHaveBeenNthCalledWith(1, mockAgent1);
       expect(onResult).toHaveBeenNthCalledWith(2, mockAgent2);
     });
+
+    it('should skip duplicate results with same id', () => {
+      const onResult = vi.fn();
+
+      const { result } = renderHook(() => useStreamingSearch({ q: 'trading' }, { onResult }), {
+        wrapper: createWrapper(),
+      });
+
+      act(() => {
+        result.current.startStream();
+      });
+
+      // First result
+      act(() => {
+        capturedCallbacks.onResult?.(mockAgent1);
+      });
+
+      expect(result.current.results).toHaveLength(1);
+      expect(onResult).toHaveBeenCalledTimes(1);
+
+      // Duplicate result (same id)
+      act(() => {
+        capturedCallbacks.onResult?.(mockAgent1);
+      });
+
+      // Should still have only 1 result
+      expect(result.current.results).toHaveLength(1);
+      expect(onResult).toHaveBeenCalledTimes(1); // Not called again for duplicate
+
+      // Different result
+      act(() => {
+        capturedCallbacks.onResult?.(mockAgent2);
+      });
+
+      expect(result.current.results).toHaveLength(2);
+      expect(onResult).toHaveBeenCalledTimes(2);
+    });
   });
 
   describe('metadata handling', () => {

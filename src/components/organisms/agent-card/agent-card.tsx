@@ -281,7 +281,7 @@ export const AgentCard = memo(function AgentCard({
   );
 
   const cardClasses = cn(
-    'block p-3 md:p-4 border-2 transition-all cursor-pointer bg-[var(--pixel-gray-800)]',
+    'block h-full p-3 md:p-4 border-2 transition-all cursor-pointer bg-[var(--pixel-gray-800)]',
     'hover:translate-y-[-2px]',
     agent.isActive
       ? [

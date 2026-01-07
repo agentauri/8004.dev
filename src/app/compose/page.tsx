@@ -1,7 +1,9 @@
 'use client';
 
+import { Users } from 'lucide-react';
 import { Suspense, useCallback, useState } from 'react';
 import { PixelExplorer } from '@/components/atoms';
+import { PageHeader } from '@/components/molecules';
 import { TeamComposer, TeamResult } from '@/components/organisms';
 import { useComposeTeam } from '@/hooks/use-team-composition';
 import { cn } from '@/lib/utils';
@@ -138,14 +140,13 @@ export default function ComposePage(): React.JSX.Element {
   return (
     <main className="space-y-8 px-4 py-8">
       {/* Header */}
-      <div className="text-center">
-        <h1 className="font-[family-name:var(--font-pixel-display)] text-2xl md:text-3xl text-[var(--pixel-gray-100)] shadow-[0_0_20px_var(--glow-gold)]">
-          TEAM COMPOSER
-        </h1>
-        <p className="font-[family-name:var(--font-pixel-body)] text-xs text-[var(--pixel-gray-400)] mt-2 uppercase tracking-wider">
-          Build the perfect agent team for your task
-        </p>
-      </div>
+      <PageHeader
+        title="Team Composer"
+        description="Build the perfect agent team for your task"
+        icon={Users}
+        glow="gold"
+        align="center"
+      />
 
       {/* Content */}
       <Suspense

@@ -415,6 +415,8 @@ export function SearchResults({
             <div
               key={agent.id}
               className={cn(
+                // Full height for equal card heights in grid
+                'h-full',
                 // Base transition for smooth animations
                 'motion-safe:transition-all motion-safe:duration-300',
                 // Streaming fade-in animation

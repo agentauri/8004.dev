@@ -1,8 +1,10 @@
 'use client';
 
+import { FlaskConical } from 'lucide-react';
 import Link from 'next/link';
 import { Suspense, useCallback, useMemo, useState } from 'react';
 import { PixelExplorer } from '@/components/atoms';
+import { PageHeader } from '@/components/molecules';
 import { EvaluationCard } from '@/components/organisms';
 import { useCreateEvaluation, useEvaluations } from '@/hooks';
 import { cn } from '@/lib/utils';
@@ -222,29 +224,27 @@ function EvaluatePageContent(): React.JSX.Element {
   return (
     <div className="space-y-8">
       {/* Header */}
-      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-        <div>
-          <h1 className="font-[family-name:var(--font-pixel-display)] text-2xl md:text-3xl text-[var(--pixel-gray-100)] shadow-[0_0_20px_var(--glow-blue)]">
-            EVALUATIONS
-          </h1>
-          <p className="font-[family-name:var(--font-pixel-body)] text-xs text-[var(--pixel-gray-400)] mt-2 uppercase tracking-wider">
-            Agent benchmark results and performance scores
-          </p>
-        </div>
-        <button
-          type="button"
-          onClick={() => setShowCreateModal(true)}
-          className={cn(
-            'font-[family-name:var(--font-pixel-body)] text-xs uppercase tracking-wider px-4 py-2 border-2',
-            'border-[var(--pixel-green-pipe)] text-[var(--pixel-green-pipe)]',
-            'hover:bg-[var(--pixel-green-pipe)] hover:text-[var(--pixel-black)]',
-            'hover:shadow-[0_0_12px_var(--glow-green)] transition-all',
-          )}
-          data-testid="create-evaluation-button"
-        >
-          + New Evaluation
-        </button>
-      </div>
+      <PageHeader
+        title="Evaluations"
+        description="Agent benchmark results and performance scores"
+        icon={FlaskConical}
+        glow="blue"
+        action={
+          <button
+            type="button"
+            onClick={() => setShowCreateModal(true)}
+            className={cn(
+              'font-[family-name:var(--font-pixel-body)] text-xs uppercase tracking-wider px-4 py-2 border-2',
+              'border-[var(--pixel-green-pipe)] text-[var(--pixel-green-pipe)]',
+              'hover:bg-[var(--pixel-green-pipe)] hover:text-[var(--pixel-black)]',
+              'hover:shadow-[0_0_12px_var(--glow-green)] transition-all',
+            )}
+            data-testid="create-evaluation-button"
+          >
+            + New Evaluation
+          </button>
+        }
+      />
 
       {/* Stats Overview */}
       <div className="grid grid-cols-2 md:grid-cols-5 gap-3">

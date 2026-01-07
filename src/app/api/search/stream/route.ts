@@ -69,7 +69,10 @@ interface StreamSearchRequest {
     chainIds?: number[];
     mcp?: boolean;
     a2a?: boolean;
+    x402?: boolean;
+    active?: boolean;
     minReputation?: number;
+    maxReputation?: number;
   };
 }
 
@@ -79,7 +82,10 @@ function buildStreamRequest(searchParams: URLSearchParams): StreamSearchRequest 
   const chains = parseIntArrayParam(searchParams.get('chains'));
   const mcp = parseBoolParam(searchParams.get('mcp'));
   const a2a = parseBoolParam(searchParams.get('a2a'));
+  const x402 = parseBoolParam(searchParams.get('x402'));
+  const active = parseBoolParam(searchParams.get('active'));
   const minReputation = parseIntParam(searchParams.get('minReputation'));
+  const maxReputation = parseIntParam(searchParams.get('maxReputation'));
 
   // Validate query
   const queryValidation = validateSearchQuery(query);
@@ -112,8 +118,23 @@ function buildStreamRequest(searchParams: URLSearchParams): StreamSearchRequest 
     hasFilters = true;
   }
 
+  if (x402 !== undefined) {
+    filters.x402 = x402;
+    hasFilters = true;
+  }
+
+  if (active !== undefined) {
+    filters.active = active;
+    hasFilters = true;
+  }
+
   if (minReputation !== undefined && minReputation >= 0 && minReputation <= 100) {
     filters.minReputation = minReputation;
+    hasFilters = true;
+  }
+
+  if (maxReputation !== undefined && maxReputation >= 0 && maxReputation <= 100) {
+    filters.maxReputation = maxReputation;
     hasFilters = true;
   }
 

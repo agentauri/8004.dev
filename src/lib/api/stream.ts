@@ -397,21 +397,89 @@ export function createSSEClient<T>(url: string, options: SSEClientOptions<T>): S
 export function createStreamingSearch(options: StreamSearchOptions): SSEClient {
   const { query, filters, onResult, onMetadata, onError, onComplete } = options;
 
-  // Build URL with query parameters
+  // Build URL with individual query parameters (not JSON-encoded filters)
   const url = new URL('/api/search/stream', window.location.origin);
   url.searchParams.set('q', query);
 
   if (filters) {
-    url.searchParams.set('filters', JSON.stringify(filters));
+    // Send filters as individual query params, not JSON
+    if (filters.chains && Array.isArray(filters.chains) && filters.chains.length > 0) {
+      url.searchParams.set('chains', filters.chains.join(','));
+    }
+    if (filters.mcp === true) {
+      url.searchParams.set('mcp', 'true');
+    }
+    if (filters.a2a === true) {
+      url.searchParams.set('a2a', 'true');
+    }
+    if (filters.x402 === true) {
+      url.searchParams.set('x402', 'true');
+    }
+    if (filters.active !== undefined) {
+      url.searchParams.set('active', String(filters.active));
+    }
+    if (typeof filters.minRep === 'number' && filters.minRep > 0) {
+      url.searchParams.set('minReputation', String(filters.minRep));
+    }
+    if (typeof filters.maxRep === 'number' && filters.maxRep < 100) {
+      url.searchParams.set('maxReputation', String(filters.maxRep));
+    }
   }
 
-  return createSSEClient<StreamSearchMessage>(url.toString(), {
+  return createSSEClient<BackendStreamMessage>(url.toString(), {
     onMessage: (message) => {
-      // Route message to appropriate handler based on type
+      // Route message to appropriate handler based on backend event types
       switch (message.type) {
+        // Backend sends agent results as 'agent_enriched' events
+        case 'agent_enriched':
+          if (message.data?.agent) {
+            onResult(message.data.agent as AgentSummary);
+          }
+          break;
+        // Backend sends metadata in 'vector_results' or 'search_started' events
+        case 'vector_results':
+          if (message.data && onMetadata) {
+            onMetadata({
+              total: message.data.total,
+              hasMore: message.data.hasMore,
+              query: message.data.query,
+            });
+          }
+          break;
+        case 'search_started':
+          // Initial metadata with query info
+          if (message.data && onMetadata) {
+            onMetadata({
+              query: message.data.query,
+            });
+          }
+          break;
+        // Backend sends errors as 'error' events
+        case 'error':
+          if (message.data && onError) {
+            onError({
+              code: message.data.code || 'STREAM_ERROR',
+              message: message.data.error || 'Unknown error',
+            });
+          }
+          break;
+        // Backend sends completion as 'search_complete' events
+        case 'search_complete':
+          // Final metadata update with complete info
+          if (message.data && onMetadata) {
+            onMetadata({
+              total: message.data.total,
+              hasMore: message.data.hasMore,
+              nextCursor: message.data.nextCursor,
+              query: message.data.query,
+            });
+          }
+          onComplete?.();
+          break;
+        // Handle legacy/fallback event types
         case 'result':
           if (message.data) {
-            onResult(message.data as AgentSummary);
+            onResult(message.data as unknown as AgentSummary);
           }
           break;
         case 'metadata':
@@ -419,12 +487,10 @@ export function createStreamingSearch(options: StreamSearchOptions): SSEClient {
             onMetadata(message.metadata);
           }
           break;
-        case 'error':
-          if (message.error && onError) {
-            onError(message.error);
-          }
-          break;
         case 'complete':
+          onComplete?.();
+          break;
+        case 'done':
           onComplete?.();
           break;
       }
@@ -436,16 +502,74 @@ export function createStreamingSearch(options: StreamSearchOptions): SSEClient {
       });
     },
     onComplete,
-    eventTypes: ['message', 'result', 'metadata', 'error', 'complete'],
+    // Listen for backend event types
+    eventTypes: [
+      'message',
+      'search_started',
+      'vector_results',
+      'enrichment_progress',
+      'agent_enriched',
+      'search_complete',
+      'error',
+      // Legacy event types for backwards compatibility
+      'result',
+      'metadata',
+      'complete',
+    ],
   });
 }
 
 /**
- * Internal message type for streaming search
+ * Internal message type for streaming search (legacy format)
  */
 interface StreamSearchMessage {
   type: 'result' | 'metadata' | 'error' | 'complete';
   data?: AgentSummary;
+  metadata?: StreamMetadata;
+  error?: StreamError;
+}
+
+/**
+ * Backend stream message format
+ * The backend sends events with different types and nested data structures
+ */
+interface BackendStreamMessage {
+  type:
+    | 'search_started'
+    | 'vector_results'
+    | 'enrichment_progress'
+    | 'agent_enriched'
+    | 'search_complete'
+    | 'error'
+    | 'done'
+    // Legacy types for backwards compatibility
+    | 'result'
+    | 'metadata'
+    | 'complete';
+  timestamp?: string;
+  data?: {
+    // For agent_enriched events
+    agent?: AgentSummary;
+    index?: number;
+    total?: number;
+    // For vector_results / search_complete events
+    count?: number;
+    hasMore?: boolean;
+    nextCursor?: string;
+    query?: string;
+    // For search_started events
+    limit?: number;
+    // For error events
+    code?: string;
+    error?: string;
+    // For enrichment_progress
+    phase?: string;
+    // Generic agents array for search_complete
+    agents?: AgentSummary[];
+    // Direct data for legacy format
+    [key: string]: unknown;
+  };
+  // Legacy fields
   metadata?: StreamMetadata;
   error?: StreamError;
 }

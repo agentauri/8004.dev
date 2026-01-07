@@ -34,6 +34,8 @@ export type { LeaderboardRowProps } from './leaderboard-row';
 export { LeaderboardRow } from './leaderboard-row';
 export type { MatchReasonsProps } from './match-reasons/match-reasons';
 export { MatchReasons } from './match-reasons/match-reasons';
+export type { PageHeaderAlign, PageHeaderGlow, PageHeaderProps } from './page-header';
+export { PageHeader } from './page-header';
 export type { PaginationProps } from './pagination';
 export { Pagination } from './pagination';
 export type { PresetSelectorProps } from './preset-selector';

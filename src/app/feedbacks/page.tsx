@@ -8,6 +8,7 @@
 
 import { MessageSquare } from 'lucide-react';
 import { useCallback, useState } from 'react';
+import { PageHeader } from '@/components/molecules';
 import { FeedbackFeed, FeedbackFilters } from '@/components/organisms';
 import { useInfiniteGlobalFeedbacks } from '@/hooks';
 import type { GlobalFeedbackFilters } from '@/types/feedback';
@@ -40,17 +41,13 @@ export default function FeedbacksPage() {
     <div className="min-h-screen bg-pixel-grid">
       <div className="max-w-7xl mx-auto px-4 py-8">
         {/* Page Header */}
-        <header className="mb-8">
-          <div className="flex items-center gap-3 mb-2">
-            <MessageSquare className="w-8 h-8 text-[var(--pixel-blue-sky)]" aria-hidden="true" />
-            <h1 className="font-[family-name:var(--font-pixel-display)] text-2xl md:text-3xl text-[var(--pixel-gray-100)]">
-              Global Feedbacks
-            </h1>
-          </div>
-          <p className="text-[var(--pixel-gray-400)] max-w-2xl">
-            Browse all on-chain feedbacks submitted for agents across all supported chains.
-          </p>
-        </header>
+        <PageHeader
+          title="Global Feedbacks"
+          description="Browse all on-chain feedbacks submitted for agents across all supported chains."
+          icon={MessageSquare}
+          glow="blue"
+          className="mb-8"
+        />
 
         {/* Main Content */}
         <div className="grid grid-cols-1 lg:grid-cols-[280px_1fr] gap-6">

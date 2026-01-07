@@ -390,9 +390,9 @@ describe('SSE Client Utilities', () => {
       client.close();
     });
 
-    it('includes filters in URL', () => {
+    it('includes filters in URL as individual params', () => {
       const onResult = vi.fn();
-      const filters = { chains: [11155111], mcp: true };
+      const filters = { chains: [11155111], mcp: true, active: true };
       const client = createStreamingSearch({
         query: 'test',
         filters,
@@ -400,7 +400,12 @@ describe('SSE Client Utilities', () => {
       });
 
       const url = new URL(mockEventSourceInstances[0].url);
-      expect(url.searchParams.get('filters')).toBe(JSON.stringify(filters));
+      // Filters are now sent as individual query params, not JSON-encoded
+      expect(url.searchParams.get('chains')).toBe('11155111');
+      expect(url.searchParams.get('mcp')).toBe('true');
+      expect(url.searchParams.get('active')).toBe('true');
+      // No JSON-encoded filters param
+      expect(url.searchParams.get('filters')).toBeNull();
 
       client.close();
     });
@@ -462,21 +467,22 @@ describe('SSE Client Utilities', () => {
         onError,
       });
 
-      const error: StreamError = {
-        code: 'SEARCH_ERROR',
-        message: 'Search failed',
-        status: 500,
-      };
-
+      // Backend sends errors in data.code and data.error format
       mockEventSourceInstances[0].simulateOpen();
       mockEventSourceInstances[0].simulateMessage(
         JSON.stringify({
           type: 'error',
-          error,
+          data: {
+            code: 'SEARCH_ERROR',
+            error: 'Search failed',
+          },
         }),
       );
 
-      expect(onError).toHaveBeenCalledWith(error);
+      expect(onError).toHaveBeenCalledWith({
+        code: 'SEARCH_ERROR',
+        message: 'Search failed',
+      });
 
       client.close();
     });
