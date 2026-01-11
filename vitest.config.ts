@@ -12,9 +12,11 @@ export default defineConfig({
     exclude: ['e2e/**', 'node_modules/**'],
     // CI stability: retry flaky tests once
     retry: process.env.CI ? 1 : 0,
-    // Reasonable timeout for async operations
-    testTimeout: 10000,
-    hookTimeout: 10000,
+    // Reduced timeouts in CI for faster failure detection
+    testTimeout: process.env.CI ? 5000 : 10000,
+    hookTimeout: process.env.CI ? 5000 : 10000,
+    // Use dot reporter in CI for compact output
+    reporters: process.env.CI ? ['dot'] : ['default'],
     server: {
       deps: {
         external: ['agent0-sdk'],

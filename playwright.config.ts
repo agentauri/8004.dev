@@ -12,20 +12,29 @@ export default defineConfig({
   testDir: './e2e',
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
-  retries: process.env.CI ? 2 : 0,
-  workers: process.env.CI ? 2 : undefined,
-  reporter: 'html',
-  // Global timeout for each test (30s default, 60s in CI)
-  timeout: process.env.CI ? 60000 : 30000,
+  // Reduced retries - MSW-mocked tests should be deterministic
+  retries: process.env.CI ? 1 : 0,
+  // Increased workers - I/O-bound tests benefit from more parallelism
+  workers: process.env.CI ? 4 : undefined,
+  // Use blob reporter in CI for efficient sharding
+  reporter: process.env.CI ? 'blob' : 'html',
+  // Reduced timeout for mocked tests (30s is sufficient)
+  timeout: 30000,
   // Expect timeout for assertions
   expect: {
-    timeout: 10000,
+    timeout: 5000,
   },
   use: {
     baseURL: 'http://localhost:3000',
-    trace: 'on-first-retry',
-    actionTimeout: 10000,
-    navigationTimeout: 15000,
+    // Only capture traces on failure to reduce overhead
+    trace: 'retain-on-failure',
+    // Reduced timeouts for mocked tests
+    actionTimeout: 5000,
+    navigationTimeout: 10000,
+    // Disable screenshots except on failure
+    screenshot: 'only-on-failure',
+    // Disable video recording in CI
+    video: 'off',
   },
   projects: [
     {
@@ -40,20 +49,26 @@ export default defineConfig({
       name: 'webkit',
       use: { ...devices['Desktop Safari'] },
     },
-    {
-      name: 'Mobile Chrome',
-      use: { ...devices['Pixel 5'] },
-    },
-    {
-      name: 'Mobile Safari',
-      use: { ...devices['iPhone 12'] },
-    },
+    // Mobile browsers excluded from CI matrix (run locally if needed)
+    ...(process.env.CI
+      ? []
+      : [
+          {
+            name: 'Mobile Chrome',
+            use: { ...devices['Pixel 5'] },
+          },
+          {
+            name: 'Mobile Safari',
+            use: { ...devices['iPhone 12'] },
+          },
+        ]),
   ],
   webServer: {
     command: process.env.CI ? 'pnpm start' : 'pnpm dev',
     url: 'http://localhost:3000',
     reuseExistingServer: !process.env.CI,
-    timeout: 120000,
+    // Reduced timeout - build is already done in CI
+    timeout: 60000,
     // Enable MSW for E2E tests - intercepts all backend API calls
     env: {
       E2E_MSW_ENABLED: 'true',

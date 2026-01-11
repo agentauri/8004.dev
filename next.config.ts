@@ -37,6 +37,15 @@ const securityHeaders = [
 
 const nextConfig: NextConfig = {
   reactStrictMode: true,
+  // Disable production source maps for faster builds
+  productionBrowserSourceMaps: false,
+  // Experimental features for faster builds
+  experimental: {
+    // Enable parallel server compilation
+    parallelServerCompiles: true,
+    // Optimize package imports (tree-shaking)
+    optimizePackageImports: ['lucide-react', '@tanstack/react-query', 'date-fns'],
+  },
   async headers() {
     return [
       {

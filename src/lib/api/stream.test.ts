@@ -10,7 +10,6 @@ import {
   createStreamingSearch,
   isSSESupported,
   type RealtimeEvent,
-  type StreamError,
   type StreamMetadata,
 } from './stream';
 

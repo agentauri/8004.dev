@@ -520,16 +520,6 @@ export function createStreamingSearch(options: StreamSearchOptions): SSEClient {
 }
 
 /**
- * Internal message type for streaming search (legacy format)
- */
-interface StreamSearchMessage {
-  type: 'result' | 'metadata' | 'error' | 'complete';
-  data?: AgentSummary;
-  metadata?: StreamMetadata;
-  error?: StreamError;
-}
-
-/**
  * Backend stream message format
  * The backend sends events with different types and nested data structures
  */

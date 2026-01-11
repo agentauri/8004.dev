@@ -78,40 +78,9 @@ jobs:
             ~/.pnpm-store
           key: pnpm-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml') }}
 
-  # Parallel validation jobs
-  lint:
-    name: Lint
-    runs-on: ubuntu-latest
-    needs: [setup, changes]
-    if: needs.changes.outputs.code == 'true' || needs.changes.outputs.config == 'true'
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: 9
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-
-      - name: Restore node_modules
-        uses: actions/cache/restore@v4
-        with:
-          path: |
-            node_modules
-            ~/.pnpm-store
-          key: pnpm-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml') }}
-          fail-on-cache-miss: true
-
-      - name: Run Biome lint
-        run: pnpm lint
-
-  typecheck:
-    name: Type Check
+  # Combined code quality checks (lint + typecheck) - reduced job overhead
+  code-quality:
+    name: Code Quality
     runs-on: ubuntu-latest
     needs: [setup, changes]
     if: needs.changes.outputs.code == 'true' || needs.changes.outputs.config == 'true'
@@ -148,10 +117,13 @@ jobs:
           restore-keys: |
             tsbuildinfo-${{ runner.os }}-
 
+      - name: Run Biome lint
+        run: pnpm lint
+
       - name: Run TypeScript
         run: pnpm typecheck
 
-  # Parallel test execution with sharding
+  # Parallel test execution with optimized sharding (3 shards instead of 4)
   test:
     name: Unit Tests (Shard ${{ matrix.shard }})
     runs-on: ubuntu-latest
@@ -160,7 +132,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        shard: [1, 2, 3, 4]
+        shard: [1, 2, 3]
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -187,85 +159,33 @@ jobs:
       - name: Cache Vitest
         uses: actions/cache@v4
         with:
-          path: node_modules/.vitest
+          path: |
+            node_modules/.vitest
+            node_modules/.vite
           key: vitest-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml') }}-${{ matrix.shard }}
           restore-keys: |
             vitest-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml') }}-
             vitest-${{ runner.os }}-
 
       - name: Run tests with coverage
-        run: pnpm vitest run --coverage --shard=${{ matrix.shard }}/4 --coverage.thresholds.lines=0 --coverage.thresholds.statements=0 --coverage.thresholds.branches=0 --coverage.thresholds.functions=0
+        run: pnpm vitest run --coverage --shard=${{ matrix.shard }}/3 --coverage.thresholds.lines=0 --coverage.thresholds.statements=0 --coverage.thresholds.branches=0 --coverage.thresholds.functions=0
 
-      - name: Upload coverage artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: coverage-${{ matrix.shard }}
-          path: coverage/coverage-final.json
-          retention-days: 1
-
-  # Merge coverage reports
-  test-coverage:
-    name: Merge Coverage
-    runs-on: ubuntu-latest
-    needs: [setup, test]
-    if: always() && needs.test.result == 'success'
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: 9
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-
-      - name: Restore node_modules
-        uses: actions/cache/restore@v4
-        with:
-          path: |
-            node_modules
-            ~/.pnpm-store
-          key: pnpm-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml') }}
-          fail-on-cache-miss: true
-
-      - name: Download coverage artifacts
-        uses: actions/download-artifact@v4
-        with:
-          pattern: coverage-*
-          path: coverage-parts
-
-      - name: Merge coverage reports
-        run: |
-          mkdir -p coverage
-          # Move all coverage files with unique names
-          for i in 1 2 3 4; do
-            mv coverage-parts/coverage-$i/coverage-final.json coverage/coverage-$i.json
-          done
-          # Merge using nyc
-          pnpm exec nyc merge coverage coverage/coverage-final.json
-          # Generate lcov report
-          pnpm exec nyc report --reporter=lcov --temp-dir=coverage
-
-      - name: Upload coverage reports
+      # Upload coverage from first shard only (reduces overhead)
+      - name: Upload coverage to Codecov
+        if: matrix.shard == 1
         uses: codecov/codecov-action@v4
         with:
           files: ./coverage/lcov.info
+          flags: unit-tests
           fail_ci_if_error: false
           verbose: true
 
-  # Build application (only depends on tests passing, not lint/typecheck)
+  # Build runs parallel to tests (no dependency on test completion)
   build:
     name: Build
     runs-on: ubuntu-latest
-    needs: [setup, changes, test]
-    if: |
-      always() &&
-      needs.setup.result == 'success' &&
-      (needs.test.result == 'success' || needs.test.result == 'skipped')
+    needs: [setup, changes]
+    if: always() && needs.setup.result == 'success'
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -314,7 +234,7 @@ jobs:
           retention-days: 7
           include-hidden-files: true
 
-  # E2E tests with optimized Playwright setup
+  # E2E tests: Chromium only on PRs, full browser matrix on main
   e2e:
     name: E2E Tests (${{ matrix.browser }}, Shard ${{ matrix.shard }})
     runs-on: ubuntu-latest
@@ -326,8 +246,9 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        browser: [chromium, firefox, webkit]
-        shard: [1, 2, 3]
+        # Full browser matrix on main, chromium-only on PRs for faster feedback
+        browser: ${{ github.ref == 'refs/heads/main' && fromJson('["chromium", "firefox", "webkit"]') || fromJson('["chromium"]') }}
+        shard: [1, 2]
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -377,7 +298,7 @@ jobs:
           path: .next
 
       - name: Run E2E tests
-        run: pnpm exec playwright test --project=${{ matrix.browser }} --shard=${{ matrix.shard }}/3 --reporter=blob
+        run: pnpm exec playwright test --project=${{ matrix.browser }} --shard=${{ matrix.shard }}/2 --reporter=blob
         env:
           BACKEND_API_KEY: ${{ secrets.BACKEND_API_KEY }}
           SEPOLIA_RPC_URL: ${{ secrets.SEPOLIA_RPC_URL || 'https://eth-sepolia.public.blastapi.io' }}
@@ -392,12 +313,12 @@ jobs:
           path: blob-report/
           retention-days: 1
 
-  # Merge E2E test reports
+  # E2E report - only generate on failure for debugging
   e2e-report:
     name: E2E Report
     runs-on: ubuntu-latest
     needs: [setup, e2e]
-    if: always() && needs.e2e.result != 'skipped'
+    if: always() && needs.e2e.result == 'failure'
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -442,12 +363,12 @@ jobs:
   ci-success:
     name: CI Success
     runs-on: ubuntu-latest
-    needs: [lint, typecheck, test, build, e2e]
+    needs: [code-quality, test, build, e2e]
     if: always()
     steps:
       - name: Check all jobs
         run: |
-          result="${{ needs.lint.result }}:${{ needs.typecheck.result }}:${{ needs.test.result }}:${{ needs.build.result }}:${{ needs.e2e.result }}"
+          result="${{ needs.code-quality.result }}:${{ needs.test.result }}:${{ needs.build.result }}:${{ needs.e2e.result }}"
           echo "Job results: $result"
 
           if [[ "$result" == *"failure"* ]]; then
