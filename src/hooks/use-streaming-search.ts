@@ -142,6 +142,8 @@ export function useStreamingSearch(
   const sseClientRef = useRef<SSEClient | null>(null);
   const paramsRef = useRef<string>(serializeParams(params));
   const callbacksRef = useRef({ onResult, onMetadata, onComplete, onError });
+  // Request ID to prevent stale callbacks from updating state after params change
+  const requestIdRef = useRef<number>(0);
 
   // Query client for cache updates
   const queryClient = useQueryClient();
@@ -193,6 +195,10 @@ export function useStreamingSearch(
       sseClientRef.current = null;
     }
 
+    // Increment request ID to invalidate any pending callbacks from previous streams
+    requestIdRef.current += 1;
+    const currentRequestId = requestIdRef.current;
+
     // Reset state for new search
     setResults([]);
     setMetadata(null);
@@ -218,6 +224,9 @@ export function useStreamingSearch(
         filterMode: params.filterMode,
       },
       onResult: (result) => {
+        // Ignore if request ID has changed (stale callback)
+        if (currentRequestId !== requestIdRef.current) return;
+
         // Transition to streaming state on first result
         setStreamState('streaming');
 
@@ -247,6 +256,9 @@ export function useStreamingSearch(
         callbacksRef.current.onResult?.(result);
       },
       onMetadata: (meta) => {
+        // Ignore if request ID has changed (stale callback)
+        if (currentRequestId !== requestIdRef.current) return;
+
         // Map backend StreamMetadata to frontend format
         const frontendMeta: StreamMetadata = {
           hydeQuery: meta.query || '',
@@ -260,6 +272,9 @@ export function useStreamingSearch(
         callbacksRef.current.onMetadata?.(frontendMeta);
       },
       onError: (err) => {
+        // Ignore if request ID has changed (stale callback)
+        if (currentRequestId !== requestIdRef.current) return;
+
         setError(err);
         setStreamState('error');
 
@@ -267,6 +282,9 @@ export function useStreamingSearch(
         callbacksRef.current.onError?.(err);
       },
       onComplete: () => {
+        // Ignore if request ID has changed (stale callback)
+        if (currentRequestId !== requestIdRef.current) return;
+
         setStreamState('complete');
         sseClientRef.current = null;
 

@@ -113,6 +113,8 @@ export function RealtimeEventsProvider({
   const eventSourceRef = useRef<EventSource | null>(null);
   const reconnectTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const reconnectDelayRef = useRef(INITIAL_RECONNECT_DELAY);
+  // Store event listener references for proper cleanup to prevent memory leaks
+  const eventListenersRef = useRef<Map<string, (e: MessageEvent) => void>>(new Map());
 
   /**
    * Clear all stored events
@@ -199,9 +201,23 @@ export function RealtimeEventsProvider({
   );
 
   /**
+   * Remove all event listeners from the current EventSource
+   */
+  const removeEventListeners = useCallback(() => {
+    if (eventSourceRef.current && eventListenersRef.current.size > 0) {
+      for (const [type, handler] of eventListenersRef.current) {
+        eventSourceRef.current.removeEventListener(type, handler);
+      }
+      eventListenersRef.current.clear();
+    }
+  }, []);
+
+  /**
    * Connect to SSE endpoint
    */
   const connect = useCallback(() => {
+    // Clean up any existing connection and listeners
+    removeEventListeners();
     if (eventSourceRef.current) {
       eventSourceRef.current.close();
     }
@@ -217,6 +233,8 @@ export function RealtimeEventsProvider({
 
     eventSource.onerror = () => {
       setIsConnected(false);
+      // Remove listeners before closing to prevent memory leaks
+      removeEventListeners();
       eventSource.close();
       eventSourceRef.current = null;
 
@@ -238,20 +256,28 @@ export function RealtimeEventsProvider({
       'evaluation.completed',
     ];
 
+    // Clear previous listeners map before adding new ones
+    eventListenersRef.current.clear();
+
     for (const type of eventTypes) {
-      eventSource.addEventListener(type, (e: MessageEvent) => {
+      const handler = (e: MessageEvent) => {
         const event = parseEventData(type, e.data);
         if (event) {
           addEvent(event);
         }
-      });
+      };
+      // Store reference for cleanup
+      eventListenersRef.current.set(type, handler);
+      eventSource.addEventListener(type, handler);
     }
 
-    // Handle connected event (not stored, just for connection confirmation)
-    eventSource.addEventListener('connected', () => {
+    // Handle connected event (not stored in map, lifecycle-bound to EventSource)
+    const connectedHandler = () => {
       setIsConnected(true);
-    });
-  }, [endpoint, addEvent]);
+    };
+    eventListenersRef.current.set('connected', connectedHandler);
+    eventSource.addEventListener('connected', connectedHandler);
+  }, [endpoint, addEvent, removeEventListeners]);
 
   /**
    * Disconnect from SSE
@@ -262,13 +288,16 @@ export function RealtimeEventsProvider({
       reconnectTimeoutRef.current = null;
     }
 
+    // Remove event listeners before closing to prevent memory leaks
+    removeEventListeners();
+
     if (eventSourceRef.current) {
       eventSourceRef.current.close();
       eventSourceRef.current = null;
     }
 
     setIsConnected(false);
-  }, []);
+  }, [removeEventListeners]);
 
   // Connect on mount, disconnect on unmount
   useEffect(() => {
