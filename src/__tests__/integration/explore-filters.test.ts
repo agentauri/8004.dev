@@ -10,6 +10,7 @@ import { useSearchAgents } from '@/hooks/use-search-agents';
 import { toSearchParams } from '@/lib/filters/to-search-params';
 import {
   createSmartBackendMock,
+  createTestFilters,
   createWrapper,
   type FilterTestCase,
   formatValidationResult,
@@ -42,17 +43,7 @@ describe('Explore Page Filter Integration Tests', () => {
   async function runFilterTest(testCase: FilterTestCase) {
     const params = toSearchParams({
       query: testCase.query,
-      filters: {
-        status: testCase.filters.status,
-        protocols: testCase.filters.protocols,
-        chains: testCase.filters.chains,
-        filterMode: testCase.filters.filterMode,
-        minReputation: testCase.filters.minReputation,
-        maxReputation: testCase.filters.maxReputation,
-        skills: testCase.filters.skills,
-        domains: testCase.filters.domains,
-        showAllAgents: testCase.filters.showAllAgents,
-      },
+      filters: testCase.filters,
       limit: 20,
     });
 
@@ -128,17 +119,7 @@ describe('Explore Page Filter Integration Tests', () => {
     it('uses GET /api/agents when no query text', async () => {
       const params = toSearchParams({
         query: '',
-        filters: {
-          status: [],
-          protocols: ['mcp'],
-          chains: [],
-          filterMode: 'AND',
-          minReputation: 0,
-          maxReputation: 100,
-          skills: [],
-          domains: [],
-          showAllAgents: false,
-        },
+        filters: createTestFilters({ protocols: ['mcp'] }),
         limit: 20,
       });
 
@@ -157,17 +138,7 @@ describe('Explore Page Filter Integration Tests', () => {
     it('uses POST /api/search when query text is provided', async () => {
       const params = toSearchParams({
         query: 'trading agent',
-        filters: {
-          status: [],
-          protocols: [],
-          chains: [],
-          filterMode: 'AND',
-          minReputation: 0,
-          maxReputation: 100,
-          skills: [],
-          domains: [],
-          showAllAgents: false,
-        },
+        filters: createTestFilters(),
         limit: 20,
       });
 
@@ -187,17 +158,7 @@ describe('Explore Page Filter Integration Tests', () => {
     it('treats whitespace-only query as empty (uses GET)', async () => {
       const params = toSearchParams({
         query: '   ',
-        filters: {
-          status: [],
-          protocols: [],
-          chains: [],
-          filterMode: 'AND',
-          minReputation: 0,
-          maxReputation: 100,
-          skills: [],
-          domains: [],
-          showAllAgents: false,
-        },
+        filters: createTestFilters(),
         limit: 20,
       });
 
@@ -218,17 +179,7 @@ describe('Explore Page Filter Integration Tests', () => {
     it('AND mode requires all protocol filters to match', async () => {
       const params = toSearchParams({
         query: '',
-        filters: {
-          status: [],
-          protocols: ['mcp', 'a2a'],
-          chains: [],
-          filterMode: 'AND',
-          minReputation: 0,
-          maxReputation: 100,
-          skills: [],
-          domains: [],
-          showAllAgents: false,
-        },
+        filters: createTestFilters({ protocols: ['mcp', 'a2a'], filterMode: 'AND' }),
         limit: 20,
       });
 
@@ -250,17 +201,7 @@ describe('Explore Page Filter Integration Tests', () => {
     it('OR mode requires at least one protocol filter to match', async () => {
       const params = toSearchParams({
         query: '',
-        filters: {
-          status: [],
-          protocols: ['mcp', 'x402'],
-          chains: [],
-          filterMode: 'OR',
-          minReputation: 0,
-          maxReputation: 100,
-          skills: [],
-          domains: [],
-          showAllAgents: false,
-        },
+        filters: createTestFilters({ protocols: ['mcp', 'x402'], filterMode: 'OR' }),
         limit: 20,
       });
 
@@ -284,17 +225,7 @@ describe('Explore Page Filter Integration Tests', () => {
     it('filters by minimum reputation', async () => {
       const params = toSearchParams({
         query: '',
-        filters: {
-          status: [],
-          protocols: [],
-          chains: [],
-          filterMode: 'AND',
-          minReputation: 50,
-          maxReputation: 100,
-          skills: [],
-          domains: [],
-          showAllAgents: false,
-        },
+        filters: createTestFilters({ minReputation: 50, maxReputation: 100 }),
         limit: 20,
       });
 
@@ -314,17 +245,7 @@ describe('Explore Page Filter Integration Tests', () => {
     it('filters by maximum reputation', async () => {
       const params = toSearchParams({
         query: '',
-        filters: {
-          status: [],
-          protocols: [],
-          chains: [],
-          filterMode: 'AND',
-          minReputation: 0,
-          maxReputation: 50,
-          skills: [],
-          domains: [],
-          showAllAgents: false,
-        },
+        filters: createTestFilters({ minReputation: 0, maxReputation: 50 }),
         limit: 20,
       });
 
@@ -346,17 +267,7 @@ describe('Explore Page Filter Integration Tests', () => {
     it('filters by single chain', async () => {
       const params = toSearchParams({
         query: '',
-        filters: {
-          status: [],
-          protocols: [],
-          chains: [11155111],
-          filterMode: 'AND',
-          minReputation: 0,
-          maxReputation: 100,
-          skills: [],
-          domains: [],
-          showAllAgents: false,
-        },
+        filters: createTestFilters({ chains: [11155111] }),
         limit: 20,
       });
 
@@ -376,17 +287,7 @@ describe('Explore Page Filter Integration Tests', () => {
     it('filters by multiple chains', async () => {
       const params = toSearchParams({
         query: '',
-        filters: {
-          status: [],
-          protocols: [],
-          chains: [11155111, 84532],
-          filterMode: 'AND',
-          minReputation: 0,
-          maxReputation: 100,
-          skills: [],
-          domains: [],
-          showAllAgents: false,
-        },
+        filters: createTestFilters({ chains: [11155111, 84532] }),
         limit: 20,
       });
 

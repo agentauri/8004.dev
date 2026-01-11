@@ -46,6 +46,20 @@ describe('Cache Consistency Integration Tests', () => {
             skills: [],
             domains: [],
             showAllAgents: false,
+            // Gap 1: Trust Score & Version Filters
+            minTrustScore: 0,
+            maxTrustScore: 100,
+            erc8004Version: '',
+            mcpVersion: '',
+            a2aVersion: '',
+            // Gap 3: Curation Filters
+            isCurated: false,
+            curatedBy: '',
+            // Gap 5: Endpoint Filters
+            hasEmail: false,
+            hasOasfEndpoint: false,
+            // Gap 6: Reachability Filters
+            hasRecentReachability: false,
           },
           limit: 20,
         });
@@ -91,6 +105,20 @@ describe('Cache Consistency Integration Tests', () => {
           skills: [],
           domains: [],
           showAllAgents: false,
+          // Gap 1: Trust Score & Version Filters
+          minTrustScore: 0,
+          maxTrustScore: 100,
+          erc8004Version: '',
+          mcpVersion: '',
+          a2aVersion: '',
+          // Gap 3: Curation Filters
+          isCurated: false,
+          curatedBy: '',
+          // Gap 5: Endpoint Filters
+          hasEmail: false,
+          hasOasfEndpoint: false,
+          // Gap 6: Reachability Filters
+          hasRecentReachability: false,
         },
         limit: 20,
       });
@@ -107,6 +135,20 @@ describe('Cache Consistency Integration Tests', () => {
           skills: [],
           domains: [],
           showAllAgents: false,
+          // Gap 1: Trust Score & Version Filters
+          minTrustScore: 0,
+          maxTrustScore: 100,
+          erc8004Version: '',
+          mcpVersion: '',
+          a2aVersion: '',
+          // Gap 3: Curation Filters
+          isCurated: false,
+          curatedBy: '',
+          // Gap 5: Endpoint Filters
+          hasEmail: false,
+          hasOasfEndpoint: false,
+          // Gap 6: Reachability Filters
+          hasRecentReachability: false,
         },
         limit: 20,
       });
@@ -153,6 +195,20 @@ describe('Cache Consistency Integration Tests', () => {
           skills: [],
           domains: [],
           showAllAgents: false,
+          // Gap 1: Trust Score & Version Filters
+          minTrustScore: 0,
+          maxTrustScore: 100,
+          erc8004Version: '',
+          mcpVersion: '',
+          a2aVersion: '',
+          // Gap 3: Curation Filters
+          isCurated: false,
+          curatedBy: '',
+          // Gap 5: Endpoint Filters
+          hasEmail: false,
+          hasOasfEndpoint: false,
+          // Gap 6: Reachability Filters
+          hasRecentReachability: false,
         },
         limit: 20,
       });
@@ -169,6 +225,20 @@ describe('Cache Consistency Integration Tests', () => {
           skills: [],
           domains: [],
           showAllAgents: false,
+          // Gap 1: Trust Score & Version Filters
+          minTrustScore: 0,
+          maxTrustScore: 100,
+          erc8004Version: '',
+          mcpVersion: '',
+          a2aVersion: '',
+          // Gap 3: Curation Filters
+          isCurated: false,
+          curatedBy: '',
+          // Gap 5: Endpoint Filters
+          hasEmail: false,
+          hasOasfEndpoint: false,
+          // Gap 6: Reachability Filters
+          hasRecentReachability: false,
         },
         limit: 20,
       });
@@ -212,6 +282,20 @@ describe('Cache Consistency Integration Tests', () => {
           skills: [],
           domains: [],
           showAllAgents: false,
+          // Gap 1: Trust Score & Version Filters
+          minTrustScore: 0,
+          maxTrustScore: 100,
+          erc8004Version: '',
+          mcpVersion: '',
+          a2aVersion: '',
+          // Gap 3: Curation Filters
+          isCurated: false,
+          curatedBy: '',
+          // Gap 5: Endpoint Filters
+          hasEmail: false,
+          hasOasfEndpoint: false,
+          // Gap 6: Reachability Filters
+          hasRecentReachability: false,
         },
         limit: 20,
       });
@@ -228,6 +312,20 @@ describe('Cache Consistency Integration Tests', () => {
           skills: [],
           domains: [],
           showAllAgents: false,
+          // Gap 1: Trust Score & Version Filters
+          minTrustScore: 0,
+          maxTrustScore: 100,
+          erc8004Version: '',
+          mcpVersion: '',
+          a2aVersion: '',
+          // Gap 3: Curation Filters
+          isCurated: false,
+          curatedBy: '',
+          // Gap 5: Endpoint Filters
+          hasEmail: false,
+          hasOasfEndpoint: false,
+          // Gap 6: Reachability Filters
+          hasRecentReachability: false,
         },
         limit: 20,
       });
@@ -271,6 +369,20 @@ describe('Cache Consistency Integration Tests', () => {
           skills: [],
           domains: [],
           showAllAgents: false,
+          // Gap 1: Trust Score & Version Filters
+          minTrustScore: 0,
+          maxTrustScore: 100,
+          erc8004Version: '',
+          mcpVersion: '',
+          a2aVersion: '',
+          // Gap 3: Curation Filters
+          isCurated: false,
+          curatedBy: '',
+          // Gap 5: Endpoint Filters
+          hasEmail: false,
+          hasOasfEndpoint: false,
+          // Gap 6: Reachability Filters
+          hasRecentReachability: false,
         },
         limit: 20,
       });
@@ -287,6 +399,20 @@ describe('Cache Consistency Integration Tests', () => {
           skills: [],
           domains: [],
           showAllAgents: false,
+          // Gap 1: Trust Score & Version Filters
+          minTrustScore: 0,
+          maxTrustScore: 100,
+          erc8004Version: '',
+          mcpVersion: '',
+          a2aVersion: '',
+          // Gap 3: Curation Filters
+          isCurated: false,
+          curatedBy: '',
+          // Gap 5: Endpoint Filters
+          hasEmail: false,
+          hasOasfEndpoint: false,
+          // Gap 6: Reachability Filters
+          hasRecentReachability: false,
         },
         limit: 20,
       });
@@ -329,6 +455,20 @@ describe('Cache Consistency Integration Tests', () => {
           skills: [],
           domains: [],
           showAllAgents: false,
+          // Gap 1: Trust Score & Version Filters
+          minTrustScore: 0,
+          maxTrustScore: 100,
+          erc8004Version: '',
+          mcpVersion: '',
+          a2aVersion: '',
+          // Gap 3: Curation Filters
+          isCurated: false,
+          curatedBy: '',
+          // Gap 5: Endpoint Filters
+          hasEmail: false,
+          hasOasfEndpoint: false,
+          // Gap 6: Reachability Filters
+          hasRecentReachability: false,
         },
         limit: 20,
       });
@@ -346,6 +486,20 @@ describe('Cache Consistency Integration Tests', () => {
           skills: [],
           domains: [],
           showAllAgents: false,
+          // Gap 1: Trust Score & Version Filters
+          minTrustScore: 0,
+          maxTrustScore: 100,
+          erc8004Version: '',
+          mcpVersion: '',
+          a2aVersion: '',
+          // Gap 3: Curation Filters
+          isCurated: false,
+          curatedBy: '',
+          // Gap 5: Endpoint Filters
+          hasEmail: false,
+          hasOasfEndpoint: false,
+          // Gap 6: Reachability Filters
+          hasRecentReachability: false,
         },
         limit: 20,
       });
@@ -389,6 +543,20 @@ describe('Cache Consistency Integration Tests', () => {
             skills: [],
             domains: [],
             showAllAgents: false,
+            // Gap 1: Trust Score & Version Filters
+            minTrustScore: 0,
+            maxTrustScore: 100,
+            erc8004Version: '',
+            mcpVersion: '',
+            a2aVersion: '',
+            // Gap 3: Curation Filters
+            isCurated: false,
+            curatedBy: '',
+            // Gap 5: Endpoint Filters
+            hasEmail: false,
+            hasOasfEndpoint: false,
+            // Gap 6: Reachability Filters
+            hasRecentReachability: false,
           },
           limit: 10,
         });
@@ -431,6 +599,20 @@ describe('Cache Consistency Integration Tests', () => {
           skills: [],
           domains: [],
           showAllAgents: false,
+          // Gap 1: Trust Score & Version Filters
+          minTrustScore: 0,
+          maxTrustScore: 100,
+          erc8004Version: '',
+          mcpVersion: '',
+          a2aVersion: '',
+          // Gap 3: Curation Filters
+          isCurated: false,
+          curatedBy: '',
+          // Gap 5: Endpoint Filters
+          hasEmail: false,
+          hasOasfEndpoint: false,
+          // Gap 6: Reachability Filters
+          hasRecentReachability: false,
         },
         limit: 20,
       });
@@ -448,6 +630,20 @@ describe('Cache Consistency Integration Tests', () => {
           skills: [],
           domains: [],
           showAllAgents: false,
+          // Gap 1: Trust Score & Version Filters
+          minTrustScore: 0,
+          maxTrustScore: 100,
+          erc8004Version: '',
+          mcpVersion: '',
+          a2aVersion: '',
+          // Gap 3: Curation Filters
+          isCurated: false,
+          curatedBy: '',
+          // Gap 5: Endpoint Filters
+          hasEmail: false,
+          hasOasfEndpoint: false,
+          // Gap 6: Reachability Filters
+          hasRecentReachability: false,
         },
         limit: 20,
       });
@@ -490,6 +686,20 @@ describe('Cache Consistency Integration Tests', () => {
           skills: [],
           domains: [],
           showAllAgents: false,
+          // Gap 1: Trust Score & Version Filters
+          minTrustScore: 0,
+          maxTrustScore: 100,
+          erc8004Version: '',
+          mcpVersion: '',
+          a2aVersion: '',
+          // Gap 3: Curation Filters
+          isCurated: false,
+          curatedBy: '',
+          // Gap 5: Endpoint Filters
+          hasEmail: false,
+          hasOasfEndpoint: false,
+          // Gap 6: Reachability Filters
+          hasRecentReachability: false,
         },
         limit: 20,
       });
@@ -508,6 +718,20 @@ describe('Cache Consistency Integration Tests', () => {
           skills: [],
           domains: [],
           showAllAgents: false,
+          // Gap 1: Trust Score & Version Filters
+          minTrustScore: 0,
+          maxTrustScore: 100,
+          erc8004Version: '',
+          mcpVersion: '',
+          a2aVersion: '',
+          // Gap 3: Curation Filters
+          isCurated: false,
+          curatedBy: '',
+          // Gap 5: Endpoint Filters
+          hasEmail: false,
+          hasOasfEndpoint: false,
+          // Gap 6: Reachability Filters
+          hasRecentReachability: false,
         },
         limit: 20,
       });

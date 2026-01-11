@@ -53,6 +53,41 @@ async function fetchSemanticSearch(params: SearchParams): Promise<SearchResult> 
   if (params.filterMode) {
     filters.filterMode = params.filterMode;
   }
+  // Gap 1: Forward trust score filters
+  if (params.trustScoreMin !== undefined && params.trustScoreMin > 0) {
+    filters.trustScoreMin = params.trustScoreMin;
+  }
+  if (params.trustScoreMax !== undefined && params.trustScoreMax < 100) {
+    filters.trustScoreMax = params.trustScoreMax;
+  }
+  // Gap 1: Forward version filters
+  if (params.erc8004Version) {
+    filters.erc8004Version = params.erc8004Version;
+  }
+  if (params.mcpVersion) {
+    filters.mcpVersion = params.mcpVersion;
+  }
+  if (params.a2aVersion) {
+    filters.a2aVersion = params.a2aVersion;
+  }
+  // Gap 3: Forward curation filters
+  if (params.isCurated) {
+    filters.isCurated = true;
+  }
+  if (params.curatedBy) {
+    filters.curatedBy = params.curatedBy;
+  }
+  // Gap 5: Forward endpoint filters
+  if (params.hasEmail) {
+    filters.hasEmail = true;
+  }
+  if (params.hasOasfEndpoint) {
+    filters.hasOasfEndpoint = true;
+  }
+  // Gap 6: Forward reachability filters
+  if (params.hasRecentReachability) {
+    filters.hasRecentReachability = true;
+  }
 
   const body: {
     query: string | undefined;
@@ -130,6 +165,41 @@ async function fetchAgentsList(params: SearchParams): Promise<SearchResult> {
   }
   if (params.hasRegistrationFile === false) {
     searchParams.set('hasRegistrationFile', 'false');
+  }
+  // Gap 1: Trust score filters
+  if (params.trustScoreMin !== undefined && params.trustScoreMin > 0) {
+    searchParams.set('trustScoreMin', String(params.trustScoreMin));
+  }
+  if (params.trustScoreMax !== undefined && params.trustScoreMax < 100) {
+    searchParams.set('trustScoreMax', String(params.trustScoreMax));
+  }
+  // Gap 1: Version filters
+  if (params.erc8004Version) {
+    searchParams.set('erc8004Version', params.erc8004Version);
+  }
+  if (params.mcpVersion) {
+    searchParams.set('mcpVersion', params.mcpVersion);
+  }
+  if (params.a2aVersion) {
+    searchParams.set('a2aVersion', params.a2aVersion);
+  }
+  // Gap 3: Curation filters
+  if (params.isCurated) {
+    searchParams.set('isCurated', 'true');
+  }
+  if (params.curatedBy) {
+    searchParams.set('curatedBy', params.curatedBy);
+  }
+  // Gap 5: Endpoint filters
+  if (params.hasEmail) {
+    searchParams.set('hasEmail', 'true');
+  }
+  if (params.hasOasfEndpoint) {
+    searchParams.set('hasOasfEndpoint', 'true');
+  }
+  // Gap 6: Reachability filters
+  if (params.hasRecentReachability) {
+    searchParams.set('hasRecentReachability', 'true');
   }
 
   const response = await fetch(`/api/agents?${searchParams.toString()}`);

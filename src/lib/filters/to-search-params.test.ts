@@ -12,6 +12,20 @@ const createDefaultFilters = (overrides: Partial<SearchFiltersState> = {}): Sear
   skills: [],
   domains: [],
   showAllAgents: false,
+  // Gap 1: Trust Score & Version Filters
+  minTrustScore: 0,
+  maxTrustScore: 100,
+  erc8004Version: '',
+  mcpVersion: '',
+  a2aVersion: '',
+  // Gap 3: Curation Filters
+  isCurated: false,
+  curatedBy: '',
+  // Gap 5: Endpoint Filters
+  hasEmail: false,
+  hasOasfEndpoint: false,
+  // Gap 6: Reachability Filters
+  hasRecentReachability: false,
   ...overrides,
 });
 
@@ -207,6 +221,116 @@ describe('toSearchParams', () => {
     it('does not set filterMode when AND (default)', () => {
       const result = toSearchParams('', createDefaultFilters({ filterMode: 'AND' }), 20, 0);
       expect(result.filterMode).toBeUndefined();
+    });
+  });
+
+  describe('trust score filters', () => {
+    it('sets trustScoreMin when greater than 0', () => {
+      const result = toSearchParams('', createDefaultFilters({ minTrustScore: 20 }), 20, 0);
+      expect(result.trustScoreMin).toBe(20);
+    });
+
+    it('does not set trustScoreMin when 0', () => {
+      const result = toSearchParams('', createDefaultFilters({ minTrustScore: 0 }), 20, 0);
+      expect(result.trustScoreMin).toBeUndefined();
+    });
+
+    it('sets trustScoreMax when less than 100', () => {
+      const result = toSearchParams('', createDefaultFilters({ maxTrustScore: 80 }), 20, 0);
+      expect(result.trustScoreMax).toBe(80);
+    });
+
+    it('does not set trustScoreMax when 100', () => {
+      const result = toSearchParams('', createDefaultFilters({ maxTrustScore: 100 }), 20, 0);
+      expect(result.trustScoreMax).toBeUndefined();
+    });
+  });
+
+  describe('version filters', () => {
+    it('sets erc8004Version when provided', () => {
+      const result = toSearchParams('', createDefaultFilters({ erc8004Version: 'v1.0' }), 20, 0);
+      expect(result.erc8004Version).toBe('v1.0');
+    });
+
+    it('does not set erc8004Version when empty', () => {
+      const result = toSearchParams('', createDefaultFilters({ erc8004Version: '' }), 20, 0);
+      expect(result.erc8004Version).toBeUndefined();
+    });
+
+    it('sets mcpVersion when provided', () => {
+      const result = toSearchParams('', createDefaultFilters({ mcpVersion: '1.0.0' }), 20, 0);
+      expect(result.mcpVersion).toBe('1.0.0');
+    });
+
+    it('sets a2aVersion when provided', () => {
+      const result = toSearchParams('', createDefaultFilters({ a2aVersion: '2.0.0' }), 20, 0);
+      expect(result.a2aVersion).toBe('2.0.0');
+    });
+  });
+
+  describe('curation filters', () => {
+    it('sets isCurated when true', () => {
+      const result = toSearchParams('', createDefaultFilters({ isCurated: true }), 20, 0);
+      expect(result.isCurated).toBe(true);
+    });
+
+    it('does not set isCurated when false', () => {
+      const result = toSearchParams('', createDefaultFilters({ isCurated: false }), 20, 0);
+      expect(result.isCurated).toBeUndefined();
+    });
+
+    it('sets curatedBy when provided', () => {
+      const result = toSearchParams('', createDefaultFilters({ curatedBy: '0x123' }), 20, 0);
+      expect(result.curatedBy).toBe('0x123');
+    });
+
+    it('does not set curatedBy when empty', () => {
+      const result = toSearchParams('', createDefaultFilters({ curatedBy: '' }), 20, 0);
+      expect(result.curatedBy).toBeUndefined();
+    });
+  });
+
+  describe('endpoint filters', () => {
+    it('sets hasEmail when true', () => {
+      const result = toSearchParams('', createDefaultFilters({ hasEmail: true }), 20, 0);
+      expect(result.hasEmail).toBe(true);
+    });
+
+    it('does not set hasEmail when false', () => {
+      const result = toSearchParams('', createDefaultFilters({ hasEmail: false }), 20, 0);
+      expect(result.hasEmail).toBeUndefined();
+    });
+
+    it('sets hasOasfEndpoint when true', () => {
+      const result = toSearchParams('', createDefaultFilters({ hasOasfEndpoint: true }), 20, 0);
+      expect(result.hasOasfEndpoint).toBe(true);
+    });
+
+    it('does not set hasOasfEndpoint when false', () => {
+      const result = toSearchParams('', createDefaultFilters({ hasOasfEndpoint: false }), 20, 0);
+      expect(result.hasOasfEndpoint).toBeUndefined();
+    });
+  });
+
+  describe('reachability filters', () => {
+    it('sets hasRecentReachability when true', () => {
+      const result = toSearchParams(
+        '',
+        createDefaultFilters({ hasRecentReachability: true }),
+        20,
+        0,
+      );
+      expect(result.hasRecentReachability).toBe(true);
+    });
+
+    it('does not set hasRecentReachability when false', () => {
+      const result = toSearchParams(
+        '',
+        createDefaultFilters({ hasRecentReachability: false }),
+        20,
+        0,
+      );
+      expect(result.hasRecentReachability).toBeUndefined();
     });
   });
 

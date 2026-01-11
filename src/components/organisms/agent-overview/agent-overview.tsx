@@ -3,8 +3,9 @@ import type React from 'react';
 import {
   AgentEndpoints,
   AgentRegistration,
+  McpCapabilitiesSection,
+  OasfSection,
   ReputationSection,
-  TaxonomySection,
 } from '@/components/organisms';
 import { cn } from '@/lib/utils';
 import type { Agent, AgentReputation, AgentWarning } from '@/types/agent';
@@ -91,7 +92,8 @@ function WarningsList({ warnings }: { warnings: AgentWarning[] }): React.JSX.Ele
  *
  * Contains:
  * - Description
- * - OASF Taxonomy (Skills and Domains)
+ * - OASF Taxonomy (Skills and Domains) with source badges
+ * - MCP Capabilities (if available)
  * - Endpoints and Capabilities
  * - Registration Information
  * - Reputation Summary
@@ -123,11 +125,17 @@ export function AgentOverview({
         </div>
       )}
 
-      {/* OASF Taxonomy - Skills and Domains */}
-      <TaxonomySection
-        skills={agent.oasf?.skills?.map((s) => s.slug)}
-        domains={agent.oasf?.domains?.map((d) => d.slug)}
+      {/* OASF Taxonomy - Skills and Domains with source badges */}
+      <OasfSection
+        classifiedSkills={agent.oasf?.skills}
+        classifiedDomains={agent.oasf?.domains}
+        declaredSkills={agent.declaredOasfSkills}
+        declaredDomains={agent.declaredOasfDomains}
+        oasfSource={agent.oasfSource}
       />
+
+      {/* MCP Capabilities Section */}
+      {agent.mcpCapabilities && <McpCapabilitiesSection capabilities={agent.mcpCapabilities} />}
 
       {/* Warnings Section */}
       {agent.warnings && agent.warnings.length > 0 && <WarningsList warnings={agent.warnings} />}

@@ -39,6 +39,76 @@ export interface BackendEndpoint {
   version: string;
 }
 
+// ============================================================================
+// MCP Capabilities Types (Gap 4)
+// ============================================================================
+
+/**
+ * MCP Tool with full details from crawl
+ */
+export interface BackendMcpTool {
+  /** Tool name (identifier) */
+  name: string;
+  /** Human-readable description */
+  description?: string;
+  /** JSON Schema for input parameters */
+  inputSchema?: Record<string, unknown>;
+}
+
+/**
+ * MCP Prompt argument
+ */
+export interface BackendMcpPromptArgument {
+  /** Argument name */
+  name: string;
+  /** Argument description */
+  description?: string;
+  /** Whether this argument is required */
+  required?: boolean;
+}
+
+/**
+ * MCP Prompt with full details from crawl
+ */
+export interface BackendMcpPrompt {
+  /** Prompt name (identifier) */
+  name: string;
+  /** Human-readable description */
+  description?: string;
+  /** Prompt arguments */
+  arguments?: BackendMcpPromptArgument[];
+}
+
+/**
+ * MCP Resource with full details from crawl
+ */
+export interface BackendMcpResource {
+  /** Resource URI */
+  uri: string;
+  /** Resource name */
+  name: string;
+  /** Human-readable description */
+  description?: string;
+  /** MIME type of the resource content */
+  mimeType?: string;
+}
+
+/**
+ * Full MCP capabilities from endpoint crawl
+ */
+export interface BackendMcpCapabilities {
+  /** Detailed tools with descriptions and schemas */
+  tools: BackendMcpTool[];
+  /** Detailed prompts with descriptions and arguments */
+  prompts: BackendMcpPrompt[];
+  /** Detailed resources with URIs and MIME types */
+  resources: BackendMcpResource[];
+  /** When capabilities were last fetched */
+  fetchedAt?: string;
+  /** Error message if fetch failed */
+  error?: string;
+}
+
 /**
  * Backend endpoints object
  */
@@ -100,6 +170,47 @@ export interface BackendAgent {
   warnings?: BackendAgentWarning[];
   /** Aggregated health score */
   healthScore?: BackendHealthScore;
+  // ============================================================================
+  // Gap 1-6 Fields
+  // ============================================================================
+  /** Trust score from PageRank (0-100) */
+  trustScore?: number;
+  /** ERC-8004 spec version */
+  erc8004Version?: 'v0.4' | 'v1.0';
+  /** MCP protocol version */
+  mcpVersion?: string;
+  /** A2A protocol version */
+  a2aVersion?: string;
+  /** Curator wallet addresses who gave STAR feedback */
+  curatedBy?: string[];
+  /** Whether agent is curated */
+  isCurated?: boolean;
+  /** OASF skills declared by agent in registration file */
+  declaredOasfSkills?: string[];
+  /** OASF domains declared by agent in registration file */
+  declaredOasfDomains?: string[];
+  /** Email contact endpoint */
+  emailEndpoint?: string;
+  /** OASF API endpoint */
+  oasfEndpoint?: string;
+  /** OASF API version */
+  oasfVersion?: string;
+  /** Last MCP reachability check timestamp */
+  lastReachabilityCheckMcp?: string;
+  /** Last A2A reachability check timestamp */
+  lastReachabilityCheckA2a?: string;
+  /** Wallet address of reachability attestor */
+  reachabilityAttestor?: string;
+  /** MCP endpoint reachability status */
+  isReachableMcp?: boolean;
+  /** A2A endpoint reachability status */
+  isReachableA2a?: boolean;
+  /** MCP capabilities with full details */
+  mcpCapabilities?: BackendMcpCapabilities;
+  /** Input modes derived from MCP prompts */
+  inputModes?: string[];
+  /** Output modes derived from MCP resources */
+  outputModes?: string[];
 }
 
 /**

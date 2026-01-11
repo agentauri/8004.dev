@@ -56,6 +56,19 @@ export function MobileFilterSheet({
     filters.skills.length > 0 ? 1 : 0,
     filters.domains.length > 0 ? 1 : 0,
     filters.minReputation > 0 || filters.maxReputation < 100 ? 1 : 0,
+    // Gap 1: Trust Score & Version Filters
+    filters.minTrustScore > 0 || filters.maxTrustScore < 100 ? 1 : 0,
+    filters.erc8004Version !== '' ? 1 : 0,
+    filters.mcpVersion !== '' ? 1 : 0,
+    filters.a2aVersion !== '' ? 1 : 0,
+    // Gap 3: Curation Filters
+    filters.isCurated ? 1 : 0,
+    filters.curatedBy !== '' ? 1 : 0,
+    // Gap 5: Endpoint Filters
+    filters.hasEmail ? 1 : 0,
+    filters.hasOasfEndpoint ? 1 : 0,
+    // Gap 6: Reachability Filters
+    filters.hasRecentReachability ? 1 : 0,
   ].reduce((a, b) => a + b, 0);
 
   // Handle escape key to close

@@ -186,6 +186,20 @@ describe('useUrlSearchParams', () => {
           skills: [],
           domains: [],
           showAllAgents: false,
+          // Gap 1: Trust Score & Version Filters
+          minTrustScore: 0,
+          maxTrustScore: 100,
+          erc8004Version: '',
+          mcpVersion: '',
+          a2aVersion: '',
+          // Gap 3: Curation Filters
+          isCurated: false,
+          curatedBy: '',
+          // Gap 5: Endpoint Filters
+          hasEmail: false,
+          hasOasfEndpoint: false,
+          // Gap 6: Reachability Filters
+          hasRecentReachability: false,
         });
       });
 
@@ -217,6 +231,20 @@ describe('useUrlSearchParams', () => {
           skills: [],
           domains: [],
           showAllAgents: false,
+          // Gap 1: Trust Score & Version Filters
+          minTrustScore: 0,
+          maxTrustScore: 100,
+          erc8004Version: '',
+          mcpVersion: '',
+          a2aVersion: '',
+          // Gap 3: Curation Filters
+          isCurated: false,
+          curatedBy: '',
+          // Gap 5: Endpoint Filters
+          hasEmail: false,
+          hasOasfEndpoint: false,
+          // Gap 6: Reachability Filters
+          hasRecentReachability: false,
         });
       });
 
@@ -244,6 +272,20 @@ describe('useUrlSearchParams', () => {
           skills: ['nlp', 'vision'],
           domains: ['tech'],
           showAllAgents: false,
+          // Gap 1: Trust Score & Version Filters
+          minTrustScore: 0,
+          maxTrustScore: 100,
+          erc8004Version: '',
+          mcpVersion: '',
+          a2aVersion: '',
+          // Gap 3: Curation Filters
+          isCurated: false,
+          curatedBy: '',
+          // Gap 5: Endpoint Filters
+          hasEmail: false,
+          hasOasfEndpoint: false,
+          // Gap 6: Reachability Filters
+          hasRecentReachability: false,
         });
       });
 
@@ -320,6 +362,20 @@ describe('useUrlSearchParams', () => {
           skills: [],
           domains: [],
           showAllAgents: false,
+          // Gap 1: Trust Score & Version Filters
+          minTrustScore: 0,
+          maxTrustScore: 100,
+          erc8004Version: '',
+          mcpVersion: '',
+          a2aVersion: '',
+          // Gap 3: Curation Filters
+          isCurated: false,
+          curatedBy: '',
+          // Gap 5: Endpoint Filters
+          hasEmail: false,
+          hasOasfEndpoint: false,
+          // Gap 6: Reachability Filters
+          hasRecentReachability: false,
         });
       });
 

@@ -78,5 +78,45 @@ export function serializeToUrl(state: UrlSearchState): URLSearchParams {
     params.set('order', state.sortOrder);
   }
 
+  // Gap 1: Trust Score Range (only if not default)
+  if (state.filters.minTrustScore > 0) {
+    params.set('minTrust', String(state.filters.minTrustScore));
+  }
+  if (state.filters.maxTrustScore < 100) {
+    params.set('maxTrust', String(state.filters.maxTrustScore));
+  }
+
+  // Gap 1: Version filters (only if set)
+  if (state.filters.erc8004Version) {
+    params.set('erc8004Version', state.filters.erc8004Version);
+  }
+  if (state.filters.mcpVersion) {
+    params.set('mcpVersion', state.filters.mcpVersion);
+  }
+  if (state.filters.a2aVersion) {
+    params.set('a2aVersion', state.filters.a2aVersion);
+  }
+
+  // Gap 3: Curation filters (only if set)
+  if (state.filters.isCurated) {
+    params.set('isCurated', 'true');
+  }
+  if (state.filters.curatedBy) {
+    params.set('curatedBy', state.filters.curatedBy);
+  }
+
+  // Gap 5: Endpoint filters (only if true)
+  if (state.filters.hasEmail) {
+    params.set('hasEmail', 'true');
+  }
+  if (state.filters.hasOasfEndpoint) {
+    params.set('hasOasfEndpoint', 'true');
+  }
+
+  // Gap 6: Reachability filters (only if true)
+  if (state.filters.hasRecentReachability) {
+    params.set('hasRecentReachability', 'true');
+  }
+
   return params;
 }

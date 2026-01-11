@@ -3,6 +3,8 @@
  * Used by both Vitest integration tests and Playwright E2E tests
  */
 
+import type { SearchFiltersState } from '@/components/organisms/search-filters';
+
 export * from './filter-validators';
 export * from './pairwise-generator';
 export * from './test-matrix';
@@ -14,6 +16,48 @@ import {
   generateSingleFilterTests,
   generateSortingTests,
 } from './test-matrix';
+
+/**
+ * Creates a complete SearchFiltersState with defaults, allowing partial overrides.
+ * Use this in tests to ensure all required filter properties are present.
+ *
+ * @param overrides - Partial filter state to merge with defaults
+ * @returns Complete SearchFiltersState
+ *
+ * @example
+ * ```ts
+ * const filters = createTestFilters({ protocols: ['mcp'] });
+ * // Returns full SearchFiltersState with mcp protocol selected
+ * ```
+ */
+export function createTestFilters(overrides: Partial<SearchFiltersState> = {}): SearchFiltersState {
+  return {
+    status: [],
+    protocols: [],
+    chains: [],
+    filterMode: 'AND',
+    minReputation: 0,
+    maxReputation: 100,
+    skills: [],
+    domains: [],
+    showAllAgents: false,
+    // Gap 1: Trust Score & Version Filters
+    minTrustScore: 0,
+    maxTrustScore: 100,
+    erc8004Version: '',
+    mcpVersion: '',
+    a2aVersion: '',
+    // Gap 3: Curation Filters
+    isCurated: false,
+    curatedBy: '',
+    // Gap 5: Endpoint Filters
+    hasEmail: false,
+    hasOasfEndpoint: false,
+    // Gap 6: Reachability Filters
+    hasRecentReachability: false,
+    ...overrides,
+  };
+}
 
 /**
  * Pre-generated test cases for both frameworks

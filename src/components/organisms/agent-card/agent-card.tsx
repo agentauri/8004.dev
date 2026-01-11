@@ -1,3 +1,4 @@
+import { Bot, User } from 'lucide-react';
 import Link from 'next/link';
 import { type JSX, memo } from 'react';
 import {
@@ -54,12 +55,16 @@ export interface AgentCardAgent {
   reputationTrend?: TrendDirection;
   /** Reputation change percentage */
   reputationChange?: number;
-  /** OASF skills classification */
+  /** OASF skills classification (LLM-classified) */
   oasfSkills?: OasfClassification[];
-  /** OASF domains classification */
+  /** OASF domains classification (LLM-classified) */
   oasfDomains?: OasfClassification[];
   /** OASF classification source */
   oasfSource?: 'creator-defined' | 'llm-classification' | 'none';
+  /** Creator-declared OASF skills */
+  declaredOasfSkills?: string[];
+  /** Creator-declared OASF domains */
+  declaredOasfDomains?: string[];
   /** Agent wallet address */
   walletAddress?: string;
   /** Supported trust mechanisms */
@@ -89,6 +94,30 @@ export interface AgentCardProps {
   isWatched?: boolean;
   /** Callback when watch toggle is clicked */
   onWatchToggle?: () => void;
+}
+
+/**
+ * Renders a small source indicator badge
+ */
+function SourceIndicator({ source }: { source: 'creator' | 'ai' }): JSX.Element {
+  if (source === 'creator') {
+    return (
+      <span
+        className="inline-flex items-center gap-0.5 text-[var(--pixel-green-pipe)]"
+        title="Creator Declared"
+      >
+        <User size={10} aria-hidden="true" />
+      </span>
+    );
+  }
+  return (
+    <span
+      className="inline-flex items-center gap-0.5 text-[var(--pixel-blue-text)]"
+      title="AI Classified"
+    >
+      <Bot size={10} aria-hidden="true" />
+    </span>
+  );
 }
 
 /**
@@ -123,6 +152,12 @@ export const AgentCard = memo(function AgentCard({
 }: AgentCardProps): JSX.Element {
   // Agent ID is in format "chainId:tokenId" (e.g., "11155111:123")
   const agentId = agent.id;
+
+  // Check if we have declared OASF data
+  const hasDeclaredSkills = agent.declaredOasfSkills && agent.declaredOasfSkills.length > 0;
+  const hasDeclaredDomains = agent.declaredOasfDomains && agent.declaredOasfDomains.length > 0;
+  const hasClassifiedSkills = agent.oasfSkills && agent.oasfSkills.length > 0;
+  const hasClassifiedDomains = agent.oasfDomains && agent.oasfDomains.length > 0;
 
   const cardContent = (
     <>
@@ -180,29 +215,65 @@ export const AgentCard = memo(function AgentCard({
         </p>
       )}
 
-      {/* OASF Skills and Domains Tags */}
-      {agent.oasfSkills?.length || agent.oasfDomains?.length ? (
-        <div className="mt-3 flex flex-wrap gap-1.5">
-          {agent.oasfSkills?.slice(0, 3).map((skill) => (
-            <span
-              key={skill.slug}
-              className="px-2 py-0.5 text-[0.625rem] bg-[var(--pixel-blue-sky)]/20 text-[var(--pixel-blue-text)] rounded font-[family-name:var(--font-pixel-body)] uppercase"
-              title={`${skill.slug} (${Math.round(skill.confidence * 100)}% confidence)`}
-            >
-              {skill.slug.split('/').pop()}
-            </span>
-          ))}
-          {agent.oasfDomains?.slice(0, 2).map((domain) => (
-            <span
-              key={domain.slug}
-              className="px-2 py-0.5 text-[0.625rem] bg-[var(--pixel-gold-coin)]/20 text-[var(--pixel-gold-coin)] rounded font-[family-name:var(--font-pixel-body)] uppercase"
-              title={`${domain.slug} (${Math.round(domain.confidence * 100)}% confidence)`}
-            >
-              {domain.slug.split('/').pop()}
-            </span>
-          ))}
+      {/* Creator-Declared OASF Tags */}
+      {(hasDeclaredSkills || hasDeclaredDomains) && (
+        <div className="mt-3">
+          <div className="flex items-center gap-1 mb-1">
+            <SourceIndicator source="creator" />
+            <span className="text-[0.5rem] text-[var(--pixel-gray-500)] uppercase">Declared</span>
+          </div>
+          <div className="flex flex-wrap gap-1.5">
+            {agent.declaredOasfSkills?.slice(0, 3).map((skill) => (
+              <span
+                key={`declared-skill-${skill}`}
+                className="px-2 py-0.5 text-[0.625rem] bg-[var(--pixel-green-pipe)]/20 text-[var(--pixel-green-pipe)] rounded font-[family-name:var(--font-pixel-body)] uppercase"
+                title={`${skill} (Creator Declared)`}
+              >
+                {skill.split('/').pop()}
+              </span>
+            ))}
+            {agent.declaredOasfDomains?.slice(0, 2).map((domain) => (
+              <span
+                key={`declared-domain-${domain}`}
+                className="px-2 py-0.5 text-[0.625rem] bg-[var(--pixel-green-pipe)]/10 text-[var(--pixel-green-pipe)] rounded font-[family-name:var(--font-pixel-body)] uppercase border border-[var(--pixel-green-pipe)]/30"
+                title={`${domain} (Creator Declared)`}
+              >
+                {domain.split('/').pop()}
+              </span>
+            ))}
+          </div>
         </div>
-      ) : null}
+      )}
+
+      {/* AI-Classified OASF Tags */}
+      {(hasClassifiedSkills || hasClassifiedDomains) && (
+        <div className="mt-3">
+          <div className="flex items-center gap-1 mb-1">
+            <SourceIndicator source="ai" />
+            <span className="text-[0.5rem] text-[var(--pixel-gray-500)] uppercase">Classified</span>
+          </div>
+          <div className="flex flex-wrap gap-1.5">
+            {agent.oasfSkills?.slice(0, 3).map((skill) => (
+              <span
+                key={skill.slug}
+                className="px-2 py-0.5 text-[0.625rem] bg-[var(--pixel-blue-sky)]/20 text-[var(--pixel-blue-text)] rounded font-[family-name:var(--font-pixel-body)] uppercase"
+                title={`${skill.slug} (${Math.round(skill.confidence * 100)}% confidence)`}
+              >
+                {skill.slug.split('/').pop()}
+              </span>
+            ))}
+            {agent.oasfDomains?.slice(0, 2).map((domain) => (
+              <span
+                key={domain.slug}
+                className="px-2 py-0.5 text-[0.625rem] bg-[var(--pixel-gold-coin)]/20 text-[var(--pixel-gold-coin)] rounded font-[family-name:var(--font-pixel-body)] uppercase"
+                title={`${domain.slug} (${Math.round(domain.confidence * 100)}% confidence)`}
+              >
+                {domain.slug.split('/').pop()}
+              </span>
+            ))}
+          </div>
+        </div>
+      )}
 
       <div className="mt-4">
         <AgentBadges

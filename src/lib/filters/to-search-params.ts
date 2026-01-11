@@ -110,6 +110,21 @@ export function toSearchParams(
     params.filterMode = 'OR';
   }
 
+  // Gap 1: Apply trust score filters
+  applyTrustScoreFilters(params, options.filters);
+
+  // Gap 1: Apply version filters
+  applyVersionFilters(params, options.filters);
+
+  // Gap 3: Apply curation filters
+  applyCurationFilters(params, options.filters);
+
+  // Gap 5: Apply endpoint filters
+  applyEndpointFilters(params, options.filters);
+
+  // Gap 6: Apply reachability filters
+  applyReachabilityFilters(params, options.filters);
+
   // Apply pagination
   params.limit = options.limit;
   if (options.cursor) {
@@ -188,5 +203,65 @@ function applyTaxonomyFilters(params: SearchParams, filters: SearchFiltersState)
   }
   if (filters.domains.length > 0) {
     params.domains = filters.domains;
+  }
+}
+
+/**
+ * Gap 1: Apply trust score range filters
+ */
+function applyTrustScoreFilters(params: SearchParams, filters: SearchFiltersState): void {
+  if (filters.minTrustScore > 0) {
+    params.trustScoreMin = filters.minTrustScore;
+  }
+  if (filters.maxTrustScore < 100) {
+    params.trustScoreMax = filters.maxTrustScore;
+  }
+}
+
+/**
+ * Gap 1: Apply version filters (ERC-8004, MCP, A2A)
+ */
+function applyVersionFilters(params: SearchParams, filters: SearchFiltersState): void {
+  if (filters.erc8004Version) {
+    params.erc8004Version = filters.erc8004Version;
+  }
+  if (filters.mcpVersion) {
+    params.mcpVersion = filters.mcpVersion;
+  }
+  if (filters.a2aVersion) {
+    params.a2aVersion = filters.a2aVersion;
+  }
+}
+
+/**
+ * Gap 3: Apply curation filters
+ */
+function applyCurationFilters(params: SearchParams, filters: SearchFiltersState): void {
+  if (filters.isCurated) {
+    params.isCurated = true;
+  }
+  if (filters.curatedBy) {
+    params.curatedBy = filters.curatedBy;
+  }
+}
+
+/**
+ * Gap 5: Apply endpoint filters
+ */
+function applyEndpointFilters(params: SearchParams, filters: SearchFiltersState): void {
+  if (filters.hasEmail) {
+    params.hasEmail = true;
+  }
+  if (filters.hasOasfEndpoint) {
+    params.hasOasfEndpoint = true;
+  }
+}
+
+/**
+ * Gap 6: Apply reachability filters
+ */
+function applyReachabilityFilters(params: SearchParams, filters: SearchFiltersState): void {
+  if (filters.hasRecentReachability) {
+    params.hasRecentReachability = true;
   }
 }

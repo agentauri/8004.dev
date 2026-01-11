@@ -1,12 +1,9 @@
 /**
  * API route for getting leaderboard (agents ranked by reputation)
  * GET /api/leaderboard?chains=11155111,84532&period=7d&mcp=true&limit=20&cursor=abc
- *
- * NOTE: Falls back to mock data if backend endpoint is not available.
- * Remove mock fallback once backend implements /api/v1/leaderboard
  */
 
-import { backendFetch, shouldUseMockData } from '@/lib/api/backend';
+import { backendFetch } from '@/lib/api/backend';
 import { mapLeaderboardEntries } from '@/lib/api/mappers';
 import {
   handleRouteError,
@@ -14,163 +11,13 @@ import {
   parseIntParam,
   successResponse,
 } from '@/lib/api/route-helpers';
-import type { BackendLeaderboardEntry, BackendLeaderboardResponse } from '@/types/backend';
+import type { BackendLeaderboardResponse } from '@/types/backend';
 import type { LeaderboardPeriod } from '@/types/leaderboard';
 
 const VALID_PERIODS = ['all', '30d', '7d', '24h'] as const;
 
 function isValidPeriod(value: string): value is LeaderboardPeriod {
   return VALID_PERIODS.includes(value as LeaderboardPeriod);
-}
-
-/**
- * Generate mock leaderboard data for development/testing
- * TODO: Remove once backend implements /api/v1/leaderboard
- */
-function getMockLeaderboardEntries(limit: number): BackendLeaderboardEntry[] {
-  const mockEntries: BackendLeaderboardEntry[] = [
-    {
-      agentId: '11155111:42',
-      chainId: 11155111,
-      tokenId: '42',
-      name: 'CodeReview Pro',
-      description: 'An AI code review assistant',
-      score: 95,
-      feedbackCount: 156,
-      trend: 'up',
-      active: true,
-      hasMcp: true,
-      hasA2a: true,
-      x402Support: false,
-    },
-    {
-      agentId: '84532:15',
-      chainId: 84532,
-      tokenId: '15',
-      name: 'Trading Assistant',
-      description: 'Automated trading helper',
-      score: 92,
-      feedbackCount: 203,
-      trend: 'up',
-      active: true,
-      hasMcp: true,
-      hasA2a: false,
-      x402Support: true,
-    },
-    {
-      agentId: '11155111:88',
-      chainId: 11155111,
-      tokenId: '88',
-      name: 'Data Analyzer',
-      description: 'Data analysis specialist',
-      score: 89,
-      feedbackCount: 98,
-      trend: 'stable',
-      active: true,
-      hasMcp: false,
-      hasA2a: true,
-      x402Support: false,
-    },
-    {
-      agentId: '80002:23',
-      chainId: 80002,
-      tokenId: '23',
-      name: 'Content Writer',
-      description: 'AI content creator',
-      score: 87,
-      feedbackCount: 145,
-      trend: 'up',
-      active: true,
-      hasMcp: true,
-      hasA2a: true,
-      x402Support: true,
-    },
-    {
-      agentId: '84532:67',
-      chainId: 84532,
-      tokenId: '67',
-      name: 'Security Scanner',
-      description: 'Security vulnerability scanner',
-      score: 85,
-      feedbackCount: 67,
-      trend: 'down',
-      active: true,
-      hasMcp: true,
-      hasA2a: false,
-      x402Support: false,
-    },
-    {
-      agentId: '11155111:101',
-      chainId: 11155111,
-      tokenId: '101',
-      name: 'Research Assistant',
-      description: 'Research and analysis helper',
-      score: 82,
-      feedbackCount: 89,
-      trend: 'up',
-      active: true,
-      hasMcp: true,
-      hasA2a: true,
-      x402Support: false,
-    },
-    {
-      agentId: '80002:55',
-      chainId: 80002,
-      tokenId: '55',
-      name: 'Translation Bot',
-      description: 'Multi-language translator',
-      score: 79,
-      feedbackCount: 134,
-      trend: 'stable',
-      active: false,
-      hasMcp: false,
-      hasA2a: true,
-      x402Support: true,
-    },
-    {
-      agentId: '84532:33',
-      chainId: 84532,
-      tokenId: '33',
-      name: 'Image Generator',
-      description: 'AI image creation tool',
-      score: 76,
-      feedbackCount: 212,
-      trend: 'down',
-      active: true,
-      hasMcp: true,
-      hasA2a: false,
-      x402Support: true,
-    },
-    {
-      agentId: '11155111:77',
-      chainId: 11155111,
-      tokenId: '77',
-      name: 'Code Debugger',
-      description: 'Automated debugging assistant',
-      score: 74,
-      feedbackCount: 56,
-      trend: 'up',
-      active: true,
-      hasMcp: true,
-      hasA2a: true,
-      x402Support: false,
-    },
-    {
-      agentId: '80002:12',
-      chainId: 80002,
-      tokenId: '12',
-      name: 'Sentiment Analyzer',
-      description: 'Text sentiment analysis',
-      score: 71,
-      feedbackCount: 78,
-      trend: 'stable',
-      active: true,
-      hasMcp: false,
-      hasA2a: false,
-      x402Support: false,
-    },
-  ];
-  return mockEntries.slice(0, limit);
 }
 
 export async function GET(request: Request) {
@@ -224,27 +71,14 @@ export async function GET(request: Request) {
       params.x402 = String(x402);
     }
 
-    let entries: BackendLeaderboardEntry[] = [];
-    let meta: BackendLeaderboardResponse['meta'] | undefined;
+    const response = await backendFetch<BackendLeaderboardResponse>('/api/v1/leaderboard', {
+      params,
+      next: { revalidate: 60 }, // Cache for 1 minute
+    });
 
-    try {
-      const response = await backendFetch<BackendLeaderboardResponse>('/api/v1/leaderboard', {
-        params,
-        next: { revalidate: 60 }, // Cache for 1 minute
-      });
-
-      // Backend returns { data: BackendLeaderboardEntry[], meta: {...} }
-      entries = response.data?.data ?? [];
-      meta = response.data?.meta;
-    } catch (error) {
-      // Fallback to mock data if backend not configured or endpoint not available
-      if (shouldUseMockData(error)) {
-        console.warn('Backend /api/v1/leaderboard not available, using mock data');
-        entries = getMockLeaderboardEntries(limit);
-      } else {
-        throw error;
-      }
-    }
+    // Backend returns { data: BackendLeaderboardEntry[], meta: {...} }
+    const entries = response.data?.data ?? [];
+    const meta = response.data?.meta;
 
     const mappedEntries = mapLeaderboardEntries(entries);
 

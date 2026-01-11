@@ -3,6 +3,11 @@
  */
 
 import type {
+  BackendMcpCapabilities,
+  BackendMcpPrompt,
+  BackendMcpPromptArgument,
+  BackendMcpResource,
+  BackendMcpTool,
   HealthCheckCategory,
   HealthCheckStatus,
   OASFItem,
@@ -18,6 +23,7 @@ export type {
   HealthCheckCategory,
   HealthCheckStatus,
   OASFItem,
+  OASFSource,
   ValidationStatus,
   ValidationType,
   WarningSeverity,
@@ -145,6 +151,135 @@ export interface ReputationTrendPoint {
  */
 export type TrendDirection = 'up' | 'down' | 'stable';
 
+// ============================================================================
+// MCP Capabilities Types (mirrored from backend)
+// ============================================================================
+
+/**
+ * MCP Tool with full details from endpoint crawl
+ */
+export interface McpTool {
+  /** Tool name (identifier) */
+  name: string;
+  /** Human-readable description */
+  description?: string;
+  /** JSON Schema for input parameters */
+  inputSchema?: Record<string, unknown>;
+}
+
+/**
+ * MCP Prompt argument
+ */
+export interface McpPromptArgument {
+  /** Argument name */
+  name: string;
+  /** Argument description */
+  description?: string;
+  /** Whether this argument is required */
+  required?: boolean;
+}
+
+/**
+ * MCP Prompt with full details from endpoint crawl
+ */
+export interface McpPrompt {
+  /** Prompt name (identifier) */
+  name: string;
+  /** Human-readable description */
+  description?: string;
+  /** Prompt arguments */
+  arguments?: McpPromptArgument[];
+}
+
+/**
+ * MCP Resource with full details from endpoint crawl
+ */
+export interface McpResource {
+  /** Resource URI */
+  uri: string;
+  /** Resource name */
+  name: string;
+  /** Human-readable description */
+  description?: string;
+  /** MIME type of the resource content */
+  mimeType?: string;
+}
+
+/**
+ * Full MCP capabilities from endpoint crawl
+ */
+export interface McpCapabilities {
+  /** Detailed tools with descriptions and schemas */
+  tools: McpTool[];
+  /** Detailed prompts with descriptions and arguments */
+  prompts: McpPrompt[];
+  /** Detailed resources with URIs and MIME types */
+  resources: McpResource[];
+  /** When capabilities were last fetched */
+  fetchedAt?: string;
+  /** Error message if fetch failed */
+  error?: string;
+}
+
+/**
+ * Map backend MCP tool to frontend McpTool
+ */
+export function mapMcpTool(tool: BackendMcpTool): McpTool {
+  return {
+    name: tool.name,
+    description: tool.description,
+    inputSchema: tool.inputSchema,
+  };
+}
+
+/**
+ * Map backend MCP prompt argument to frontend McpPromptArgument
+ */
+export function mapMcpPromptArgument(arg: BackendMcpPromptArgument): McpPromptArgument {
+  return {
+    name: arg.name,
+    description: arg.description,
+    required: arg.required,
+  };
+}
+
+/**
+ * Map backend MCP prompt to frontend McpPrompt
+ */
+export function mapMcpPrompt(prompt: BackendMcpPrompt): McpPrompt {
+  return {
+    name: prompt.name,
+    description: prompt.description,
+    arguments: prompt.arguments?.map(mapMcpPromptArgument),
+  };
+}
+
+/**
+ * Map backend MCP resource to frontend McpResource
+ */
+export function mapMcpResource(resource: BackendMcpResource): McpResource {
+  return {
+    uri: resource.uri,
+    name: resource.name,
+    description: resource.description,
+    mimeType: resource.mimeType,
+  };
+}
+
+/**
+ * Map backend MCP capabilities to frontend McpCapabilities
+ */
+export function mapMcpCapabilities(caps?: BackendMcpCapabilities): McpCapabilities | undefined {
+  if (!caps) return undefined;
+  return {
+    tools: caps.tools?.map(mapMcpTool) ?? [],
+    prompts: caps.prompts?.map(mapMcpPrompt) ?? [],
+    resources: caps.resources?.map(mapMcpResource) ?? [],
+    fetchedAt: caps.fetchedAt,
+    error: caps.error,
+  };
+}
+
 /**
  * Full agent data
  */
@@ -157,6 +292,12 @@ export interface Agent {
   image?: string;
   endpoints: AgentEndpoints;
   oasf?: AgentOASF;
+  /** OASF source indicating how the classification was obtained */
+  oasfSource?: OASFSource;
+  /** OASF skills declared by agent in registration file */
+  declaredOasfSkills?: string[];
+  /** OASF domains declared by agent in registration file */
+  declaredOasfDomains?: string[];
   supportedTrust: string[];
   active: boolean;
   x402support: boolean;
@@ -168,6 +309,8 @@ export interface Agent {
   warnings?: AgentWarning[];
   /** Aggregated health score */
   healthScore?: AgentHealthScore;
+  /** MCP capabilities with full details from endpoint crawl */
+  mcpCapabilities?: McpCapabilities;
 }
 
 /**
@@ -203,6 +346,45 @@ export interface AgentSummary {
   reputationTrend?: TrendDirection;
   /** Reputation change percentage */
   reputationChange?: number;
+  // ============================================================================
+  // Gap 1-6 Fields
+  // ============================================================================
+  /** Trust score from PageRank (0-100) */
+  trustScore?: number;
+  /** ERC-8004 spec version */
+  erc8004Version?: 'v0.4' | 'v1.0';
+  /** MCP protocol version */
+  mcpVersion?: string;
+  /** A2A protocol version */
+  a2aVersion?: string;
+  /** Curator wallet addresses who gave STAR feedback */
+  curatedBy?: string[];
+  /** Whether agent is curated */
+  isCurated?: boolean;
+  /** OASF skills declared by agent in registration file */
+  declaredOasfSkills?: string[];
+  /** OASF domains declared by agent in registration file */
+  declaredOasfDomains?: string[];
+  /** Email contact endpoint */
+  emailEndpoint?: string;
+  /** OASF API endpoint */
+  oasfEndpoint?: string;
+  /** OASF API version */
+  oasfVersion?: string;
+  /** Last MCP reachability check timestamp */
+  lastReachabilityCheckMcp?: string;
+  /** Last A2A reachability check timestamp */
+  lastReachabilityCheckA2a?: string;
+  /** Wallet address of reachability attestor */
+  reachabilityAttestor?: string;
+  /** MCP endpoint reachability status */
+  isReachableMcp?: boolean;
+  /** A2A endpoint reachability status */
+  isReachableA2a?: boolean;
+  /** Input modes derived from MCP prompts */
+  inputModes?: string[];
+  /** Output modes derived from MCP resources */
+  outputModes?: string[];
 }
 
 /**

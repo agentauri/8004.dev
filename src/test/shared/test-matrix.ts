@@ -6,7 +6,7 @@
 import type { ChainId } from '@/components/atoms';
 import type { CapabilityType } from '@/components/molecules/capability-tag';
 import type { FilterMode } from '@/components/molecules/filter-mode-toggle';
-import type { SearchSortField, SearchSortOrder } from '@/types/search';
+import type { Erc8004Version, SearchSortField, SearchSortOrder } from '@/types/search';
 
 /**
  * Simplified filter state for test cases
@@ -21,6 +21,20 @@ export interface TestFiltersState {
   skills: string[];
   domains: string[];
   showAllAgents: boolean;
+  // Gap 1: Trust Score & Version Filters
+  minTrustScore: number;
+  maxTrustScore: number;
+  erc8004Version: Erc8004Version | '';
+  mcpVersion: string;
+  a2aVersion: string;
+  // Gap 3: Curation Filters
+  isCurated: boolean;
+  curatedBy: string;
+  // Gap 5: Endpoint Filters
+  hasEmail: boolean;
+  hasOasfEndpoint: boolean;
+  // Gap 6: Reachability Filters
+  hasRecentReachability: boolean;
 }
 
 /**
@@ -51,6 +65,20 @@ export function createDefaultFilters(): TestFiltersState {
     skills: [],
     domains: [],
     showAllAgents: false,
+    // Gap 1: Trust Score & Version Filters
+    minTrustScore: 0,
+    maxTrustScore: 100,
+    erc8004Version: '',
+    mcpVersion: '',
+    a2aVersion: '',
+    // Gap 3: Curation Filters
+    isCurated: false,
+    curatedBy: '',
+    // Gap 5: Endpoint Filters
+    hasEmail: false,
+    hasOasfEndpoint: false,
+    // Gap 6: Reachability Filters
+    hasRecentReachability: false,
   };
 }
 
@@ -239,15 +267,13 @@ export function generateEdgeCaseTests(): FilterTestCase[] {
       name: 'All filters enabled',
       query: 'agent',
       filters: {
+        ...baseFilters,
         status: ['active'],
         protocols: ['mcp', 'a2a', 'x402'],
         chains: [11155111, 84532, 80002],
         filterMode: 'AND',
         minReputation: 25,
         maxReputation: 75,
-        skills: [],
-        domains: [],
-        showAllAgents: false,
       },
       sortBy: 'reputation',
       sortOrder: 'desc',

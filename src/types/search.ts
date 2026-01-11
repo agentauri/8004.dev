@@ -5,6 +5,11 @@
 import type { AgentSummary } from './agent';
 
 /**
+ * ERC-8004 version type
+ */
+export type Erc8004Version = 'v0.4' | 'v1.0';
+
+/**
  * Search request parameters
  */
 export interface SearchParams {
@@ -25,6 +30,30 @@ export interface SearchParams {
   filterMode?: 'AND' | 'OR';
   /** Filter by registration file presence (backend default is true) */
   hasRegistrationFile?: boolean;
+  // Gap 1: Trust Score & Version Filters
+  /** Minimum trust score (0-100) */
+  trustScoreMin?: number;
+  /** Maximum trust score (0-100) */
+  trustScoreMax?: number;
+  /** ERC-8004 spec version */
+  erc8004Version?: Erc8004Version;
+  /** MCP protocol version */
+  mcpVersion?: string;
+  /** A2A protocol version */
+  a2aVersion?: string;
+  // Gap 3: Curation Filters
+  /** Curator wallet address */
+  curatedBy?: string;
+  /** Whether agent is curated */
+  isCurated?: boolean;
+  // Gap 5: Endpoint Filters
+  /** Has email endpoint */
+  hasEmail?: boolean;
+  /** Has OASF endpoint */
+  hasOasfEndpoint?: boolean;
+  // Gap 6: Reachability Filters
+  /** Has recent reachability check */
+  hasRecentReachability?: boolean;
 }
 
 /**

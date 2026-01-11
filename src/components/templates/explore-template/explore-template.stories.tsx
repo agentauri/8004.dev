@@ -87,6 +87,20 @@ const defaultFilters: SearchFiltersState = {
   skills: [],
   domains: [],
   showAllAgents: false,
+  // Gap 1: Trust Score & Version Filters
+  minTrustScore: 0,
+  maxTrustScore: 100,
+  erc8004Version: '',
+  mcpVersion: '',
+  a2aVersion: '',
+  // Gap 3: Curation Filters
+  isCurated: false,
+  curatedBy: '',
+  // Gap 5: Endpoint Filters
+  hasEmail: false,
+  hasOasfEndpoint: false,
+  // Gap 6: Reachability Filters
+  hasRecentReachability: false,
 };
 
 export const Default: Story = {
@@ -159,6 +173,20 @@ export const WithFilters: Story = {
       skills: [],
       domains: [],
       showAllAgents: false,
+      // Gap 1: Trust Score & Version Filters
+      minTrustScore: 0,
+      maxTrustScore: 100,
+      erc8004Version: '',
+      mcpVersion: '',
+      a2aVersion: '',
+      // Gap 3: Curation Filters
+      isCurated: false,
+      curatedBy: '',
+      // Gap 5: Endpoint Filters
+      hasEmail: false,
+      hasOasfEndpoint: false,
+      // Gap 6: Reachability Filters
+      hasRecentReachability: false,
     },
     onFiltersChange: () => {},
     agents: mockAgents.filter((a) => a.isActive && a.capabilities?.includes('mcp')),
@@ -195,6 +223,20 @@ export const Interactive: Story = {
       skills: [],
       domains: [],
       showAllAgents: false,
+      // Gap 1: Trust Score & Version Filters
+      minTrustScore: 0,
+      maxTrustScore: 100,
+      erc8004Version: '',
+      mcpVersion: '',
+      a2aVersion: '',
+      // Gap 3: Curation Filters
+      isCurated: false,
+      curatedBy: '',
+      // Gap 5: Endpoint Filters
+      hasEmail: false,
+      hasOasfEndpoint: false,
+      // Gap 6: Reachability Filters
+      hasRecentReachability: false,
     });
     const [isLoading, setIsLoading] = useState(false);
     const [results, setResults] = useState(mockAgents);

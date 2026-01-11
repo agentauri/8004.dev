@@ -13,8 +13,14 @@ import {
 import { CHAINS } from '@/lib/constants/chains';
 import { cn } from '@/lib/utils';
 import type { FilterPreset } from '@/types/filter-preset';
+import type { Erc8004Version } from '@/types/search';
 
-import { CHAIN_SELECTED_STYLES, PROTOCOLS, SUPPORTED_CHAINS } from './filter-constants';
+import {
+  CHAIN_SELECTED_STYLES,
+  ERC8004_VERSION_OPTIONS,
+  PROTOCOLS,
+  SUPPORTED_CHAINS,
+} from './filter-constants';
 import { useFilterHandlers } from './use-filter-handlers';
 
 /**
@@ -41,6 +47,30 @@ export interface SearchFiltersState {
   domains: string[];
   /** Show all agents including inactive and without registration file */
   showAllAgents: boolean;
+  // Gap 1: Trust Score & Version Filters
+  /** Minimum trust score (0-100) */
+  minTrustScore: number;
+  /** Maximum trust score (0-100) */
+  maxTrustScore: number;
+  /** ERC-8004 spec version filter */
+  erc8004Version: Erc8004Version | '';
+  /** MCP protocol version filter */
+  mcpVersion: string;
+  /** A2A protocol version filter */
+  a2aVersion: string;
+  // Gap 3: Curation Filters
+  /** Whether to show only curated agents */
+  isCurated: boolean;
+  /** Curator wallet address filter */
+  curatedBy: string;
+  // Gap 5: Endpoint Filters
+  /** Has email endpoint */
+  hasEmail: boolean;
+  /** Has OASF endpoint */
+  hasOasfEndpoint: boolean;
+  // Gap 6: Reachability Filters
+  /** Has recent reachability check */
+  hasRecentReachability: boolean;
 }
 
 export interface SearchFiltersProps {
@@ -107,6 +137,15 @@ export function SearchFilters({
     handleSkillsChange,
     handleDomainsChange,
     handleShowAllAgentsChange,
+    handleTrustScoreChange,
+    handleErc8004VersionChange,
+    handleMcpVersionChange,
+    handleA2aVersionChange,
+    handleIsCuratedChange,
+    handleCuratedByChange,
+    handleHasEmailChange,
+    handleHasOasfEndpointChange,
+    handleHasRecentReachabilityChange,
     handleClearAll,
     statusOptionsWithCounts,
     hasActiveFilters,
@@ -235,6 +274,202 @@ export function SearchFilters({
         onChange={handleReputationChange}
         disabled={disabled}
       />
+
+      {/* Trust Score Range Filter */}
+      <div className="space-y-2" data-testid="trust-score-range-filter">
+        <div className="flex items-center justify-between">
+          <span className="text-[0.625rem] font-[family-name:var(--font-pixel-body)] uppercase text-[var(--pixel-gray-400)]">
+            Trust Score
+          </span>
+          <span className="text-[0.625rem] font-[family-name:var(--font-pixel-body)] text-[var(--pixel-blue-text)]">
+            {filters.minTrustScore} - {filters.maxTrustScore}
+          </span>
+        </div>
+        <div className="flex items-center gap-2">
+          <input
+            type="range"
+            min={0}
+            max={100}
+            step={5}
+            value={filters.minTrustScore}
+            onChange={(e) =>
+              handleTrustScoreChange(
+                Math.min(Number(e.target.value), filters.maxTrustScore),
+                filters.maxTrustScore,
+              )
+            }
+            className="flex-1 h-2 appearance-none bg-[var(--pixel-gray-700)] rounded cursor-pointer"
+            disabled={disabled}
+            data-testid="trust-score-min-slider"
+          />
+          <input
+            type="range"
+            min={0}
+            max={100}
+            step={5}
+            value={filters.maxTrustScore}
+            onChange={(e) =>
+              handleTrustScoreChange(
+                filters.minTrustScore,
+                Math.max(Number(e.target.value), filters.minTrustScore),
+              )
+            }
+            className="flex-1 h-2 appearance-none bg-[var(--pixel-gray-700)] rounded cursor-pointer"
+            disabled={disabled}
+            data-testid="trust-score-max-slider"
+          />
+        </div>
+        <div className="flex justify-between text-[0.5rem] text-[var(--pixel-gray-500)]">
+          <span>0</span>
+          <span>50</span>
+          <span>100</span>
+        </div>
+      </div>
+
+      {/* Version Filters Section */}
+      <div className="space-y-3 pt-4 border-t border-[var(--pixel-gray-700)]">
+        <span className="text-[var(--pixel-gray-400)] font-[family-name:var(--font-pixel-body)] text-[0.625rem] uppercase tracking-wider">
+          Version Filters
+        </span>
+
+        {/* ERC-8004 Version */}
+        <div className="space-y-1.5">
+          <label
+            htmlFor="erc8004-version"
+            className="text-[0.5rem] text-[var(--pixel-gray-500)] uppercase"
+          >
+            ERC-8004 Version
+          </label>
+          <select
+            id="erc8004-version"
+            value={filters.erc8004Version}
+            onChange={(e) => handleErc8004VersionChange(e.target.value as Erc8004Version | '')}
+            className="w-full px-2 py-1.5 text-[0.625rem] bg-[var(--pixel-gray-800)] border border-[var(--pixel-gray-600)] text-[var(--pixel-gray-200)] focus:border-[var(--pixel-blue-sky)] focus:outline-none"
+            disabled={disabled}
+            data-testid="erc8004-version-select"
+          >
+            {ERC8004_VERSION_OPTIONS.map((opt) => (
+              <option key={opt.value} value={opt.value}>
+                {opt.label}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        {/* MCP Version */}
+        <div className="space-y-1.5">
+          <label
+            htmlFor="mcp-version"
+            className="text-[0.5rem] text-[var(--pixel-gray-500)] uppercase"
+          >
+            MCP Version
+          </label>
+          <input
+            id="mcp-version"
+            type="text"
+            value={filters.mcpVersion}
+            onChange={(e) => handleMcpVersionChange(e.target.value)}
+            placeholder="e.g., 1.0.0"
+            className="w-full px-2 py-1.5 text-[0.625rem] bg-[var(--pixel-gray-800)] border border-[var(--pixel-gray-600)] text-[var(--pixel-gray-200)] placeholder:text-[var(--pixel-gray-600)] focus:border-[var(--pixel-blue-sky)] focus:outline-none"
+            disabled={disabled}
+            data-testid="mcp-version-input"
+          />
+        </div>
+
+        {/* A2A Version */}
+        <div className="space-y-1.5">
+          <label
+            htmlFor="a2a-version"
+            className="text-[0.5rem] text-[var(--pixel-gray-500)] uppercase"
+          >
+            A2A Version
+          </label>
+          <input
+            id="a2a-version"
+            type="text"
+            value={filters.a2aVersion}
+            onChange={(e) => handleA2aVersionChange(e.target.value)}
+            placeholder="e.g., 1.0.0"
+            className="w-full px-2 py-1.5 text-[0.625rem] bg-[var(--pixel-gray-800)] border border-[var(--pixel-gray-600)] text-[var(--pixel-gray-200)] placeholder:text-[var(--pixel-gray-600)] focus:border-[var(--pixel-blue-sky)] focus:outline-none"
+            disabled={disabled}
+            data-testid="a2a-version-input"
+          />
+        </div>
+      </div>
+
+      {/* Curation Filters Section */}
+      <div className="space-y-3 pt-4 border-t border-[var(--pixel-gray-700)]">
+        <span className="text-[var(--pixel-gray-400)] font-[family-name:var(--font-pixel-body)] text-[0.625rem] uppercase tracking-wider">
+          Curation
+        </span>
+
+        <Switch
+          checked={filters.isCurated}
+          onChange={handleIsCuratedChange}
+          label="Curated Only"
+          description="Show only agents with STAR feedback from curators"
+          size="sm"
+          disabled={disabled}
+          testId="is-curated-toggle"
+        />
+
+        {/* Curator Address */}
+        <div className="space-y-1.5">
+          <label
+            htmlFor="curated-by"
+            className="text-[0.5rem] text-[var(--pixel-gray-500)] uppercase"
+          >
+            Curated By (Wallet)
+          </label>
+          <input
+            id="curated-by"
+            type="text"
+            value={filters.curatedBy}
+            onChange={(e) => handleCuratedByChange(e.target.value)}
+            placeholder="0x..."
+            className="w-full px-2 py-1.5 text-[0.625rem] bg-[var(--pixel-gray-800)] border border-[var(--pixel-gray-600)] text-[var(--pixel-gray-200)] placeholder:text-[var(--pixel-gray-600)] focus:border-[var(--pixel-blue-sky)] focus:outline-none font-mono"
+            disabled={disabled}
+            data-testid="curated-by-input"
+          />
+        </div>
+      </div>
+
+      {/* Endpoint & Reachability Filters Section */}
+      <div className="space-y-3 pt-4 border-t border-[var(--pixel-gray-700)]">
+        <span className="text-[var(--pixel-gray-400)] font-[family-name:var(--font-pixel-body)] text-[0.625rem] uppercase tracking-wider">
+          Endpoints & Reachability
+        </span>
+
+        <Switch
+          checked={filters.hasEmail}
+          onChange={handleHasEmailChange}
+          label="Has Email"
+          description="Agent has an email contact endpoint"
+          size="sm"
+          disabled={disabled}
+          testId="has-email-toggle"
+        />
+
+        <Switch
+          checked={filters.hasOasfEndpoint}
+          onChange={handleHasOasfEndpointChange}
+          label="Has OASF Endpoint"
+          description="Agent has an OASF API endpoint"
+          size="sm"
+          disabled={disabled}
+          testId="has-oasf-endpoint-toggle"
+        />
+
+        <Switch
+          checked={filters.hasRecentReachability}
+          onChange={handleHasRecentReachabilityChange}
+          label="Recently Verified"
+          description="Agent has a recent reachability check"
+          size="sm"
+          disabled={disabled}
+          testId="has-recent-reachability-toggle"
+        />
+      </div>
 
       {/* Show All Agents Toggle */}
       <div className="pt-4 border-t border-[var(--pixel-gray-700)]">

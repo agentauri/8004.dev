@@ -28,6 +28,8 @@ const NAV_LINKS: NavLink[] = [
   { href: '/evaluate', label: 'Evaluate', testId: 'nav-evaluate' },
   { href: '/compose', label: 'Compose', testId: 'nav-compose' },
   { href: '/intents', label: 'Intents', testId: 'nav-intents' },
+  { href: '/analytics', label: 'Analytics', testId: 'nav-analytics' },
+  { href: '/webhooks', label: 'Webhooks', testId: 'nav-webhooks' },
 ];
 
 /**
@@ -91,13 +93,13 @@ export function Header({ className }: HeaderProps): React.JSX.Element {
       </Link>
 
       {/* Desktop Navigation */}
-      <nav className="hidden md:flex items-center gap-6" data-testid="header-nav">
+      <nav className="hidden md:flex items-center gap-4 lg:gap-6" data-testid="header-nav">
         {NAV_LINKS.map((link) => (
           <Link
             key={link.href}
             href={link.href}
             className={cn(
-              'font-[family-name:var(--font-pixel-body)] text-sm uppercase tracking-wider',
+              'font-[family-name:var(--font-pixel-body)] text-xs lg:text-sm uppercase tracking-wider',
               'transition-colors',
               isActiveLink(link.href)
                 ? 'text-[var(--pixel-primary)]'
@@ -122,8 +124,8 @@ export function Header({ className }: HeaderProps): React.JSX.Element {
           type="button"
           onClick={() => setShowMCPModal(true)}
           className={cn(
-            'font-[family-name:var(--font-pixel-body)] text-sm uppercase tracking-wider',
-            'px-3 py-1.5 border-2 border-[var(--pixel-gold-coin)]',
+            'font-[family-name:var(--font-pixel-body)] text-xs lg:text-sm uppercase tracking-wider',
+            'px-2 lg:px-3 py-1.5 border-2 border-[var(--pixel-gold-coin)]',
             'text-[var(--pixel-gold-coin)] bg-transparent',
             'hover:bg-[var(--pixel-gold-coin)] hover:text-[var(--pixel-black)]',
             'hover:shadow-[0_0_12px_var(--pixel-gold-coin)]',

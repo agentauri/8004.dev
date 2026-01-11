@@ -39,6 +39,16 @@ const defaultFilters: SearchFiltersState = {
   skills: [],
   domains: [],
   showAllAgents: false,
+  minTrustScore: 0,
+  maxTrustScore: 100,
+  erc8004Version: '',
+  mcpVersion: '',
+  a2aVersion: '',
+  isCurated: false,
+  curatedBy: '',
+  hasEmail: false,
+  hasOasfEndpoint: false,
+  hasRecentReachability: false,
 };
 
 export const Default: Story = {
@@ -51,15 +61,9 @@ export const Default: Story = {
 export const WithActiveFilters: Story = {
   args: {
     filters: {
+      ...defaultFilters,
       status: ['active'],
       protocols: ['mcp'],
-      chains: [],
-      filterMode: 'AND',
-      minReputation: 0,
-      maxReputation: 100,
-      skills: [],
-      domains: [],
-      showAllAgents: false,
     },
     onFiltersChange: () => {},
   },
@@ -82,6 +86,7 @@ export const WithCounts: Story = {
 export const FullySelected: Story = {
   args: {
     filters: {
+      ...defaultFilters,
       status: ['active', 'inactive'],
       protocols: ['mcp', 'a2a', 'x402'],
       chains: [11155111, 84532],
@@ -110,17 +115,7 @@ export const Interactive: Story = {
     onFiltersChange: () => {},
   },
   render: function InteractiveStory() {
-    const [filters, setFilters] = useState<SearchFiltersState>({
-      status: [],
-      protocols: [],
-      chains: [],
-      filterMode: 'AND',
-      minReputation: 0,
-      maxReputation: 100,
-      skills: [],
-      domains: [],
-      showAllAgents: false,
-    });
+    const [filters, setFilters] = useState<SearchFiltersState>(defaultFilters);
 
     return (
       <div className="flex gap-8">
@@ -157,15 +152,8 @@ export const InSidebarContext: Story = {
   },
   render: function InSidebarContextStory() {
     const [filters, setFilters] = useState<SearchFiltersState>({
+      ...defaultFilters,
       status: ['active'],
-      protocols: [],
-      chains: [],
-      filterMode: 'AND',
-      minReputation: 0,
-      maxReputation: 100,
-      skills: [],
-      domains: [],
-      showAllAgents: false,
     });
 
     return (

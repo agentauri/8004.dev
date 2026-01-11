@@ -1,20 +1,11 @@
 import { fireEvent, render, screen } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import type { FilterPreset } from '@/types/filter-preset';
+import { EMPTY_FILTERS } from './filter-constants';
 import { SearchFilters, type SearchFiltersState } from './search-filters';
 
 describe('SearchFilters', () => {
-  const defaultFilters: SearchFiltersState = {
-    status: [],
-    protocols: [],
-    chains: [],
-    filterMode: 'AND',
-    minReputation: 0,
-    maxReputation: 100,
-    skills: [],
-    domains: [],
-    showAllAgents: false,
-  };
+  const defaultFilters: SearchFiltersState = { ...EMPTY_FILTERS };
 
   const defaultOnChange = vi.fn();
 
@@ -367,6 +358,7 @@ describe('SearchFilters', () => {
       render(
         <SearchFilters
           filters={{
+            ...defaultFilters,
             status: ['active'],
             protocols: ['mcp'],
             chains: [11155111],
@@ -383,17 +375,7 @@ describe('SearchFilters', () => {
 
       fireEvent.click(screen.getByTestId('clear-filters'));
 
-      expect(onFiltersChange).toHaveBeenCalledWith({
-        status: [],
-        protocols: [],
-        chains: [],
-        filterMode: 'AND',
-        minReputation: 0,
-        maxReputation: 100,
-        skills: [],
-        domains: [],
-        showAllAgents: false,
-      });
+      expect(onFiltersChange).toHaveBeenCalledWith(EMPTY_FILTERS);
     });
 
     it('shows clear all when showAllAgents is active', () => {

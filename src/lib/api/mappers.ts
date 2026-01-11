@@ -34,6 +34,7 @@ import type {
   TeamMember,
   WorkflowStep,
 } from '@/types/agent';
+import { mapMcpCapabilities } from '@/types/agent';
 import type {
   BackendAgent,
   BackendAgentClassifiedEvent,
@@ -122,6 +123,25 @@ export function mapAgentToSummary(agent: BackendAgent): AgentSummary {
     // Reputation is not included in basic agent response
     reputationScore: undefined,
     reputationCount: undefined,
+    // Gap 1-6 fields
+    trustScore: agent.trustScore,
+    erc8004Version: agent.erc8004Version,
+    mcpVersion: agent.mcpVersion,
+    a2aVersion: agent.a2aVersion,
+    curatedBy: agent.curatedBy,
+    isCurated: agent.isCurated,
+    declaredOasfSkills: agent.declaredOasfSkills,
+    declaredOasfDomains: agent.declaredOasfDomains,
+    emailEndpoint: agent.emailEndpoint,
+    oasfEndpoint: agent.oasfEndpoint,
+    oasfVersion: agent.oasfVersion,
+    lastReachabilityCheckMcp: agent.lastReachabilityCheckMcp,
+    lastReachabilityCheckA2a: agent.lastReachabilityCheckA2a,
+    reachabilityAttestor: agent.reachabilityAttestor,
+    isReachableMcp: agent.isReachableMcp,
+    isReachableA2a: agent.isReachableA2a,
+    inputModes: agent.inputModes,
+    outputModes: agent.outputModes,
   };
 }
 
@@ -220,6 +240,9 @@ export function mapAgentToFull(agent: BackendAgent): Agent {
     x402support: agent.x402Support ?? false,
     supportedTrust: agent.supportedTrust,
     oasf: mapOASF(agent.oasf),
+    oasfSource: agent.oasfSource,
+    declaredOasfSkills: agent.declaredOasfSkills,
+    declaredOasfDomains: agent.declaredOasfDomains,
     endpoints: {
       // Use actual endpoint data from backend, fall back to flags for presence indication
       mcp: agent.endpoints?.mcp ?? (agent.hasMcp ? { url: '', version: '' } : undefined),
@@ -240,6 +263,7 @@ export function mapAgentToFull(agent: BackendAgent): Agent {
     lastUpdatedAt: agent.lastUpdatedAt,
     warnings: mapWarnings(agent.warnings),
     healthScore: mapHealthScore(agent.healthScore),
+    mcpCapabilities: mapMcpCapabilities(agent.mcpCapabilities),
   };
 }
 

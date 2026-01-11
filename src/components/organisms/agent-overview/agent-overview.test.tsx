@@ -74,7 +74,8 @@ describe('AgentOverview', () => {
   describe('taxonomy section', () => {
     it('renders taxonomy section', () => {
       render(<AgentOverview agent={mockAgent} />);
-      expect(screen.getByTestId('taxonomy-section')).toBeInTheDocument();
+      // OasfSection uses 'oasf-section' as testid
+      expect(screen.getByTestId('oasf-section')).toBeInTheDocument();
     });
 
     it('handles agent without OASF data', () => {

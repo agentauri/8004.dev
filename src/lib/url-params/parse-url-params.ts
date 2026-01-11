@@ -6,6 +6,7 @@ import type { ChainId } from '@/components/atoms';
 import { DEFAULT_PAGE_SIZE, DEFAULT_PAGE_SIZE_OPTIONS } from '@/components/atoms';
 import type { CapabilityType, SortField, SortOrder } from '@/components/molecules';
 import type { SearchFiltersState } from '@/components/organisms/search-filters';
+import type { Erc8004Version } from '@/types/search';
 import { SUPPORTED_CHAIN_IDS, VALID_SORT_FIELDS, VALID_SORT_ORDERS } from './constants';
 
 export interface UrlSearchState {
@@ -97,6 +98,33 @@ export function parseUrlParams(searchParams: URLSearchParams): UrlSearchState {
   const finalMinRep = Math.min(clampedMin, clampedMax);
   const finalMaxRep = Math.max(clampedMin, clampedMax);
 
+  // Gap 1: Parse trust score range
+  const minTrustScoreParam = Number.parseInt(searchParams.get('minTrust') ?? '0', 10) || 0;
+  const maxTrustScoreParam = Number.parseInt(searchParams.get('maxTrust') ?? '100', 10) || 100;
+  const clampedMinTrust = Math.max(0, Math.min(100, minTrustScoreParam));
+  const clampedMaxTrust = Math.max(0, Math.min(100, maxTrustScoreParam));
+  const minTrustScore = Math.min(clampedMinTrust, clampedMaxTrust);
+  const maxTrustScore = Math.max(clampedMinTrust, clampedMaxTrust);
+
+  // Gap 1: Parse version filters
+  const erc8004VersionParam = searchParams.get('erc8004Version');
+  const erc8004Version: Erc8004Version | '' =
+    erc8004VersionParam === 'v0.4' || erc8004VersionParam === 'v1.0' ? erc8004VersionParam : '';
+
+  const mcpVersion = searchParams.get('mcpVersion') ?? '';
+  const a2aVersion = searchParams.get('a2aVersion') ?? '';
+
+  // Gap 3: Parse curation filters
+  const isCurated = searchParams.get('isCurated') === 'true';
+  const curatedBy = searchParams.get('curatedBy') ?? '';
+
+  // Gap 5: Parse endpoint filters
+  const hasEmail = searchParams.get('hasEmail') === 'true';
+  const hasOasfEndpoint = searchParams.get('hasOasfEndpoint') === 'true';
+
+  // Gap 6: Parse reachability filters
+  const hasRecentReachability = searchParams.get('hasRecentReachability') === 'true';
+
   return {
     query,
     page,
@@ -113,6 +141,20 @@ export function parseUrlParams(searchParams: URLSearchParams): UrlSearchState {
       skills,
       domains,
       showAllAgents,
+      // Gap 1: Trust Score & Version Filters
+      minTrustScore,
+      maxTrustScore,
+      erc8004Version,
+      mcpVersion,
+      a2aVersion,
+      // Gap 3: Curation Filters
+      isCurated,
+      curatedBy,
+      // Gap 5: Endpoint Filters
+      hasEmail,
+      hasOasfEndpoint,
+      // Gap 6: Reachability Filters
+      hasRecentReachability,
     },
   };
 }

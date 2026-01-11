@@ -3,6 +3,7 @@
  */
 
 export { useAgentDetail } from './use-agent-detail';
+export { type UseAnalyticsOptions, useAnalytics } from './use-analytics';
 export {
   type BookmarkedAgent,
   MAX_BOOKMARKS,
@@ -94,3 +95,12 @@ export {
   type WatchChangeType,
   type WatchedAgent,
 } from './use-watchlist';
+export {
+  type UseWebhookOptions,
+  type UseWebhooksOptions,
+  useCreateWebhook,
+  useDeleteWebhook,
+  useTestWebhook,
+  useWebhook,
+  useWebhooks,
+} from './use-webhooks';
