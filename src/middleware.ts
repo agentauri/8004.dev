@@ -5,8 +5,8 @@
  * Rate limits are configured per endpoint type in src/lib/api/rate-limit.ts
  */
 
-import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
+import { NextResponse } from 'next/server';
 import {
   checkRateLimit,
   getRateLimitConfig,

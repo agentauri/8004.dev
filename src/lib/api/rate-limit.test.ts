@@ -2,13 +2,12 @@
  * Tests for rate limiting utilities
  */
 
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import {
-  checkRateLimit,
   getRateLimitConfig,
   getRateLimitHeaders,
-  rateLimitedResponse,
   RATE_LIMIT_CONFIGS,
+  rateLimitedResponse,
 } from './rate-limit';
 
 describe('rate-limit', () => {
