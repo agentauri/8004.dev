@@ -54,9 +54,10 @@
     --chain-glow-polygon: rgba(156, 84, 252, 0.4);
 
     /* Taxonomy Colors (OASF) */
-    --taxonomy-skill: #a855f7;
+    /* Skill adjusted from #a855f7 to #c084fc for WCAG AA contrast (5.2:1 on #2a2a2a) */
+    --taxonomy-skill: #c084fc;
     --taxonomy-domain: #14b8a6;
-    --taxonomy-glow-skill: rgba(168, 85, 247, 0.4);
+    --taxonomy-glow-skill: rgba(192, 132, 252, 0.4);
     --taxonomy-glow-domain: rgba(20, 184, 166, 0.4);
 
     /* Status Colors */
