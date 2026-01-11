@@ -93,6 +93,7 @@ export function FilterNode({
             checked={isSelected}
             onChange={() => onToggleSelect(fullSlug)}
             onClick={(e) => e.stopPropagation()} // Prevent row click from also triggering
+            aria-label={`Select ${category.name}`}
             className={cn(
               'w-3.5 h-3.5 rounded-none border cursor-pointer',
               'bg-transparent',

@@ -129,6 +129,7 @@ export function TaxonomyFilter({
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder={`Search ${title.toLowerCase()}...`}
+              aria-label={`Search ${title.toLowerCase()}`}
               className={cn(
                 'w-full pl-7 pr-2 py-1.5',
                 'bg-[var(--pixel-gray-800)] border border-[var(--pixel-gray-700)]',

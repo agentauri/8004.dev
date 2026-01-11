@@ -300,6 +300,7 @@ export function SearchFilters({
             }
             className="flex-1 h-2 appearance-none bg-[var(--pixel-gray-700)] rounded cursor-pointer"
             disabled={disabled}
+            aria-label="Minimum trust score"
             data-testid="trust-score-min-slider"
           />
           <input
@@ -316,6 +317,7 @@ export function SearchFilters({
             }
             className="flex-1 h-2 appearance-none bg-[var(--pixel-gray-700)] rounded cursor-pointer"
             disabled={disabled}
+            aria-label="Maximum trust score"
             data-testid="trust-score-max-slider"
           />
         </div>

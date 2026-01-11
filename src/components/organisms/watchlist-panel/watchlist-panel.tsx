@@ -109,6 +109,7 @@ export function WatchlistItem({
                     onChange={(e) => setNotesValue(e.target.value)}
                     className="flex-1 px-2 py-1 text-sm bg-[var(--pixel-gray-900)] border border-[var(--pixel-gray-600)] text-[var(--pixel-white)] focus:border-[var(--pixel-blue-sky)] focus:outline-none"
                     placeholder="Add a note..."
+                    aria-label={`Notes for ${agent.name || 'agent'}`}
                     data-testid={`watchlist-item-notes-input-${agent.agentId}`}
                   />
                   <button
