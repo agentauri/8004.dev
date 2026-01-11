@@ -89,6 +89,14 @@ export function parseUrlParams(searchParams: URLSearchParams): UrlSearchState {
     ? (sortOrderParam as SortOrder)
     : 'desc';
 
+  // Clamp reputation values to valid range [0, 100]
+  const clampedMin = Math.max(0, Math.min(100, minReputation));
+  const clampedMax = Math.max(0, Math.min(100, maxReputation));
+
+  // Ensure min <= max (swap if inverted)
+  const finalMinRep = Math.min(clampedMin, clampedMax);
+  const finalMaxRep = Math.max(clampedMin, clampedMax);
+
   return {
     query,
     page,
@@ -100,8 +108,8 @@ export function parseUrlParams(searchParams: URLSearchParams): UrlSearchState {
       protocols,
       chains,
       filterMode,
-      minReputation: Math.max(0, Math.min(100, minReputation)),
-      maxReputation: Math.max(0, Math.min(100, maxReputation)),
+      minReputation: finalMinRep,
+      maxReputation: finalMaxRep,
       skills,
       domains,
       showAllAgents,

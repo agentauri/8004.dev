@@ -40,11 +40,16 @@ export function sortAgents(
         comparison = a.name.toLowerCase().localeCompare(b.name.toLowerCase());
         break;
 
-      case 'createdAt':
+      case 'createdAt': {
         // Use tokenId as proxy for creation order
         // Higher tokenId = more recently created
-        comparison = parseInt(a.tokenId, 10) - parseInt(b.tokenId, 10);
+        const tokenIdA = parseInt(a.tokenId, 10);
+        const tokenIdB = parseInt(b.tokenId, 10);
+        // Handle NaN from invalid tokenId strings (treat as 0)
+        comparison =
+          (Number.isNaN(tokenIdA) ? 0 : tokenIdA) - (Number.isNaN(tokenIdB) ? 0 : tokenIdB);
         break;
+      }
 
       case 'reputation':
         // Sort by reputation score (null/undefined treated as 0)

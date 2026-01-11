@@ -204,12 +204,29 @@ export function useKeyboardShortcuts(
 }
 
 /**
+ * Detect if the user is on a Mac/Apple device.
+ * Uses modern userAgentData API with fallback to userAgent string.
+ */
+function isMacPlatform(): boolean {
+  if (typeof navigator === 'undefined') return false;
+
+  // Modern API (Chrome 90+, Edge 90+)
+  // biome-ignore lint/suspicious/noExplicitAny: userAgentData is not in standard Navigator type yet
+  const userAgentData = (navigator as any).userAgentData;
+  if (userAgentData?.platform) {
+    return /macOS/i.test(userAgentData.platform);
+  }
+
+  // Fallback to userAgent string (works in all browsers)
+  return /Mac|iPhone|iPad|iPod/i.test(navigator.userAgent);
+}
+
+/**
  * Get human-readable key display text.
  */
 export function formatKeyCombo(keys: string): string {
   const parts = keys.split('+');
-  const isMac =
-    typeof navigator !== 'undefined' && /Mac|iPhone|iPad|iPod/i.test(navigator.platform);
+  const isMac = isMacPlatform();
 
   return parts
     .map((part) => {

@@ -168,16 +168,23 @@ export function useBookmarks(): UseBookmarksResult {
 
   const addBookmark = useCallback(
     (agent: Omit<BookmarkedAgent, 'bookmarkedAt'>): boolean => {
-      // Check if already bookmarked (using current state)
-      let added = false;
+      // Check conditions using current bookmarks state (via bookmarkIds for O(1) lookup)
+      // These checks happen synchronously before setState
+      if (bookmarkIds.has(agent.agentId)) {
+        return false; // Already bookmarked
+      }
 
+      if (bookmarks.length >= MAX_BOOKMARKS) {
+        return false; // Limit reached
+      }
+
+      // Conditions met, add the bookmark
       setBookmarks((prevBookmarks) => {
-        // Check if already bookmarked
+        // Double-check in case of race conditions with rapid clicks
         if (prevBookmarks.some((b) => b.agentId === agent.agentId)) {
           return prevBookmarks;
         }
 
-        // Check limit
         if (prevBookmarks.length >= MAX_BOOKMARKS) {
           return prevBookmarks;
         }
@@ -187,13 +194,12 @@ export function useBookmarks(): UseBookmarksResult {
           bookmarkedAt: Date.now(),
         };
 
-        added = true;
         return [newBookmark, ...prevBookmarks];
       });
 
-      return added;
+      return true;
     },
-    [setBookmarks],
+    [setBookmarks, bookmarkIds, bookmarks.length],
   );
 
   const removeBookmark = useCallback(
@@ -220,10 +226,13 @@ export function useBookmarks(): UseBookmarksResult {
 
   const saveSearch = useCallback(
     (search: Omit<SavedSearch, 'id' | 'savedAt'>): boolean => {
-      let saved = false;
+      // Check limit synchronously before setState
+      if (savedSearches.length >= MAX_SAVED_SEARCHES) {
+        return false;
+      }
 
       setSavedSearches((prevSearches) => {
-        // Check limit
+        // Double-check in case of race conditions
         if (prevSearches.length >= MAX_SAVED_SEARCHES) {
           return prevSearches;
         }
@@ -234,13 +243,12 @@ export function useBookmarks(): UseBookmarksResult {
           savedAt: Date.now(),
         };
 
-        saved = true;
         return [newSearch, ...prevSearches];
       });
 
-      return saved;
+      return true;
     },
-    [setSavedSearches],
+    [setSavedSearches, savedSearches.length],
   );
 
   const removeSearch = useCallback(

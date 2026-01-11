@@ -1,5 +1,5 @@
 import type React from 'react';
-import { cn } from '@/lib/utils';
+import { cn, getTrustLevel } from '@/lib/utils';
 
 export type TrustLevel = 'low' | 'medium' | 'high';
 
@@ -16,14 +16,8 @@ export interface TrustScoreProps {
   className?: string;
 }
 
-/**
- * Determines trust level based on score
- */
-export function getTrustLevel(score: number): TrustLevel {
-  if (score >= 70) return 'high';
-  if (score >= 40) return 'medium';
-  return 'low';
-}
+// Re-export getTrustLevel for backwards compatibility
+export { getTrustLevel };
 
 const TRUST_CONFIG: Record<
   TrustLevel,

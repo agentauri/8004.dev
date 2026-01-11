@@ -52,13 +52,18 @@ export function CopyButton({
       e.stopPropagation();
       e.preventDefault();
 
-      await navigator.clipboard.writeText(text);
-      setCopied(true);
-      onCopy?.();
+      try {
+        await navigator.clipboard.writeText(text);
+        setCopied(true);
+        onCopy?.();
 
-      setTimeout(() => {
-        setCopied(false);
-      }, successDuration);
+        setTimeout(() => {
+          setCopied(false);
+        }, successDuration);
+      } catch {
+        // Clipboard API may fail in some environments (e.g., insecure contexts, permissions denied)
+        // Silently fail - user can try again or use manual copy
+      }
     },
     [text, successDuration, onCopy],
   );

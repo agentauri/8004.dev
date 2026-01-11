@@ -53,9 +53,13 @@ export function getTrustLevel(score: number): 'low' | 'medium' | 'high' {
 
 /**
  * Formats a timestamp to a human-readable date
+ * Returns 'Invalid Date' for invalid input values
  */
 export function formatDate(timestamp: number | string | Date): string {
   const date = new Date(timestamp);
+  if (Number.isNaN(date.getTime())) {
+    return 'Invalid Date';
+  }
   return date.toLocaleDateString('en-US', {
     year: 'numeric',
     month: 'short',
