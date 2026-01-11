@@ -71,33 +71,12 @@ export function useLocalStorage<T>(
 
   const storageKey = `${prefix}-${key}`;
 
-  // Initialize state from localStorage or use initial value
-  const [storedValue, setStoredValue] = useState<T>(() => {
-    if (typeof window === 'undefined') {
-      return initialValue;
-    }
+  // Initialize state with initialValue to prevent SSR hydration mismatch.
+  // Actual localStorage value is loaded in useEffect after hydration.
+  const [storedValue, setStoredValue] = useState<T>(initialValue);
 
-    try {
-      const item = localStorage.getItem(storageKey);
-      if (item !== null) {
-        return deserializer(item) as T;
-      }
-    } catch (error) {
-      if (process.env.NODE_ENV === 'development') {
-        console.warn(`Failed to read localStorage key "${storageKey}":`, error);
-      }
-    }
-
-    return initialValue;
-  });
-
-  // Track if value exists in storage
-  const [exists, setExists] = useState<boolean>(() => {
-    if (typeof window === 'undefined') {
-      return false;
-    }
-    return localStorage.getItem(storageKey) !== null;
-  });
+  // Track if value exists in storage (initialized after mount)
+  const [exists, setExists] = useState<boolean>(false);
 
   // Set value in state and localStorage
   const setValue = useCallback(
@@ -165,18 +144,23 @@ export function useLocalStorage<T>(
     return () => window.removeEventListener('storage', handleStorageChange);
   }, [storageKey, initialValue, deserializer]);
 
-  // Re-sync on mount for SSR hydration
+  // Load localStorage value after mount to prevent SSR hydration mismatch.
+  // Also re-sync when storageKey or deserializer changes.
   useEffect(() => {
     try {
       const item = localStorage.getItem(storageKey);
       if (item !== null) {
         setStoredValue(deserializer(item) as T);
         setExists(true);
+      } else {
+        // Key doesn't exist in storage - reset to initial value
+        setStoredValue(initialValue);
+        setExists(false);
       }
     } catch {
       // Ignore errors during hydration
     }
-  }, [storageKey, deserializer]);
+  }, [storageKey, deserializer, initialValue]);
 
   return {
     value: storedValue,

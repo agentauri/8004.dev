@@ -1,7 +1,7 @@
 'use client';
 
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
-import { useCallback, useMemo, useRef } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import type { SortField, SortOrder } from '@/components/molecules';
 import type { SearchFiltersState } from '@/components/organisms/search-filters';
 import { parseUrlParams, serializeToUrl, type UrlSearchState } from '@/lib/url-params';
@@ -63,22 +63,21 @@ export function useUrlSearchParams(): UseUrlSearchParamsReturn {
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
-  // Reset signal - increments when cursor should be reset (query/filters/sort/pageSize change)
-  // Using ref + useMemo to create a stable signal that only changes when URL changes
-  const resetSignalRef = useRef(0);
-
   // Parse current URL state
   const state = useMemo(() => parseUrlParams(searchParams), [searchParams]);
 
   // Serialize filters for stable comparison (object reference would change every render)
   const filtersKey = useMemo(() => JSON.stringify(state.filters), [state.filters]);
 
+  // Reset signal - increments when cursor should be reset (query/filters/sort/pageSize change)
+  // Using useState + useEffect to avoid side effects in useMemo
+  const [resetSignal, setResetSignal] = useState(0);
+
   // Track changes to generate reset signal
   // biome-ignore lint/correctness/useExhaustiveDependencies: Dependencies are intentional change triggers
-  const resetSignal = useMemo(() => {
+  useEffect(() => {
     // Increment signal on URL state changes (triggers cursor reset in consuming components)
-    resetSignalRef.current += 1;
-    return resetSignalRef.current;
+    setResetSignal((prev) => prev + 1);
   }, [state.query, filtersKey, state.sortBy, state.sortOrder, state.pageSize]);
 
   // Update URL helper - accepts either a new state or an updater function

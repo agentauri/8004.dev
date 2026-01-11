@@ -171,3 +171,87 @@ export function validateLimit(
 
   return Math.min(parsed, maxLimit);
 }
+
+/** Maximum cursor string length to prevent DoS */
+const MAX_CURSOR_LENGTH = 500;
+
+interface CursorValidationResult {
+  valid: true;
+  cursor: string;
+}
+
+interface CursorValidationError {
+  valid: false;
+  error: string;
+  code: string;
+}
+
+/**
+ * Validate pagination cursor format.
+ * Cursor is expected to be a JSON string with _global_offset field.
+ *
+ * @param cursor - Cursor string to validate
+ * @returns Validation result with sanitized cursor or error
+ */
+export function validateCursor(
+  cursor: string | null | undefined,
+): CursorValidationResult | CursorValidationError | null {
+  // No cursor is valid (first page)
+  if (!cursor) {
+    return null;
+  }
+
+  if (typeof cursor !== 'string') {
+    return {
+      valid: false,
+      error: 'Cursor must be a string',
+      code: 'INVALID_CURSOR_TYPE',
+    };
+  }
+
+  // Prevent DoS with extremely long cursors
+  if (cursor.length > MAX_CURSOR_LENGTH) {
+    return {
+      valid: false,
+      error: `Cursor too long. Maximum length: ${MAX_CURSOR_LENGTH}`,
+      code: 'CURSOR_TOO_LONG',
+    };
+  }
+
+  // Validate JSON structure
+  try {
+    const parsed = JSON.parse(cursor);
+
+    // Cursor should be an object
+    if (typeof parsed !== 'object' || parsed === null) {
+      return {
+        valid: false,
+        error: 'Invalid cursor format: expected JSON object',
+        code: 'INVALID_CURSOR_FORMAT',
+      };
+    }
+
+    // Validate _global_offset if present (should be a non-negative integer)
+    if ('_global_offset' in parsed) {
+      const offset = parsed._global_offset;
+      if (typeof offset !== 'number' || !Number.isInteger(offset) || offset < 0) {
+        return {
+          valid: false,
+          error: 'Invalid cursor: _global_offset must be a non-negative integer',
+          code: 'INVALID_CURSOR_OFFSET',
+        };
+      }
+    }
+
+    return {
+      valid: true,
+      cursor,
+    };
+  } catch {
+    return {
+      valid: false,
+      error: 'Invalid cursor: must be valid JSON',
+      code: 'INVALID_CURSOR_JSON',
+    };
+  }
+}

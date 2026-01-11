@@ -244,15 +244,25 @@ describe('GET /api/agents', () => {
 
     it('passes cursor parameter', async () => {
       mockBackendFetch.mockResolvedValueOnce(mockBackendResponse);
+      const validCursor = JSON.stringify({ _global_offset: 20 });
 
-      await GET(createRequest({ cursor: 'abc123' }));
+      await GET(createRequest({ cursor: validCursor }));
 
       expect(mockBackendFetch).toHaveBeenCalledWith(
         '/api/v1/agents',
         expect.objectContaining({
-          params: expect.objectContaining({ cursor: 'abc123' }),
+          params: expect.objectContaining({ cursor: validCursor }),
         }),
       );
+    });
+
+    it('rejects invalid cursor format', async () => {
+      const response = await GET(createRequest({ cursor: 'invalid-cursor' }));
+      const data = await response.json();
+
+      expect(response.status).toBe(400);
+      expect(data.success).toBe(false);
+      expect(data.code).toBe('INVALID_CURSOR_JSON');
     });
 
     it('passes multiple chains as CSV to backend', async () => {

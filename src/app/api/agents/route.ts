@@ -24,11 +24,13 @@
 import { backendFetch, shouldUseMockData } from '@/lib/api/backend';
 import { mapAgentsToSummaries } from '@/lib/api/mappers';
 import {
+  errorResponse,
   handleRouteError,
   parseIntArrayParam,
   parseIntParam,
   successResponse,
 } from '@/lib/api/route-helpers';
+import { validateCursor } from '@/lib/api/validation';
 import type { BackendAgent } from '@/types/backend';
 
 /**
@@ -174,8 +176,14 @@ export async function GET(request: Request) {
       backendParams.limit = limit;
     }
 
-    const cursor = searchParams.get('cursor');
-    if (cursor) backendParams.cursor = cursor;
+    // Validate and set cursor for pagination
+    const cursorValidation = validateCursor(searchParams.get('cursor'));
+    if (cursorValidation !== null) {
+      if (!cursorValidation.valid) {
+        return errorResponse(cursorValidation.error, cursorValidation.code, 400);
+      }
+      backendParams.cursor = cursorValidation.cursor;
+    }
 
     // Chain filter - backend supports CSV format: chains=11155111,84532
     const chains = parseIntArrayParam(searchParams.get('chains'));

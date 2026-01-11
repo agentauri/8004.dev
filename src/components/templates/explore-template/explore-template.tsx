@@ -57,21 +57,6 @@ export interface ExploreTemplateProps {
   };
   /** Callback when an agent is clicked */
   onAgentClick?: (agent: AgentCardAgent) => void;
-  /**
-   * @deprecated Use pageNumber for cursor-based pagination
-   * Current page number (1-indexed)
-   */
-  currentPage?: number;
-  /**
-   * @deprecated Total pages not available with cursor-based pagination
-   * Total number of pages
-   */
-  totalPages?: number;
-  /**
-   * @deprecated Use onNext/onPrevious for cursor-based pagination
-   * Callback when page changes
-   */
-  onPageChange?: (page: number) => void;
   /** Current page number for cursor-based pagination */
   pageNumber?: number;
   /** Whether there are more results available */
@@ -148,9 +133,6 @@ export function ExploreTemplate({
   error,
   filterCounts,
   onAgentClick,
-  currentPage,
-  totalPages,
-  onPageChange,
   pageNumber,
   hasMore,
   onNext,
@@ -225,9 +207,6 @@ export function ExploreTemplate({
               isLoading={isLoading}
               error={error}
               onAgentClick={onAgentClick}
-              currentPage={currentPage}
-              totalPages={totalPages}
-              onPageChange={onPageChange}
               pageNumber={pageNumber}
               hasMore={hasMore}
               onNext={onNext}

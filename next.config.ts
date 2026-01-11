@@ -1,5 +1,15 @@
 import type { NextConfig } from 'next';
 
+// Determine if we're in development mode
+const isDev = process.env.NODE_ENV !== 'production';
+
+// CSP script-src directive:
+// - Production: 'unsafe-inline' only (for styled-jsx and inline scripts)
+// - Development: also includes 'unsafe-eval' for HMR/Fast Refresh
+const scriptSrc = isDev
+  ? "script-src 'self' 'unsafe-inline' 'unsafe-eval'"
+  : "script-src 'self' 'unsafe-inline'";
+
 const securityHeaders = [
   {
     key: 'X-Frame-Options',
@@ -25,7 +35,7 @@ const securityHeaders = [
     key: 'Content-Security-Policy',
     value: [
       "default-src 'self'",
-      "script-src 'self' 'unsafe-inline' 'unsafe-eval'",
+      scriptSrc,
       "style-src 'self' 'unsafe-inline'",
       "img-src 'self' data: https://ipfs.io https://gateway.pinata.cloud",
       "font-src 'self' data:",

@@ -130,10 +130,14 @@ export function mapAgentToSummary(agent: BackendAgent): AgentSummary {
  * Includes search score mapped to relevanceScore for display
  */
 export function mapSearchResultToSummary(result: BackendSearchResult): AgentSummary {
+  // Clamp searchScore to [0, 1] range and handle NaN/undefined
+  const rawScore = result.searchScore ?? 0;
+  const clampedScore = Math.max(0, Math.min(1, Number.isNaN(rawScore) ? 0 : rawScore));
+
   return {
     ...mapAgentToSummary(result),
     // Relevance score from semantic search (0-100)
-    relevanceScore: Math.round(result.searchScore * 100),
+    relevanceScore: Math.round(clampedScore * 100),
     // Match reasons explaining why this result matched
     matchReasons: result.matchReasons,
   };
