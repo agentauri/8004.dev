@@ -51,6 +51,8 @@ export type {
 export { ReputationSparkline } from './reputation-sparkline/reputation-sparkline';
 export type { SearchInputProps } from './search-input';
 export { SearchInput } from './search-input';
+export type { SectionHeaderProps } from './section-header/section-header';
+export { SectionHeader } from './section-header/section-header';
 export type { SortField, SortOption, SortOrder, SortSelectorProps } from './sort-selector';
 export { SortSelector } from './sort-selector';
 export type { StatCardProps } from './stat-card';

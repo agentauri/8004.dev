@@ -10,7 +10,7 @@
 import { Flame, RefreshCw } from 'lucide-react';
 import type React from 'react';
 import { useState } from 'react';
-import { TrendingAgentCard } from '@/components/molecules';
+import { SectionHeader, TrendingAgentCard } from '@/components/molecules';
 import { useTrending } from '@/hooks';
 import { cn } from '@/lib/utils';
 import type { TrendingPeriod } from '@/types/trending';
@@ -69,20 +69,17 @@ export function TrendingSection({
   return (
     <section className={cn('w-full', className)} data-testid="trending-section">
       {/* Section Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
-        <div className="flex items-center gap-3">
-          <Flame className="w-6 h-6 text-[var(--pixel-red-fire)]" aria-hidden="true" />
-          <h2 className="font-[family-name:var(--font-pixel-heading)] text-xl text-[var(--pixel-gray-100)]">
-            Trending Agents
-          </h2>
-          {isFetching && !isLoading && (
-            <RefreshCw
-              className="w-4 h-4 text-[var(--pixel-gray-500)] animate-spin"
-              aria-label="Refreshing"
-            />
-          )}
-        </div>
-
+      <SectionHeader
+        title="Trending Agents"
+        icon={<Flame className="w-5 h-5 text-[var(--pixel-red-fire)]" />}
+      >
+        {/* Refresh indicator */}
+        {isFetching && !isLoading && (
+          <RefreshCw
+            className="w-4 h-4 text-[var(--pixel-gray-500)] animate-spin"
+            aria-label="Refreshing"
+          />
+        )}
         {/* Period Selector */}
         <div className="flex items-center gap-2">
           <span className="text-[var(--pixel-gray-500)] text-xs uppercase tracking-wider mr-2">
@@ -106,7 +103,7 @@ export function TrendingSection({
             </button>
           ))}
         </div>
-      </div>
+      </SectionHeader>
 
       {/* Error State */}
       {error && (

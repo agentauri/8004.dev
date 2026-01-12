@@ -87,8 +87,8 @@ export const CheckedWithLabel: Story = {
   render: (args) => <InteractiveSwitch {...args} />,
   args: {
     checked: true,
-    label: 'Dark mode',
-    description: 'Enable dark theme for the interface',
+    label: 'Notifications',
+    description: 'Receive alerts for agent updates',
   },
 };
 

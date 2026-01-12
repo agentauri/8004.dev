@@ -81,7 +81,6 @@ export {
   useComposeTeam,
   useTeamComposition,
 } from './use-team-composition';
-export { type Theme, type UseThemeReturn, useTheme } from './use-theme';
 export { useTrending } from './use-trending';
 export {
   type UrlSearchState,

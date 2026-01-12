@@ -52,21 +52,6 @@ vi.mock('@/components/organisms/mobile-filter-sheet', () => ({
   MobileFilterSheet: () => <div data-testid="mobile-filter-sheet-mock">Mobile Filters</div>,
 }));
 
-// Mock useThemeContext hook
-vi.mock('@/providers', async (importOriginal) => {
-  const actual = await importOriginal<typeof import('@/providers')>();
-  return {
-    ...actual,
-    useThemeContext: () => ({
-      theme: 'dark',
-      resolvedTheme: 'dark',
-      setTheme: vi.fn(),
-      toggleTheme: vi.fn(),
-      isLoaded: true,
-    }),
-  };
-});
-
 // Mock next/link
 vi.mock('next/link', () => ({
   default: ({ children, href }: { children: React.ReactNode; href: string }) => (

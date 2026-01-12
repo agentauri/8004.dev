@@ -1,23 +1,8 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { render, screen } from '@testing-library/react';
-import { describe, expect, it, vi } from 'vitest';
+import { describe, expect, it } from 'vitest';
 import { RealtimeEventsProvider } from '@/providers/realtime-events-provider';
 import { MainLayout } from './main-layout';
-
-// Mock useThemeContext hook
-vi.mock('@/providers', async (importOriginal) => {
-  const actual = await importOriginal<typeof import('@/providers')>();
-  return {
-    ...actual,
-    useThemeContext: () => ({
-      theme: 'dark',
-      resolvedTheme: 'dark',
-      setTheme: vi.fn(),
-      toggleTheme: vi.fn(),
-      isLoaded: true,
-    }),
-  };
-});
 
 // Create wrapper with required providers
 function createWrapper() {

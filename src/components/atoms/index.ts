@@ -52,8 +52,6 @@ export type { SwitchProps } from './switch';
 export { Switch } from './switch';
 export type { TaxonomyBadgeProps } from './taxonomy-badge';
 export { TaxonomyBadge } from './taxonomy-badge';
-export type { ThemeToggleProps } from './theme-toggle';
-export { ThemeToggle } from './theme-toggle';
 export type { ToggleSwitchProps } from './toggle-switch';
 export { ToggleSwitch } from './toggle-switch';
 export type { TreeNodeIndicatorProps } from './tree-node-indicator';

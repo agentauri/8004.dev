@@ -31,8 +31,6 @@ export const FEATURE_FLAGS = {
   watchlist: false,
   /** Keyboard shortcuts modal */
   keyboardShortcuts: true,
-  /** Theme toggle (light/dark) */
-  themeToggle: false,
   /** Real-time SSE events */
   realtimeEvents: false,
   /** Advanced search filters */

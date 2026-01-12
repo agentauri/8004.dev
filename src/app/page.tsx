@@ -1,10 +1,11 @@
 'use client';
 
+import { Award, BarChart2, Workflow } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { PixelExplorer } from '@/components/atoms';
-import { FeatureCard, IntentCard, SearchInput } from '@/components/molecules';
+import { FeatureCard, IntentCard, SearchInput, SectionHeader } from '@/components/molecules';
 import {
   EvaluationCard,
   MCPConnectModal,
@@ -227,18 +228,13 @@ export default function HomePage() {
 
         {/* Workflow Templates */}
         <section className="w-full max-w-4xl mx-auto mt-16" data-testid="intents-section">
-          <div className="flex justify-between items-center mb-6">
-            <h2 className="font-[family-name:var(--font-pixel-heading)] text-lg md:text-xl text-[var(--pixel-gray-100)] uppercase">
-              Workflow Templates
-            </h2>
-            <Link
-              href="/intents"
-              className="text-[var(--pixel-blue-sky)] text-sm hover:underline"
-              data-testid="intents-browse-link"
-            >
-              Browse all
-            </Link>
-          </div>
+          <SectionHeader
+            title="Workflow Templates"
+            icon={<Workflow className="w-5 h-5 text-[var(--pixel-gold-coin)]" />}
+            actionHref="/intents"
+            actionText="Browse all"
+            actionTestId="intents-browse-link"
+          />
           {intentsLoading ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
               {Array.from({ length: 4 }).map((_, i) => (
@@ -271,18 +267,13 @@ export default function HomePage() {
 
         {/* Recent Evaluations */}
         <section className="w-full max-w-4xl mx-auto mt-16" data-testid="evaluations-section">
-          <div className="flex justify-between items-center mb-6">
-            <h2 className="font-[family-name:var(--font-pixel-heading)] text-lg md:text-xl text-[var(--pixel-gray-100)] uppercase">
-              Recent Evaluations
-            </h2>
-            <Link
-              href="/evaluate"
-              className="text-[var(--pixel-blue-sky)] text-sm hover:underline"
-              data-testid="evaluations-browse-link"
-            >
-              View all
-            </Link>
-          </div>
+          <SectionHeader
+            title="Recent Evaluations"
+            icon={<Award className="w-5 h-5 text-[var(--pixel-green-pipe)]" />}
+            actionHref="/evaluate"
+            actionText="View all"
+            actionTestId="evaluations-browse-link"
+          />
           {evaluationsLoading ? (
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               {Array.from({ length: 3 }).map((_, i) => (
@@ -315,13 +306,11 @@ export default function HomePage() {
         </section>
 
         {/* Platform Statistics */}
-        <section
-          className="w-full max-w-4xl mx-auto mt-16 space-y-3 md:space-y-2"
-          data-testid="stats-section"
-        >
-          <p className="text-pixel-body text-xs text-[var(--pixel-gray-400)] text-center uppercase">
-            Platform Statistics
-          </p>
+        <section className="w-full max-w-4xl mx-auto mt-16" data-testid="stats-section">
+          <SectionHeader
+            title="Platform Statistics"
+            icon={<BarChart2 className="w-5 h-5 text-[var(--pixel-blue-sky)]" />}
+          />
           <StatsGrid stats={stats} isLoading={statsLoading} error={statsError?.message} />
         </section>
       </main>
