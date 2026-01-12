@@ -18,6 +18,8 @@ export interface CopyButtonProps {
   label?: string;
   /** Callback when copy is successful */
   onCopy?: () => void;
+  /** Callback when copy fails */
+  onError?: (error: Error) => void;
 }
 
 const SIZE_CONFIG = {
@@ -43,8 +45,10 @@ export function CopyButton({
   className,
   label = 'Copy to clipboard',
   onCopy,
+  onError,
 }: CopyButtonProps): React.JSX.Element {
   const [copied, setCopied] = useState(false);
+  const [error, setError] = useState(false);
 
   const handleCopy = useCallback(
     async (e: React.MouseEvent) => {
@@ -55,20 +59,37 @@ export function CopyButton({
       try {
         await navigator.clipboard.writeText(text);
         setCopied(true);
+        setError(false);
         onCopy?.();
 
         setTimeout(() => {
           setCopied(false);
         }, successDuration);
-      } catch {
+      } catch (err) {
         // Clipboard API may fail in some environments (e.g., insecure contexts, permissions denied)
-        // Silently fail - user can try again or use manual copy
+        const copyError = err instanceof Error ? err : new Error('Failed to copy to clipboard');
+
+        // Log in development for debugging
+        if (process.env.NODE_ENV === 'development') {
+          console.warn('[CopyButton] Failed to copy:', copyError.message);
+        }
+
+        // Show error state briefly to provide visual feedback
+        setError(true);
+        onError?.(copyError);
+
+        setTimeout(() => {
+          setError(false);
+        }, successDuration);
       }
     },
-    [text, successDuration, onCopy],
+    [text, successDuration, onCopy, onError],
   );
 
   const sizeConfig = SIZE_CONFIG[size];
+
+  // Determine aria-label based on state
+  const ariaLabel = error ? 'Copy failed' : copied ? 'Copied!' : label;
 
   return (
     <button
@@ -80,13 +101,16 @@ export function CopyButton({
         'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--pixel-blue-sky)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--pixel-black)]',
         copied
           ? 'border-[var(--pixel-green-pipe)] text-[var(--pixel-green-pipe)] shadow-[0_0_8px_var(--glow-green)]'
-          : 'border-[var(--pixel-gray-600)] text-[var(--pixel-gray-400)] hover:border-[var(--pixel-blue-text)] hover:text-[var(--pixel-blue-text)] hover:shadow-[0_0_8px_var(--glow-blue-text)]',
+          : error
+            ? 'border-[var(--pixel-red-fire)] text-[var(--pixel-red-fire)] shadow-[0_0_8px_rgba(252,84,84,0.5)]'
+            : 'border-[var(--pixel-gray-600)] text-[var(--pixel-gray-400)] hover:border-[var(--pixel-blue-text)] hover:text-[var(--pixel-blue-text)] hover:shadow-[0_0_8px_var(--glow-blue-text)]',
         sizeConfig.button,
         className,
       )}
-      aria-label={copied ? 'Copied!' : label}
+      aria-label={ariaLabel}
       data-testid="copy-button"
       data-copied={copied}
+      data-error={error}
     >
       {copied ? (
         <Check size={sizeConfig.icon} aria-hidden="true" />

@@ -138,15 +138,22 @@ export function useWatchlist(): UseWatchlistResult {
 
   const addToWatchlist = useCallback(
     (agent: Omit<WatchedAgent, 'watchedAt'>): boolean => {
-      let added = false;
+      // Check conditions synchronously before setState to avoid race condition
+      // where `added` variable is set inside async callback but returned immediately
+      if (watchedIds.has(agent.agentId)) {
+        return false; // Already watching
+      }
+
+      if (watchlist.length >= MAX_WATCHED_AGENTS) {
+        return false; // At limit
+      }
 
       setWatchlist((prevWatchlist) => {
-        // Check if already watching
+        // Double-check in callback in case of concurrent updates
         if (prevWatchlist.some((a) => a.agentId === agent.agentId)) {
           return prevWatchlist;
         }
 
-        // Check limit
         if (prevWatchlist.length >= MAX_WATCHED_AGENTS) {
           return prevWatchlist;
         }
@@ -156,13 +163,12 @@ export function useWatchlist(): UseWatchlistResult {
           watchedAt: Date.now(),
         };
 
-        added = true;
         return [newWatchedAgent, ...prevWatchlist];
       });
 
-      return added;
+      return true;
     },
-    [setWatchlist],
+    [setWatchlist, watchedIds, watchlist.length],
   );
 
   const removeFromWatchlist = useCallback(

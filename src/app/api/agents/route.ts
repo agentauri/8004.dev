@@ -24,6 +24,7 @@
 import { backendFetch, shouldUseMockData } from '@/lib/api/backend';
 import { mapAgentsToSummaries } from '@/lib/api/mappers';
 import {
+  applyRateLimit,
   errorResponse,
   handleRouteError,
   parseIntArrayParam,
@@ -126,6 +127,10 @@ interface BackendAgentsResponse {
 }
 
 export async function GET(request: Request) {
+  // Apply rate limiting
+  const rateLimitResponse = applyRateLimit(request);
+  if (rateLimitResponse) return rateLimitResponse;
+
   try {
     const { searchParams } = new URL(request.url);
 

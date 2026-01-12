@@ -1,4 +1,5 @@
 import type React from 'react';
+import { getChainConfig, SUPPORTED_CHAIN_IDS } from '@/lib/constants/chains';
 import { cn } from '@/lib/utils';
 
 export type ChainId = 11155111 | 84532 | 80002;
@@ -12,29 +13,30 @@ export interface ChainBadgeProps {
   showFullName?: boolean;
 }
 
-const CHAIN_CONFIG: Record<
-  ChainId,
-  { name: string; shortName: string; colorClass: string; glowClass: string }
-> = {
+/**
+ * Styling configuration for chain badges.
+ * Uses CSS variables from the design system for consistent theming.
+ * Chain names and data come from the centralized chains.ts config.
+ */
+const CHAIN_STYLING: Record<ChainId, { colorClass: string; glowClass: string }> = {
   11155111: {
-    name: 'Ethereum Sepolia',
-    shortName: 'SEPOLIA',
     colorClass: 'text-[var(--chain-sepolia-text)] border-[var(--chain-sepolia)]',
     glowClass: 'shadow-[0_0_8px_var(--chain-glow-sepolia)]',
   },
   84532: {
-    name: 'Base Sepolia',
-    shortName: 'BASE',
     colorClass: 'text-[var(--chain-base-text)] border-[var(--chain-base)]',
     glowClass: 'shadow-[0_0_8px_var(--chain-glow-base)]',
   },
   80002: {
-    name: 'Polygon Amoy',
-    shortName: 'POLYGON',
     colorClass: 'text-[var(--chain-polygon-text)] border-[var(--chain-polygon)]',
     glowClass: 'shadow-[0_0_8px_var(--chain-glow-polygon)]',
   },
 };
+
+/** Check if a chain ID is supported */
+function isSupportedChainId(chainId: number): chainId is ChainId {
+  return SUPPORTED_CHAIN_IDS.includes(chainId);
+}
 
 /**
  * ChainBadge displays a blockchain network identifier with chain-specific colors and glow effects.
@@ -50,9 +52,11 @@ export function ChainBadge({
   className,
   showFullName = false,
 }: ChainBadgeProps): React.JSX.Element {
-  const config = CHAIN_CONFIG[chainId];
+  // Get chain data from centralized config
+  const chainData = getChainConfig(chainId);
+  const styling = isSupportedChainId(chainId) ? CHAIN_STYLING[chainId] : null;
 
-  if (!config) {
+  if (!chainData || !styling) {
     return (
       <span
         className={cn(
@@ -69,11 +73,11 @@ export function ChainBadge({
 
   return (
     <span
-      className={cn('badge-pixel', config.colorClass, config.glowClass, className)}
+      className={cn('badge-pixel', styling.colorClass, styling.glowClass, className)}
       data-testid="chain-badge"
       data-chain={chainId}
     >
-      {showFullName ? config.name : config.shortName}
+      {showFullName ? chainData.name : chainData.shortName.toUpperCase()}
     </span>
   );
 }

@@ -152,11 +152,18 @@ export function AgentDetailTemplate({
     }
   };
 
-  // Handle intent click
+  // Handle intent click with validation
   const handleIntentClick = (intentId: string) => {
-    if (agent) {
-      router.push(`/intents/${intentId}?agent=${agent.id}`);
+    if (!agent) return;
+
+    // Validate intent ID format (alphanumeric with hyphens/underscores, max 100 chars)
+    const isValidIntentId = /^[a-zA-Z0-9_-]{1,100}$/.test(intentId);
+    if (!isValidIntentId) {
+      console.warn('[AgentDetailTemplate] Invalid intent ID format:', intentId);
+      return;
     }
+
+    router.push(`/intents/${encodeURIComponent(intentId)}?agent=${encodeURIComponent(agent.id)}`);
   };
 
   // Loading state

@@ -56,9 +56,14 @@ export function parseUrlParams(searchParams: URLSearchParams): UrlSearchState {
         .filter((id): id is ChainId => SUPPORTED_CHAIN_IDS.includes(id as ChainId))
     : [];
 
-  // Parse reputation range
-  const minReputation = Number.parseInt(searchParams.get('minRep') ?? '0', 10) || 0;
-  const maxReputation = Number.parseInt(searchParams.get('maxRep') ?? '100', 10) || 100;
+  // Parse reputation range (use proper null checks to handle 0 correctly)
+  const minRepParam = searchParams.get('minRep');
+  const maxRepParam = searchParams.get('maxRep');
+  const parsedMinRep = minRepParam !== null ? Number.parseInt(minRepParam, 10) : 0;
+  const parsedMaxRep = maxRepParam !== null ? Number.parseInt(maxRepParam, 10) : 100;
+  // Handle NaN from invalid input
+  const minReputation = Number.isNaN(parsedMinRep) ? 0 : parsedMinRep;
+  const maxReputation = Number.isNaN(parsedMaxRep) ? 100 : parsedMaxRep;
 
   // Parse filter mode
   const filterModeParam = searchParams.get('filterMode');
@@ -98,11 +103,16 @@ export function parseUrlParams(searchParams: URLSearchParams): UrlSearchState {
   const finalMinRep = Math.min(clampedMin, clampedMax);
   const finalMaxRep = Math.max(clampedMin, clampedMax);
 
-  // Gap 1: Parse trust score range
-  const minTrustScoreParam = Number.parseInt(searchParams.get('minTrust') ?? '0', 10) || 0;
-  const maxTrustScoreParam = Number.parseInt(searchParams.get('maxTrust') ?? '100', 10) || 100;
-  const clampedMinTrust = Math.max(0, Math.min(100, minTrustScoreParam));
-  const clampedMaxTrust = Math.max(0, Math.min(100, maxTrustScoreParam));
+  // Gap 1: Parse trust score range (use proper null checks to handle 0 correctly)
+  const minTrustParam = searchParams.get('minTrust');
+  const maxTrustParam = searchParams.get('maxTrust');
+  const minTrustScoreParam = minTrustParam !== null ? Number.parseInt(minTrustParam, 10) : 0;
+  const maxTrustScoreParam = maxTrustParam !== null ? Number.parseInt(maxTrustParam, 10) : 100;
+  // Handle NaN from invalid input
+  const safeMinTrust = Number.isNaN(minTrustScoreParam) ? 0 : minTrustScoreParam;
+  const safeMaxTrust = Number.isNaN(maxTrustScoreParam) ? 100 : maxTrustScoreParam;
+  const clampedMinTrust = Math.max(0, Math.min(100, safeMinTrust));
+  const clampedMaxTrust = Math.max(0, Math.min(100, safeMaxTrust));
   const minTrustScore = Math.min(clampedMinTrust, clampedMaxTrust);
   const maxTrustScore = Math.max(clampedMinTrust, clampedMaxTrust);
 

@@ -56,8 +56,11 @@ function getStoredOverrides(): Partial<Record<FeatureFlagKey, boolean>> {
     if (stored) {
       return JSON.parse(stored) as Partial<Record<FeatureFlagKey, boolean>>;
     }
-  } catch {
-    // Ignore parse errors
+  } catch (error) {
+    // Log in development to aid debugging
+    if (process.env.NODE_ENV === 'development') {
+      console.warn('[feature-flags] Failed to parse stored overrides:', error);
+    }
   }
 
   return {};
@@ -121,8 +124,11 @@ export function setFeatureFlagOverride(flag: FeatureFlagKey, enabled: boolean): 
 
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(overrides));
-  } catch {
-    // Ignore storage errors
+  } catch (error) {
+    // Log in development to aid debugging
+    if (process.env.NODE_ENV === 'development') {
+      console.warn('[feature-flags] Failed to save override:', error);
+    }
   }
 }
 
@@ -145,8 +151,11 @@ export function clearFeatureFlagOverride(flag: FeatureFlagKey): void {
     } else {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(overrides));
     }
-  } catch {
-    // Ignore storage errors
+  } catch (error) {
+    // Log in development to aid debugging
+    if (process.env.NODE_ENV === 'development') {
+      console.warn('[feature-flags] Failed to clear override:', error);
+    }
   }
 }
 
@@ -160,7 +169,10 @@ export function clearAllFeatureFlagOverrides(): void {
 
   try {
     localStorage.removeItem(STORAGE_KEY);
-  } catch {
-    // Ignore storage errors
+  } catch (error) {
+    // Log in development to aid debugging
+    if (process.env.NODE_ENV === 'development') {
+      console.warn('[feature-flags] Failed to clear all overrides:', error);
+    }
   }
 }

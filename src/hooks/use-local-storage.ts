@@ -157,8 +157,14 @@ export function useLocalStorage<T>(
         setStoredValue(initialValue);
         setExists(false);
       }
-    } catch {
-      // Ignore errors during hydration
+    } catch (error) {
+      // Log in development to aid debugging of hydration/storage issues
+      if (process.env.NODE_ENV === 'development') {
+        console.warn(`[useLocalStorage] Failed to load key "${storageKey}":`, error);
+      }
+      // Reset to initial value on error
+      setStoredValue(initialValue);
+      setExists(false);
     }
   }, [storageKey, deserializer, initialValue]);
 

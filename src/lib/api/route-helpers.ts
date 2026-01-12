@@ -7,6 +7,13 @@
 
 import { NextResponse } from 'next/server';
 import { BackendError } from './backend';
+import {
+  checkRateLimit,
+  getRateLimitConfig,
+  getRateLimitHeaders,
+  type RateLimitConfig,
+  rateLimitedResponse,
+} from './rate-limit';
 
 /**
  * Standard error response structure
@@ -185,4 +192,89 @@ export function parseBoolParam(value: string | null): boolean | undefined {
   if (value === 'true' || value === '1') return true;
   if (value === 'false' || value === '0') return false;
   return undefined;
+}
+
+/**
+ * Extract client IP address from request headers.
+ * Handles common proxy headers in order of preference.
+ *
+ * @example
+ * ```typescript
+ * const clientIp = getClientIp(request);
+ * ```
+ */
+export function getClientIp(request: Request): string {
+  const headers = request.headers;
+
+  // Check common proxy headers in order of preference
+  const forwardedFor = headers.get('x-forwarded-for');
+  if (forwardedFor) {
+    // x-forwarded-for can contain multiple IPs, take the first (client IP)
+    const firstIp = forwardedFor.split(',')[0].trim();
+    if (firstIp) return firstIp;
+  }
+
+  const realIp = headers.get('x-real-ip');
+  if (realIp) return realIp;
+
+  const cfConnectingIp = headers.get('cf-connecting-ip');
+  if (cfConnectingIp) return cfConnectingIp;
+
+  // Fallback for local development
+  return '127.0.0.1';
+}
+
+/**
+ * Apply rate limiting to an API route.
+ * Returns a Response if rate limited, null if allowed.
+ *
+ * @example
+ * ```typescript
+ * export async function GET(request: Request) {
+ *   const rateLimitResponse = applyRateLimit(request);
+ *   if (rateLimitResponse) return rateLimitResponse;
+ *   // ... rest of handler
+ * }
+ * ```
+ */
+export function applyRateLimit(request: Request, config?: RateLimitConfig): Response | null {
+  const clientIp = getClientIp(request);
+  const pathname = new URL(request.url).pathname;
+  const effectiveConfig = config ?? getRateLimitConfig(pathname);
+
+  const result = checkRateLimit(`${clientIp}:${pathname}`, effectiveConfig);
+
+  if (!result.success) {
+    return rateLimitedResponse(result);
+  }
+
+  return null;
+}
+
+/**
+ * Add rate limit headers to a NextResponse.
+ *
+ * @example
+ * ```typescript
+ * const response = successResponse(data);
+ * return addRateLimitHeadersToResponse(response, request);
+ * ```
+ */
+export function addRateLimitHeadersToResponse(
+  response: NextResponse,
+  request: Request,
+  config?: RateLimitConfig,
+): NextResponse {
+  const clientIp = getClientIp(request);
+  const pathname = new URL(request.url).pathname;
+  const effectiveConfig = config ?? getRateLimitConfig(pathname);
+
+  const result = checkRateLimit(`${clientIp}:${pathname}`, effectiveConfig);
+  const headers = getRateLimitHeaders(result);
+
+  for (const [key, value] of Object.entries(headers)) {
+    response.headers.set(key, value);
+  }
+
+  return response;
 }
