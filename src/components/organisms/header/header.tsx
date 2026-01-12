@@ -29,7 +29,6 @@ const NAV_LINKS: NavLink[] = [
   { href: '/compose', label: 'Compose', testId: 'nav-compose' },
   { href: '/intents', label: 'Intents', testId: 'nav-intents' },
   { href: '/analytics', label: 'Analytics', testId: 'nav-analytics' },
-  { href: '/webhooks', label: 'Webhooks', testId: 'nav-webhooks' },
 ];
 
 /**
