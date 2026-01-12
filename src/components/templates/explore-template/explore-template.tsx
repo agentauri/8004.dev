@@ -9,10 +9,11 @@ import {
   type SortField,
   type SortOrder,
 } from '@/components/molecules';
-import { Header, SearchBar, type SearchFiltersState } from '@/components/organisms';
+import { SearchBar, type SearchFiltersState } from '@/components/organisms';
 import type { AgentCardAgent } from '@/components/organisms/agent-card';
 import { MobileFilterSheet } from '@/components/organisms/mobile-filter-sheet';
 import type { StreamProgress } from '@/components/organisms/search-results';
+import { MainLayout } from '@/components/templates/main-layout';
 import { cn } from '@/lib/utils';
 import { FiltersSkeleton } from './filters-skeleton';
 import { ResultsSkeleton } from './results-skeleton';
@@ -159,9 +160,8 @@ export function ExploreTemplate({
   onClearCompareAgents,
 }: ExploreTemplateProps): React.JSX.Element {
   return (
-    <div className={cn('flex flex-col h-screen', className)} data-testid="explore-template">
-      <Header />
-      <div className="flex flex-1 min-h-0">
+    <MainLayout showFooter={false} className="h-screen">
+      <div className={cn('flex flex-1 min-h-0', className)} data-testid="explore-template">
         {/* Desktop Sidebar - hidden on mobile */}
         <aside
           className="hidden md:block w-64 shrink-0 h-full overflow-y-auto p-4 lg:p-6 border-r border-[var(--pixel-gray-700)] bg-[var(--pixel-gray-900)]"
@@ -243,21 +243,21 @@ export function ExploreTemplate({
             )}
           </div>
         </main>
-      </div>
 
-      {/* Compare Bar */}
-      {compareAgents &&
-        compareAgents.length > 0 &&
-        onRemoveCompareAgent &&
-        onClearCompareAgents &&
-        compareUrl && (
-          <CompareBar
-            agents={compareAgents}
-            onRemove={onRemoveCompareAgent}
-            onClearAll={onClearCompareAgents}
-            compareUrl={compareUrl}
-          />
-        )}
-    </div>
+        {/* Compare Bar */}
+        {compareAgents &&
+          compareAgents.length > 0 &&
+          onRemoveCompareAgent &&
+          onClearCompareAgents &&
+          compareUrl && (
+            <CompareBar
+              agents={compareAgents}
+              onRemove={onRemoveCompareAgent}
+              onClearAll={onClearCompareAgents}
+              compareUrl={compareUrl}
+            />
+          )}
+      </div>
+    </MainLayout>
   );
 }

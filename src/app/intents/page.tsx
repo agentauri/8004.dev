@@ -6,6 +6,7 @@ import { Suspense, useCallback } from 'react';
 import { PixelExplorer } from '@/components/atoms';
 import { PageHeader } from '@/components/molecules';
 import { IntentGallery } from '@/components/organisms';
+import { MainLayout } from '@/components/templates';
 import { useIntents } from '@/hooks';
 import type { IntentTemplate } from '@/types';
 
@@ -53,17 +54,23 @@ function IntentsPageContent(): React.JSX.Element {
  */
 export default function IntentsPage(): React.JSX.Element {
   return (
-    <Suspense
-      fallback={
-        <div className="flex flex-col items-center justify-center min-h-[60vh]">
-          <PixelExplorer size="lg" animation="bounce" />
-          <p className="font-[family-name:var(--font-pixel-body)] text-sm text-[var(--pixel-gray-300)] mt-4 animate-pulse uppercase tracking-wider">
-            Loading Intent Templates...
-          </p>
+    <MainLayout>
+      <div className="min-h-screen bg-pixel-grid">
+        <div className="max-w-7xl mx-auto px-4 py-8">
+          <Suspense
+            fallback={
+              <div className="flex flex-col items-center justify-center min-h-[60vh]">
+                <PixelExplorer size="lg" animation="bounce" />
+                <p className="font-[family-name:var(--font-pixel-body)] text-sm text-[var(--pixel-gray-300)] mt-4 animate-pulse uppercase tracking-wider">
+                  Loading Intent Templates...
+                </p>
+              </div>
+            }
+          >
+            <IntentsPageContent />
+          </Suspense>
         </div>
-      }
-    >
-      <IntentsPageContent />
-    </Suspense>
+      </div>
+    </MainLayout>
   );
 }

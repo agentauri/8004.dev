@@ -6,6 +6,7 @@ import { Suspense, useCallback, useMemo, useState } from 'react';
 import { PixelExplorer } from '@/components/atoms';
 import { PageHeader } from '@/components/molecules';
 import { EvaluationCard } from '@/components/organisms';
+import { MainLayout } from '@/components/templates';
 import { useCreateEvaluation, useEvaluations } from '@/hooks';
 import { cn } from '@/lib/utils';
 import type { EvaluationStatus } from '@/types';
@@ -363,17 +364,23 @@ function EvaluatePageContent(): React.JSX.Element {
  */
 export default function EvaluatePage(): React.JSX.Element {
   return (
-    <Suspense
-      fallback={
-        <div className="flex flex-col items-center justify-center min-h-[60vh]">
-          <PixelExplorer size="lg" animation="bounce" />
-          <p className="font-[family-name:var(--font-pixel-body)] text-sm text-[var(--pixel-gray-300)] mt-4 animate-pulse uppercase tracking-wider">
-            Loading Evaluations...
-          </p>
+    <MainLayout>
+      <div className="min-h-screen bg-pixel-grid">
+        <div className="max-w-7xl mx-auto px-4 py-8">
+          <Suspense
+            fallback={
+              <div className="flex flex-col items-center justify-center min-h-[60vh]">
+                <PixelExplorer size="lg" animation="bounce" />
+                <p className="font-[family-name:var(--font-pixel-body)] text-sm text-[var(--pixel-gray-300)] mt-4 animate-pulse uppercase tracking-wider">
+                  Loading Evaluations...
+                </p>
+              </div>
+            }
+          >
+            <EvaluatePageContent />
+          </Suspense>
         </div>
-      }
-    >
-      <EvaluatePageContent />
-    </Suspense>
+      </div>
+    </MainLayout>
   );
 }

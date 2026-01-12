@@ -47,30 +47,7 @@ describe('PageHeader', () => {
     });
   });
 
-  describe('glow variants', () => {
-    it('applies blue glow class by default', () => {
-      render(<PageHeader title="Test" icon={Trophy} />);
-
-      const title = screen.getByTestId('page-header-title');
-      expect(title).toHaveClass('shadow-[0_0_20px_var(--glow-blue)]');
-    });
-
-    it('applies gold glow class when glow="gold"', () => {
-      render(<PageHeader title="Test" icon={Trophy} glow="gold" />);
-
-      const title = screen.getByTestId('page-header-title');
-      expect(title).toHaveClass('shadow-[0_0_20px_var(--glow-gold)]');
-    });
-
-    it('applies green glow class when glow="green"', () => {
-      render(<PageHeader title="Test" icon={Trophy} glow="green" />);
-
-      const title = screen.getByTestId('page-header-title');
-      expect(title).toHaveClass('shadow-[0_0_20px_var(--glow-green)]');
-    });
-  });
-
-  describe('icon styling', () => {
+  describe('color variants', () => {
     it('applies blue color to icon by default', () => {
       render(<PageHeader title="Test" icon={Trophy} />);
 

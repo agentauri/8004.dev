@@ -32,16 +32,7 @@ export interface PageHeaderProps {
 }
 
 /**
- * Glow shadow classes for each color variant
- */
-const glowClasses: Record<PageHeaderGlow, string> = {
-  blue: 'shadow-[0_0_20px_var(--glow-blue)]',
-  gold: 'shadow-[0_0_20px_var(--glow-gold)]',
-  green: 'shadow-[0_0_20px_var(--glow-green)]',
-};
-
-/**
- * Icon color classes matching each glow variant
+ * Icon color classes matching each color variant
  */
 const iconColorClasses: Record<PageHeaderGlow, string> = {
   blue: 'text-[var(--pixel-blue-sky)]',
@@ -53,8 +44,8 @@ const iconColorClasses: Record<PageHeaderGlow, string> = {
  * PageHeader displays a standardized header section for pages.
  *
  * Features:
- * - UPPERCASE title with pixel font and glow effect
- * - Icon with color matching the glow
+ * - UPPERCASE title with pixel font
+ * - Icon with color matching the selected variant
  * - Optional description with uppercase styling
  * - Optional action button/element
  * - Left or center alignment
@@ -123,7 +114,6 @@ export function PageHeader({
               'font-[family-name:var(--font-pixel-display)]',
               'text-2xl md:text-3xl text-[var(--pixel-gray-100)]',
               'uppercase tracking-wider',
-              glowClasses[glow],
             )}
             data-testid={`${testId}-title`}
           >

@@ -10,6 +10,7 @@ import { BarChart3 } from 'lucide-react';
 import { Suspense, useState } from 'react';
 import { PixelExplorer } from '@/components/atoms';
 import { PageHeader, StatCard } from '@/components/molecules';
+import { MainLayout } from '@/components/templates';
 import { useAnalytics } from '@/hooks';
 import { CHAINS } from '@/lib/constants/chains';
 import { cn } from '@/lib/utils';
@@ -413,29 +414,31 @@ function AnalyticsContent() {
  */
 export default function AnalyticsPage() {
   return (
-    <div className="min-h-screen bg-pixel-grid">
-      <div className="max-w-7xl mx-auto px-4 py-8">
-        <PageHeader
-          title="Analytics"
-          description="Platform-wide statistics, usage metrics, and performance data."
-          icon={BarChart3}
-          glow="blue"
-          className="mb-8"
-        />
+    <MainLayout>
+      <div className="min-h-screen bg-pixel-grid">
+        <div className="max-w-7xl mx-auto px-4 py-8">
+          <PageHeader
+            title="Analytics"
+            description="Platform-wide statistics, usage metrics, and performance data."
+            icon={BarChart3}
+            glow="blue"
+            className="mb-8"
+          />
 
-        <Suspense
-          fallback={
-            <div className="flex flex-col items-center justify-center min-h-[60vh]">
-              <PixelExplorer size="lg" animation="bounce" />
-              <p className="font-[family-name:var(--font-pixel-body)] text-sm text-[var(--pixel-gray-300)] mt-4 animate-pulse uppercase tracking-wider">
-                Loading Analytics...
-              </p>
-            </div>
-          }
-        >
-          <AnalyticsContent />
-        </Suspense>
+          <Suspense
+            fallback={
+              <div className="flex flex-col items-center justify-center min-h-[60vh]">
+                <PixelExplorer size="lg" animation="bounce" />
+                <p className="font-[family-name:var(--font-pixel-body)] text-sm text-[var(--pixel-gray-300)] mt-4 animate-pulse uppercase tracking-wider">
+                  Loading Analytics...
+                </p>
+              </div>
+            }
+          >
+            <AnalyticsContent />
+          </Suspense>
+        </div>
       </div>
-    </div>
+    </MainLayout>
   );
 }

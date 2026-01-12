@@ -10,6 +10,7 @@ import { MessageSquare } from 'lucide-react';
 import { useCallback, useState } from 'react';
 import { PageHeader } from '@/components/molecules';
 import { FeedbackFeed, FeedbackFilters } from '@/components/organisms';
+import { MainLayout } from '@/components/templates';
 import { useInfiniteGlobalFeedbacks } from '@/hooks';
 import type { GlobalFeedbackFilters } from '@/types/feedback';
 
@@ -38,42 +39,44 @@ export default function FeedbacksPage() {
   }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
 
   return (
-    <div className="min-h-screen bg-pixel-grid">
-      <div className="max-w-7xl mx-auto px-4 py-8">
-        {/* Page Header */}
-        <PageHeader
-          title="Global Feedbacks"
-          description="Browse all on-chain feedbacks submitted for agents across all supported chains."
-          icon={MessageSquare}
-          glow="blue"
-          className="mb-8"
-        />
+    <MainLayout>
+      <div className="min-h-screen bg-pixel-grid">
+        <div className="max-w-7xl mx-auto px-4 py-8">
+          {/* Page Header */}
+          <PageHeader
+            title="Global Feedbacks"
+            description="Browse all on-chain feedbacks submitted for agents across all supported chains."
+            icon={MessageSquare}
+            glow="blue"
+            className="mb-8"
+          />
 
-        {/* Main Content */}
-        <div className="grid grid-cols-1 lg:grid-cols-[280px_1fr] gap-6">
-          {/* Sidebar Filters */}
-          <aside>
-            <FeedbackFilters
-              filters={filters}
-              onFiltersChange={setFilters}
-              stats={stats}
-              isLoading={isLoading}
-            />
-          </aside>
+          {/* Main Content */}
+          <div className="grid grid-cols-1 lg:grid-cols-[280px_1fr] gap-6">
+            {/* Sidebar Filters */}
+            <aside>
+              <FeedbackFilters
+                filters={filters}
+                onFiltersChange={setFilters}
+                stats={stats}
+                isLoading={isLoading}
+              />
+            </aside>
 
-          {/* Feedback Feed */}
-          <main>
-            <FeedbackFeed
-              feedbacks={feedbacks}
-              isLoading={isLoading}
-              error={error?.message}
-              onLoadMore={handleLoadMore}
-              hasMore={hasNextPage}
-              isLoadingMore={isFetchingNextPage}
-            />
-          </main>
+            {/* Feedback Feed */}
+            <main>
+              <FeedbackFeed
+                feedbacks={feedbacks}
+                isLoading={isLoading}
+                error={error?.message}
+                onLoadMore={handleLoadMore}
+                hasMore={hasNextPage}
+                isLoadingMore={isFetchingNextPage}
+              />
+            </main>
+          </div>
         </div>
       </div>
-    </div>
+    </MainLayout>
   );
 }

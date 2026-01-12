@@ -5,6 +5,7 @@ import { notFound, useParams } from 'next/navigation';
 import { Suspense, useCallback, useMemo } from 'react';
 import { PixelExplorer } from '@/components/atoms';
 import { WorkflowVisualizer } from '@/components/organisms';
+import { MainLayout } from '@/components/templates';
 import { useIntent, useIntentMatches } from '@/hooks';
 import { cn } from '@/lib/utils';
 
@@ -146,7 +147,7 @@ function IntentDetailContent(): React.JSX.Element {
             </span>
           </div>
 
-          <h1 className="font-[family-name:var(--font-pixel-display)] text-2xl md:text-3xl text-[var(--pixel-gray-100)] shadow-[0_0_20px_var(--glow-blue)]">
+          <h1 className="font-[family-name:var(--font-pixel-display)] text-2xl md:text-3xl text-[var(--pixel-gray-100)]">
             {displayTemplate.name}
           </h1>
 
@@ -252,17 +253,23 @@ function IntentDetailContent(): React.JSX.Element {
  */
 export default function IntentDetailPage(): React.JSX.Element {
   return (
-    <Suspense
-      fallback={
-        <div className="flex flex-col items-center justify-center min-h-[60vh]">
-          <PixelExplorer size="lg" animation="bounce" />
-          <p className="font-[family-name:var(--font-pixel-body)] text-sm text-[var(--pixel-gray-300)] mt-4 animate-pulse uppercase tracking-wider">
-            Loading Template...
-          </p>
+    <MainLayout>
+      <div className="min-h-screen bg-pixel-grid">
+        <div className="max-w-7xl mx-auto px-4 py-8">
+          <Suspense
+            fallback={
+              <div className="flex flex-col items-center justify-center min-h-[60vh]">
+                <PixelExplorer size="lg" animation="bounce" />
+                <p className="font-[family-name:var(--font-pixel-body)] text-sm text-[var(--pixel-gray-300)] mt-4 animate-pulse uppercase tracking-wider">
+                  Loading Template...
+                </p>
+              </div>
+            }
+          >
+            <IntentDetailContent />
+          </Suspense>
         </div>
-      }
-    >
-      <IntentDetailContent />
-    </Suspense>
+      </div>
+    </MainLayout>
   );
 }

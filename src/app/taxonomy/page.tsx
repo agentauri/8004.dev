@@ -3,6 +3,7 @@
 import dynamic from 'next/dynamic';
 import { useRouter } from 'next/navigation';
 import { useCallback } from 'react';
+import { MainLayout } from '@/components/templates';
 import type { TaxonomyCategory, TaxonomyType } from '@/lib/constants/oasf';
 
 // Dynamic import for code splitting - TaxonomyTemplate is a large component
@@ -33,5 +34,9 @@ export default function TaxonomyPage() {
     [router],
   );
 
-  return <TaxonomyTemplate onCategorySelect={handleCategorySelect} />;
+  return (
+    <MainLayout>
+      <TaxonomyTemplate onCategorySelect={handleCategorySelect} />
+    </MainLayout>
+  );
 }

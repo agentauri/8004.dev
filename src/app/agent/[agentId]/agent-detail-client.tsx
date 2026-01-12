@@ -2,7 +2,7 @@
 
 import { useMemo } from 'react';
 import { AgentBreadcrumb, AgentJsonLd } from '@/components/organisms/json-ld';
-import { AgentDetailTemplate } from '@/components/templates';
+import { AgentDetailTemplate, MainLayout } from '@/components/templates';
 import { useAgentDetail, useAgentEvaluations, useIntents, useSimilarAgents } from '@/hooks';
 
 interface AgentDetailClientProps {
@@ -66,7 +66,7 @@ export function AgentDetailClient({ agentId }: AgentDetailClientProps) {
   }, [allIntents, data?.agent]);
 
   return (
-    <>
+    <MainLayout>
       {/* JSON-LD structured data for SEO */}
       {data?.agent && (
         <>
@@ -89,6 +89,6 @@ export function AgentDetailClient({ agentId }: AgentDetailClientProps) {
         isLoading={isLoading}
         error={error?.message}
       />
-    </>
+    </MainLayout>
   );
 }

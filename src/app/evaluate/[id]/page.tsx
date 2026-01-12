@@ -5,6 +5,7 @@ import { useParams } from 'next/navigation';
 import { Suspense } from 'react';
 import { PixelExplorer } from '@/components/atoms';
 import { EvaluationDetail } from '@/components/organisms';
+import { MainLayout } from '@/components/templates';
 import { useEvaluation } from '@/hooks';
 import { cn } from '@/lib/utils';
 
@@ -99,7 +100,7 @@ function EvaluationDetailContent({ id }: { id: string }): React.JSX.Element {
     return (
       <div className="flex flex-col items-center justify-center py-16 text-center">
         <PixelExplorer size="lg" animation="float" />
-        <h2 className="font-[family-name:var(--font-pixel-heading)] text-xl text-[var(--pixel-red-fire)] mt-6 shadow-[0_0_12px_var(--glow-red)]">
+        <h2 className="font-[family-name:var(--font-pixel-heading)] text-xl text-[var(--pixel-red-fire)] mt-6">
           EVALUATION NOT FOUND
         </h2>
         <p className="font-mono text-sm text-[var(--pixel-gray-400)] mt-2 max-w-md">
@@ -172,15 +173,21 @@ export default function EvaluationDetailPage(): React.JSX.Element {
   const id = params.id;
 
   return (
-    <Suspense
-      fallback={
-        <div className="space-y-6">
-          <div className="h-4 bg-[var(--pixel-gray-800)] rounded w-32 animate-pulse" />
-          <EvaluationDetailSkeleton />
+    <MainLayout>
+      <div className="min-h-screen bg-pixel-grid">
+        <div className="max-w-7xl mx-auto px-4 py-8">
+          <Suspense
+            fallback={
+              <div className="space-y-6">
+                <div className="h-4 bg-[var(--pixel-gray-800)] rounded w-32 animate-pulse" />
+                <EvaluationDetailSkeleton />
+              </div>
+            }
+          >
+            <EvaluationDetailContent id={id} />
+          </Suspense>
         </div>
-      }
-    >
-      <EvaluationDetailContent id={id} />
-    </Suspense>
+      </div>
+    </MainLayout>
   );
 }

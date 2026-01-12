@@ -5,6 +5,7 @@ import { Suspense, useCallback, useState } from 'react';
 import { PixelExplorer } from '@/components/atoms';
 import { PageHeader } from '@/components/molecules';
 import { TeamComposer, TeamResult } from '@/components/organisms';
+import { MainLayout } from '@/components/templates';
 import { useComposeTeam } from '@/hooks/use-team-composition';
 import { cn } from '@/lib/utils';
 import type { TeamComposition } from '@/types';
@@ -138,29 +139,31 @@ function ComposePageContent(): React.JSX.Element {
  */
 export default function ComposePage(): React.JSX.Element {
   return (
-    <main className="space-y-8 px-4 py-8">
-      {/* Header */}
-      <PageHeader
-        title="Team Composer"
-        description="Build the perfect agent team for your task"
-        icon={Users}
-        glow="gold"
-        align="center"
-      />
+    <MainLayout>
+      <main className="space-y-8 px-4 py-8">
+        {/* Header */}
+        <PageHeader
+          title="Team Composer"
+          description="Build the perfect agent team for your task"
+          icon={Users}
+          glow="gold"
+          align="center"
+        />
 
-      {/* Content */}
-      <Suspense
-        fallback={
-          <div className="flex flex-col items-center justify-center py-16">
-            <PixelExplorer size="md" animation="bounce" />
-            <p className="font-[family-name:var(--font-pixel-body)] text-sm text-[var(--pixel-gray-300)] mt-4 animate-pulse uppercase tracking-wider">
-              Loading...
-            </p>
-          </div>
-        }
-      >
-        <ComposePageContent />
-      </Suspense>
-    </main>
+        {/* Content */}
+        <Suspense
+          fallback={
+            <div className="flex flex-col items-center justify-center py-16">
+              <PixelExplorer size="md" animation="bounce" />
+              <p className="font-[family-name:var(--font-pixel-body)] text-sm text-[var(--pixel-gray-300)] mt-4 animate-pulse uppercase tracking-wider">
+                Loading...
+              </p>
+            </div>
+          }
+        >
+          <ComposePageContent />
+        </Suspense>
+      </main>
+    </MainLayout>
   );
 }

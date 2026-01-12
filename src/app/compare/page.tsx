@@ -5,7 +5,7 @@ import { Suspense, useCallback, useEffect, useMemo, useState } from 'react';
 import type { ChainId } from '@/components/atoms';
 import type { CapabilityType } from '@/components/molecules';
 import type { CompareTableAgent } from '@/components/organisms/compare-table';
-import { CompareTemplate } from '@/components/templates';
+import { CompareTemplate, MainLayout } from '@/components/templates';
 import { COMPARE_PARAM_KEY, MAX_COMPARE_AGENTS } from '@/hooks/use-compare-agents';
 import type { AgentDetailResponse } from '@/types/agent';
 
@@ -132,8 +132,10 @@ function ComparePageContent() {
 
 export default function ComparePage() {
   return (
-    <Suspense fallback={<CompareTemplate agents={[]} isLoading={true} />}>
-      <ComparePageContent />
-    </Suspense>
+    <MainLayout>
+      <Suspense fallback={<CompareTemplate agents={[]} isLoading={true} />}>
+        <ComparePageContent />
+      </Suspense>
+    </MainLayout>
   );
 }

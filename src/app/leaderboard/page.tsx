@@ -10,6 +10,7 @@ import { Trophy } from 'lucide-react';
 import { useCallback, useState } from 'react';
 import { PageHeader } from '@/components/molecules';
 import { LeaderboardFilters, LeaderboardTable } from '@/components/organisms';
+import { MainLayout } from '@/components/templates';
 import { useInfiniteLeaderboard } from '@/hooks';
 import type { LeaderboardFiltersState, LeaderboardPeriod } from '@/types/leaderboard';
 
@@ -46,42 +47,44 @@ export default function LeaderboardPage() {
   }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
 
   return (
-    <div className="min-h-screen bg-pixel-grid">
-      <div className="max-w-7xl mx-auto px-4 py-8">
-        {/* Page Header */}
-        <PageHeader
-          title="Leaderboard"
-          description="Top agents ranked by reputation score. Filter by chain, protocol support, and time period."
-          icon={Trophy}
-          glow="gold"
-          className="mb-8"
-        />
+    <MainLayout>
+      <div className="min-h-screen bg-pixel-grid">
+        <div className="max-w-7xl mx-auto px-4 py-8">
+          {/* Page Header */}
+          <PageHeader
+            title="Leaderboard"
+            description="Top agents ranked by reputation score. Filter by chain, protocol support, and time period."
+            icon={Trophy}
+            glow="gold"
+            className="mb-8"
+          />
 
-        {/* Main Content */}
-        <div className="grid grid-cols-1 lg:grid-cols-[280px_1fr] gap-6">
-          {/* Sidebar Filters */}
-          <aside>
-            <LeaderboardFilters
-              filters={filters}
-              onFiltersChange={setFilters}
-              totalCount={totalCount}
-              isLoading={isLoading}
-            />
-          </aside>
+          {/* Main Content */}
+          <div className="grid grid-cols-1 lg:grid-cols-[280px_1fr] gap-6">
+            {/* Sidebar Filters */}
+            <aside>
+              <LeaderboardFilters
+                filters={filters}
+                onFiltersChange={setFilters}
+                totalCount={totalCount}
+                isLoading={isLoading}
+              />
+            </aside>
 
-          {/* Leaderboard Table */}
-          <main>
-            <LeaderboardTable
-              entries={entries}
-              isLoading={isLoading}
-              error={error?.message}
-              onLoadMore={handleLoadMore}
-              hasMore={hasNextPage}
-              isLoadingMore={isFetchingNextPage}
-            />
-          </main>
+            {/* Leaderboard Table */}
+            <main>
+              <LeaderboardTable
+                entries={entries}
+                isLoading={isLoading}
+                error={error?.message}
+                onLoadMore={handleLoadMore}
+                hasMore={hasNextPage}
+                isLoadingMore={isFetchingNextPage}
+              />
+            </main>
+          </div>
         </div>
       </div>
-    </div>
+    </MainLayout>
   );
 }

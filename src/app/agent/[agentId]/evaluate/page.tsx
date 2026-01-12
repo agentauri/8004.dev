@@ -5,6 +5,7 @@ import { useParams } from 'next/navigation';
 import { Suspense, useCallback, useState } from 'react';
 import { PixelExplorer } from '@/components/atoms';
 import { EvaluationCard } from '@/components/organisms';
+import { MainLayout } from '@/components/templates';
 import { useAgentEvaluations, useCreateEvaluation } from '@/hooks';
 import { cn } from '@/lib/utils';
 
@@ -93,7 +94,7 @@ function AgentEvaluateContent({ agentId }: { agentId: string }): React.JSX.Eleme
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div>
-          <h1 className="font-[family-name:var(--font-pixel-display)] text-xl md:text-2xl text-[var(--pixel-gray-100)] shadow-[0_0_20px_var(--glow-blue)]">
+          <h1 className="font-[family-name:var(--font-pixel-display)] text-xl md:text-2xl text-[var(--pixel-gray-100)]">
             AGENT EVALUATIONS
           </h1>
           <p className="font-mono text-xs text-[var(--pixel-gray-400)] mt-2">
@@ -237,15 +238,21 @@ export default function AgentEvaluatePage(): React.JSX.Element {
   const agentId = params.agentId;
 
   return (
-    <Suspense
-      fallback={
-        <div className="space-y-6">
-          <div className="h-4 bg-[var(--pixel-gray-800)] rounded w-48 animate-pulse" />
-          <EvaluationsSkeleton />
+    <MainLayout>
+      <div className="min-h-screen bg-pixel-grid">
+        <div className="max-w-7xl mx-auto px-4 py-8">
+          <Suspense
+            fallback={
+              <div className="space-y-6">
+                <div className="h-4 bg-[var(--pixel-gray-800)] rounded w-48 animate-pulse" />
+                <EvaluationsSkeleton />
+              </div>
+            }
+          >
+            <AgentEvaluateContent agentId={agentId} />
+          </Suspense>
         </div>
-      }
-    >
-      <AgentEvaluateContent agentId={agentId} />
-    </Suspense>
+      </div>
+    </MainLayout>
   );
 }

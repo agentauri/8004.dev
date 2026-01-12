@@ -29,7 +29,7 @@ export default function EvaluateError({ error, reset }: ErrorProps): React.JSX.E
         </div>
 
         {/* Error Title */}
-        <h1 className="font-[family-name:var(--font-pixel-display)] text-xl md:text-2xl text-[var(--pixel-red-fire)] shadow-[0_0_20px_var(--glow-red)]">
+        <h1 className="font-[family-name:var(--font-pixel-display)] text-xl md:text-2xl text-[var(--pixel-red-fire)]">
           EVALUATION ERROR
         </h1>
 
