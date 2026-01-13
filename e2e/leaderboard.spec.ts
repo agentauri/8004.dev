@@ -12,15 +12,15 @@ test.describe('Leaderboard Page', () => {
     test('loads leaderboard page successfully', async ({ page }) => {
       await page.goto('/leaderboard');
 
-      // Should show page title
-      await expect(page.getByText(/leaderboard/i)).toBeVisible();
+      // Should show page title (use h1 to avoid matching nav link)
+      await expect(page.getByRole('heading', { name: /leaderboard/i })).toBeVisible();
     });
 
     test('displays trophy icon', async ({ page }) => {
       await page.goto('/leaderboard');
 
-      // Page should have the trophy icon or header
-      await expect(page.locator('header')).toBeVisible();
+      // Page should have the header banner (role="banner")
+      await expect(page.getByRole('banner')).toBeVisible();
     });
 
     test('shows loading state initially', async ({ page }) => {
