@@ -36,7 +36,7 @@ test.describe('Team Composition Page', () => {
         await expect(composer).toBeVisible();
       } else {
         // If no testid, just verify page loaded
-        await expect(page.locator('main')).toBeVisible();
+        await expect(page.getByRole('main').first()).toBeVisible();
       }
     });
   });
@@ -159,7 +159,7 @@ test.describe('Team Composition Page', () => {
       } else {
         // On mobile, the link is in the mobile menu
         // Just verify the page loads correctly
-        await expect(page.locator('main')).toBeVisible();
+        await expect(page.getByRole('main').first()).toBeVisible();
       }
     });
   });

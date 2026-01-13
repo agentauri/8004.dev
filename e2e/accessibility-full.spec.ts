@@ -64,7 +64,7 @@ test.describe('Full Accessibility Audit', () => {
 
         // Just verify page loads and has basic structure
         await expect(page.locator('body')).toBeVisible();
-        await expect(page.locator('main')).toBeVisible();
+        await expect(page.getByRole('main').first()).toBeVisible();
       });
     }
   });
@@ -198,7 +198,7 @@ test.describe('Full Accessibility Audit', () => {
 
       // Check for required landmarks
       await expect(page.getByRole('banner')).toBeVisible(); // header
-      await expect(page.locator('main')).toBeVisible(); // main
+      await expect(page.getByRole('main').first()).toBeVisible(); // main
       await expect(page.getByRole('contentinfo')).toBeVisible(); // footer
     });
 
@@ -215,7 +215,7 @@ test.describe('Full Accessibility Audit', () => {
       // Skip link is optional but recommended
       if (text?.toLowerCase().includes('skip')) {
         await page.keyboard.press('Enter');
-        const main = page.locator('main');
+        const main = page.getByRole('main').first();
         await expect(main).toBeFocused();
       }
     });

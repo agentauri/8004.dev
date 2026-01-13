@@ -147,7 +147,7 @@ test.describe('Bookmarks Feature', () => {
         await expect(bookmarkButton).toHaveAttribute('data-bookmarked', 'true');
       } else {
         // If bookmark button not visible, just verify page loaded correctly
-        await expect(page.locator('main')).toBeVisible();
+        await expect(page.getByRole('main').first()).toBeVisible();
       }
     });
   });
