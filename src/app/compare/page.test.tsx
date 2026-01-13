@@ -1,5 +1,6 @@
 import { render, screen, waitFor } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { RealtimeEventsProvider } from '@/providers/realtime-events-provider';
 import ComparePage from './page';
 
 // Mock next/navigation
@@ -11,6 +12,24 @@ vi.mock('next/navigation', () => ({
     push: mockPush,
   }),
   useSearchParams: () => mockSearchParams,
+}));
+
+// Mock the useWallet hook
+vi.mock('@/hooks/use-wallet', () => ({
+  useWallet: () => ({
+    status: 'disconnected',
+    address: null,
+    chainId: null,
+    isCorrectNetwork: false,
+    usdcBalance: null,
+    error: null,
+    connect: vi.fn(),
+    disconnect: vi.fn(),
+    switchToBase: vi.fn(),
+    isReadyForPayment: false,
+    connectors: [],
+  }),
+  truncateAddress: (address: string) => `${address.slice(0, 6)}...${address.slice(-4)}`,
 }));
 
 // Mock fetch
@@ -52,7 +71,7 @@ function createMockAgentResponse(id: string, name: string, chainId: number) {
   };
 }
 
-// Mock CompareTemplate to simplify tests
+// Mock CompareTemplate and MainLayout to simplify tests
 vi.mock('@/components/templates', () => ({
   CompareTemplate: ({
     agents,
@@ -76,6 +95,9 @@ vi.mock('@/components/templates', () => ({
         </button>
       )}
     </div>
+  ),
+  MainLayout: ({ children }: { children: React.ReactNode }) => (
+    <div data-testid="main-layout">{children}</div>
   ),
 }));
 

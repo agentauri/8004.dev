@@ -9,6 +9,8 @@ import type { UseMutationResult, UseQueryResult } from '@tanstack/react-query';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { queryKeys } from '@/lib/query-keys';
 import type { TeamComposition } from '@/types/agent';
+import type { X402PaymentDetails } from '@/types/x402';
+import { type UsePaidMutationResult, usePaidMutation } from './use-paid-mutation';
 
 /** Input for composing a new team */
 export interface ComposeTeamInput {
@@ -27,15 +29,33 @@ export interface UseTeamCompositionOptions {
 }
 
 /**
- * Compose a team via API
+ * Compose a team via API (supports x402 payment)
  */
-async function composeTeam(input: ComposeTeamInput): Promise<TeamComposition> {
+async function composeTeam(
+  input: ComposeTeamInput,
+  paymentHeader?: string,
+): Promise<TeamComposition> {
+  const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+  if (paymentHeader) {
+    headers['X-PAYMENT'] = paymentHeader;
+  }
+
   const response = await fetch('/api/compose', {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers,
     body: JSON.stringify(input),
   });
   const json = await response.json();
+
+  // Handle 402 Payment Required
+  if (response.status === 402) {
+    const error = new Error('Payment required') as Error & {
+      paymentDetails: X402PaymentDetails;
+    };
+    error.name = 'PaymentRequiredError';
+    error.paymentDetails = json;
+    throw error;
+  }
 
   if (!json.success) {
     throw new Error(json.error || 'Failed to compose team');
@@ -95,6 +115,55 @@ export function useComposeTeam(): UseMutationResult<TeamComposition, Error, Comp
   const queryClient = useQueryClient();
 
   return useMutation<TeamComposition, Error, ComposeTeamInput>({
+    mutationFn: (input) => composeTeam(input),
+    onSuccess: (data) => {
+      // Cache the new composition
+      queryClient.setQueryData(queryKeys.composition(data.id), data);
+
+      // Invalidate teams list to include the new composition
+      queryClient.invalidateQueries({ queryKey: queryKeys.teams() });
+    },
+  });
+}
+
+/**
+ * Hook to compose a new team with x402 payment support
+ *
+ * Uses usePaidMutation to handle 402 Payment Required responses.
+ * When a 402 is received, the hook captures the payment details
+ * and provides methods to confirm payment and retry.
+ *
+ * @returns Extended mutation result with payment state and confirmation methods
+ *
+ * @example
+ * ```tsx
+ * const {
+ *   mutate,
+ *   isPending,
+ *   paymentState,
+ *   confirmPayment,
+ *   clearPayment,
+ * } = usePaidComposeTeam();
+ *
+ * // Start composition (may trigger payment requirement)
+ * mutate({ task: 'Build a smart contract auditor' });
+ *
+ * // If payment is required
+ * if (paymentState.paymentRequired) {
+ *   // Show payment modal, get signature, then:
+ *   await confirmPayment(signedPaymentHeader);
+ * }
+ * ```
+ */
+export function usePaidComposeTeam(): UsePaidMutationResult<
+  TeamComposition,
+  Error,
+  ComposeTeamInput,
+  unknown
+> {
+  const queryClient = useQueryClient();
+
+  return usePaidMutation<TeamComposition, Error, ComposeTeamInput, unknown>({
     mutationFn: composeTeam,
     onSuccess: (data) => {
       // Cache the new composition

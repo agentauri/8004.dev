@@ -24,13 +24,29 @@ vi.mock('next/link', () => ({
   ),
 }));
 
-// Mock useRealtimeEvents hook
+// Mock hooks
 vi.mock('@/hooks', () => ({
   useRealtimeEvents: () => ({
     eventCount: 3,
     isConnected: true,
     recentEvents: [],
     clearEvents: vi.fn(),
+  }),
+  useWallet: () => ({
+    status: 'disconnected',
+    address: null,
+    chainId: null,
+    isCorrectNetwork: false,
+    usdcBalance: null,
+    error: null,
+    connect: vi.fn(),
+    disconnect: vi.fn(),
+    switchToBase: vi.fn(),
+    isReadyForPayment: false,
+    connectors: [
+      { id: 'injected', name: 'MetaMask' },
+      { id: 'coinbaseWallet', name: 'Coinbase Wallet' },
+    ],
   }),
 }));
 

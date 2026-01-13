@@ -32,6 +32,24 @@ vi.mock('next/navigation', () => ({
   }),
 }));
 
+// Mock the useWallet hook
+vi.mock('@/hooks/use-wallet', () => ({
+  useWallet: () => ({
+    status: 'disconnected',
+    address: null,
+    chainId: null,
+    isCorrectNetwork: false,
+    usdcBalance: null,
+    error: null,
+    connect: vi.fn(),
+    disconnect: vi.fn(),
+    switchToBase: vi.fn(),
+    isReadyForPayment: false,
+    connectors: [],
+  }),
+  truncateAddress: (address: string) => `${address.slice(0, 6)}...${address.slice(-4)}`,
+}));
+
 describe('AgentDetailTemplate', () => {
   const mockAgent = {
     id: '11155111:123',
@@ -462,7 +480,7 @@ describe('AgentDetailTemplate', () => {
       const intentCards = screen.getAllByTestId('intent-card');
       fireEvent.click(intentCards[0]);
 
-      expect(mockPush).toHaveBeenCalledWith('/intents/code-review?agent=11155111:123');
+      expect(mockPush).toHaveBeenCalledWith('/intents/code-review?agent=11155111%3A123');
     });
 
     it('shows view all link when more than 4 intents', () => {

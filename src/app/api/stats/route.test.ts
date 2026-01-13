@@ -14,6 +14,16 @@ vi.mock('@/lib/api/backend', () => ({
       this.name = 'BackendError';
     }
   },
+  PaymentRequiredError: class PaymentRequiredError extends Error {
+    constructor(
+      message: string,
+      public paymentDetails: unknown,
+    ) {
+      super(message);
+      this.name = 'PaymentRequiredError';
+    }
+  },
+  isPaymentRequiredError: (error: unknown) => (error as Error)?.name === 'PaymentRequiredError',
   shouldUseMockData: vi.fn().mockReturnValue(false),
 }));
 

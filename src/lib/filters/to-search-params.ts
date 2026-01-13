@@ -220,17 +220,10 @@ function applyTrustScoreFilters(params: SearchParams, filters: SearchFiltersStat
 
 /**
  * Gap 1: Apply version filters (ERC-8004, MCP, A2A)
+ * NOTE: Version filters have been removed from the UI
  */
-function applyVersionFilters(params: SearchParams, filters: SearchFiltersState): void {
-  if (filters.erc8004Version) {
-    params.erc8004Version = filters.erc8004Version;
-  }
-  if (filters.mcpVersion) {
-    params.mcpVersion = filters.mcpVersion;
-  }
-  if (filters.a2aVersion) {
-    params.a2aVersion = filters.a2aVersion;
-  }
+function applyVersionFilters(_params: SearchParams, _filters: SearchFiltersState): void {
+  // Version filters removed - function kept as placeholder for backwards compatibility
 }
 
 /**

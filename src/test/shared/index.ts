@@ -41,12 +41,9 @@ export function createTestFilters(overrides: Partial<SearchFiltersState> = {}): 
     skills: [],
     domains: [],
     showAllAgents: false,
-    // Gap 1: Trust Score & Version Filters
+    // Gap 1: Trust Score Filters
     minTrustScore: 0,
     maxTrustScore: 100,
-    erc8004Version: '',
-    mcpVersion: '',
-    a2aVersion: '',
     // Gap 3: Curation Filters
     isCurated: false,
     curatedBy: '',

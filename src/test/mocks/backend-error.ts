@@ -1,4 +1,5 @@
 import { vi } from 'vitest';
+import type { X402PaymentDetails } from '@/types/x402';
 
 /**
  * Mock BackendError class for testing API routes.
@@ -16,6 +17,29 @@ export class MockBackendError extends Error {
 }
 
 /**
+ * Mock PaymentRequiredError class for testing x402 payment flows.
+ * Mimics the real PaymentRequiredError from @/lib/api/backend.
+ */
+export class MockPaymentRequiredError extends Error {
+  constructor(
+    message: string,
+    public paymentDetails: X402PaymentDetails,
+  ) {
+    super(message);
+    this.name = 'PaymentRequiredError';
+  }
+}
+
+/**
+ * Mock type guard for payment required errors.
+ */
+export function mockIsPaymentRequiredError(error: unknown): error is MockPaymentRequiredError {
+  return (
+    error instanceof MockPaymentRequiredError || (error as Error)?.name === 'PaymentRequiredError'
+  );
+}
+
+/**
  * Creates a mock module for @/lib/api/backend.
  * Use with vi.mock() in API route tests.
  *
@@ -30,6 +54,8 @@ export function mockBackendModule() {
   return {
     backendFetch: vi.fn(),
     BackendError: MockBackendError,
+    PaymentRequiredError: MockPaymentRequiredError,
+    isPaymentRequiredError: mockIsPaymentRequiredError,
   };
 }
 

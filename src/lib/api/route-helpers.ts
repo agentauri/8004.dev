@@ -6,7 +6,8 @@
  */
 
 import { NextResponse } from 'next/server';
-import { BackendError } from './backend';
+import type { X402PaymentDetails } from '@/types/x402';
+import { BackendError, isPaymentRequiredError, type PaymentRequiredError } from './backend';
 import {
   checkRateLimit,
   getRateLimitConfig,
@@ -52,7 +53,7 @@ export function handleRouteError(
   error: unknown,
   fallbackMessage: string,
   fallbackCode: string,
-): NextResponse<ApiErrorResponse> {
+): NextResponse<ApiErrorResponse | X402PaymentDetails> {
   console.error('API error:', error);
 
   // Handle JSON parse errors
@@ -65,6 +66,11 @@ export function handleRouteError(
       },
       { status: 400 },
     );
+  }
+
+  // Handle payment required errors - return 402 with payment details
+  if (isPaymentRequiredError(error)) {
+    return paymentRequiredResponse(error.paymentDetails);
   }
 
   // Handle backend API errors
@@ -144,6 +150,36 @@ export function errorResponse(
     },
     { status },
   );
+}
+
+/**
+ * Creates a 402 Payment Required response with x402 payment details.
+ *
+ * @example
+ * ```typescript
+ * return paymentRequiredResponse(paymentDetails);
+ * ```
+ */
+export function paymentRequiredResponse(
+  paymentDetails: X402PaymentDetails,
+): NextResponse<X402PaymentDetails> {
+  return NextResponse.json(paymentDetails, { status: 402 });
+}
+
+/**
+ * Extracts the X-PAYMENT header from a request.
+ * Returns undefined if not present.
+ *
+ * @example
+ * ```typescript
+ * const paymentHeader = getPaymentHeader(request);
+ * const response = await backendFetch('/api/v1/compose', {
+ *   headers: paymentHeader ? { 'X-PAYMENT': paymentHeader } : undefined,
+ * });
+ * ```
+ */
+export function getPaymentHeader(request: Request): string | undefined {
+  return request.headers.get('X-PAYMENT') ?? undefined;
 }
 
 /**

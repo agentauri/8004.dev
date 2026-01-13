@@ -1,8 +1,8 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { act, render, screen, waitFor } from '@testing-library/react';
-import { Suspense } from 'react';
+import { render, screen, waitFor } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import AgentPage from './page';
+import { RealtimeEventsProvider } from '@/providers/realtime-events-provider';
+import { AgentDetailClient } from './agent-detail-client';
 
 // Mock fetch
 const mockFetch = vi.fn();
@@ -14,6 +14,24 @@ vi.mock('next/link', () => ({
       {children}
     </a>
   ),
+}));
+
+// Mock the useWallet hook
+vi.mock('@/hooks/use-wallet', () => ({
+  useWallet: () => ({
+    status: 'disconnected',
+    address: null,
+    chainId: null,
+    isCorrectNetwork: false,
+    usdcBalance: null,
+    error: null,
+    connect: vi.fn(),
+    disconnect: vi.fn(),
+    switchToBase: vi.fn(),
+    isReadyForPayment: false,
+    connectors: [],
+  }),
+  truncateAddress: (address: string) => `${address.slice(0, 6)}...${address.slice(-4)}`,
 }));
 
 const mockAgent = {
@@ -100,24 +118,19 @@ function createMockFetch(options: {
   };
 }
 
-async function renderAgentPage(agentId: string) {
-  const paramsPromise = Promise.resolve({ agentId });
+function renderAgentDetailClient(agentId: string) {
   const queryClient = createQueryClient();
 
-  await act(async () => {
-    render(
-      <QueryClientProvider client={queryClient}>
-        <Suspense fallback={<div>Loading suspense...</div>}>
-          <AgentPage params={paramsPromise} />
-        </Suspense>
-      </QueryClientProvider>,
-    );
-    // Allow the promise to resolve
-    await paramsPromise;
-  });
+  return render(
+    <QueryClientProvider client={queryClient}>
+      <RealtimeEventsProvider enabled={false}>
+        <AgentDetailClient agentId={agentId} />
+      </RealtimeEventsProvider>
+    </QueryClientProvider>,
+  );
 }
 
-describe('AgentPage', () => {
+describe('AgentDetailClient', () => {
   beforeEach(() => {
     mockFetch.mockReset();
     global.fetch = mockFetch;
@@ -128,9 +141,9 @@ describe('AgentPage', () => {
   });
 
   describe('loading state', () => {
-    it('shows loading state initially', async () => {
+    it('shows loading state initially', () => {
       mockFetch.mockImplementation(() => new Promise(() => {}));
-      await renderAgentPage('11155111:123');
+      renderAgentDetailClient('11155111:123');
 
       expect(screen.getByText('Loading agent...')).toBeInTheDocument();
     });
@@ -151,7 +164,7 @@ describe('AgentPage', () => {
         }),
       );
 
-      await renderAgentPage('11155111:123');
+      renderAgentDetailClient('11155111:123');
 
       await waitFor(() => {
         expect(screen.getByText('Test Agent')).toBeInTheDocument();
@@ -172,7 +185,7 @@ describe('AgentPage', () => {
         }),
       );
 
-      await renderAgentPage('11155111:123');
+      renderAgentDetailClient('11155111:123');
 
       await waitFor(() => {
         expect(mockFetch).toHaveBeenCalledWith('/api/agents/11155111:123');
@@ -193,7 +206,7 @@ describe('AgentPage', () => {
         }),
       );
 
-      await renderAgentPage('11155111:123');
+      renderAgentDetailClient('11155111:123');
 
       await waitFor(() => {
         expect(screen.getByText('A test agent')).toBeInTheDocument();
@@ -209,7 +222,7 @@ describe('AgentPage', () => {
         }),
       );
 
-      await renderAgentPage('11155111:123');
+      renderAgentDetailClient('11155111:123');
 
       await waitFor(() => {
         expect(screen.getByText('Network error')).toBeInTheDocument();
@@ -225,7 +238,7 @@ describe('AgentPage', () => {
         }),
       );
 
-      await renderAgentPage('11155111:999');
+      renderAgentDetailClient('11155111:999');
 
       await waitFor(() => {
         expect(screen.getByText('Agent not found')).toBeInTheDocument();
@@ -248,7 +261,7 @@ describe('AgentPage', () => {
         }),
       );
 
-      await renderAgentPage('84532:456');
+      renderAgentDetailClient('84532:456');
 
       await waitFor(() => {
         expect(mockFetch).toHaveBeenCalledWith('/api/agents/84532:456');

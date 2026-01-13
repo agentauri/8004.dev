@@ -27,7 +27,8 @@ function toAgentCardAgent(agent: AgentSummary): AgentCardAgent {
     image: agent.image,
     chainId: agent.chainId as ChainId,
     isActive: agent.active,
-    trustScore: agent.reputationScore,
+    // Use actual trustScore from BE (PageRank), fallback to reputationScore
+    trustScore: agent.trustScore ?? agent.reputationScore,
     capabilities,
     // Search metadata
     relevanceScore: agent.relevanceScore,
@@ -52,19 +53,16 @@ const DEFAULT_FILTERS: SearchFiltersState = {
   skills: [],
   domains: [],
   showAllAgents: false,
-  // Gap 1: Trust Score & Version Filters
+  // Trust Score Filters
   minTrustScore: 0,
   maxTrustScore: 100,
-  erc8004Version: '',
-  mcpVersion: '',
-  a2aVersion: '',
-  // Gap 3: Curation Filters
+  // Curation Filters
   isCurated: false,
   curatedBy: '',
-  // Gap 5: Endpoint Filters
+  // Endpoint Filters
   hasEmail: false,
   hasOasfEndpoint: false,
-  // Gap 6: Reachability Filters
+  // Reachability Filters
   hasRecentReachability: false,
 };
 

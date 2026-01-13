@@ -3,6 +3,7 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { type ReactNode, useState } from 'react';
 import { RealtimeEventsProvider } from '@/providers/realtime-events-provider';
+import { WalletProvider } from '@/providers/wallet-provider';
 
 interface ProvidersProps {
   children: ReactNode;
@@ -29,7 +30,9 @@ export function Providers({ children }: ProvidersProps) {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <RealtimeEventsProvider>{children}</RealtimeEventsProvider>
+      <WalletProvider>
+        <RealtimeEventsProvider>{children}</RealtimeEventsProvider>
+      </WalletProvider>
     </QueryClientProvider>
   );
 }

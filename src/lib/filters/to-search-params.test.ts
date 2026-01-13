@@ -15,9 +15,6 @@ const createDefaultFilters = (overrides: Partial<SearchFiltersState> = {}): Sear
   // Gap 1: Trust Score & Version Filters
   minTrustScore: 0,
   maxTrustScore: 100,
-  erc8004Version: '',
-  mcpVersion: '',
-  a2aVersion: '',
   // Gap 3: Curation Filters
   isCurated: false,
   curatedBy: '',
@@ -243,28 +240,6 @@ describe('toSearchParams', () => {
     it('does not set trustScoreMax when 100', () => {
       const result = toSearchParams('', createDefaultFilters({ maxTrustScore: 100 }), 20, 0);
       expect(result.trustScoreMax).toBeUndefined();
-    });
-  });
-
-  describe('version filters', () => {
-    it('sets erc8004Version when provided', () => {
-      const result = toSearchParams('', createDefaultFilters({ erc8004Version: 'v1.0' }), 20, 0);
-      expect(result.erc8004Version).toBe('v1.0');
-    });
-
-    it('does not set erc8004Version when empty', () => {
-      const result = toSearchParams('', createDefaultFilters({ erc8004Version: '' }), 20, 0);
-      expect(result.erc8004Version).toBeUndefined();
-    });
-
-    it('sets mcpVersion when provided', () => {
-      const result = toSearchParams('', createDefaultFilters({ mcpVersion: '1.0.0' }), 20, 0);
-      expect(result.mcpVersion).toBe('1.0.0');
-    });
-
-    it('sets a2aVersion when provided', () => {
-      const result = toSearchParams('', createDefaultFilters({ a2aVersion: '2.0.0' }), 20, 0);
-      expect(result.a2aVersion).toBe('2.0.0');
     });
   });
 

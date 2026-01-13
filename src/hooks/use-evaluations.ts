@@ -9,6 +9,8 @@ import type { UseMutationResult, UseQueryResult } from '@tanstack/react-query';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { queryKeys } from '@/lib/query-keys';
 import type { Evaluation, EvaluationStatus } from '@/types/agent';
+import type { X402PaymentDetails } from '@/types/x402';
+import { type UsePaidMutationResult, usePaidMutation } from './use-paid-mutation';
 
 /** Options for the useEvaluations hook */
 export interface UseEvaluationsOptions {
@@ -96,15 +98,33 @@ async function fetchAgentEvaluations(agentId: string): Promise<Evaluation[]> {
 }
 
 /**
- * Create a new evaluation via API
+ * Create a new evaluation via API (supports x402 payment)
  */
-async function createEvaluation(input: CreateEvaluationInput): Promise<Evaluation> {
+async function createEvaluation(
+  input: CreateEvaluationInput,
+  paymentHeader?: string,
+): Promise<Evaluation> {
+  const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+  if (paymentHeader) {
+    headers['X-PAYMENT'] = paymentHeader;
+  }
+
   const response = await fetch('/api/evaluations', {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers,
     body: JSON.stringify(input),
   });
   const json = await response.json();
+
+  // Handle 402 Payment Required
+  if (response.status === 402) {
+    const error = new Error('Payment required') as Error & {
+      paymentDetails: X402PaymentDetails;
+    };
+    error.name = 'PaymentRequiredError';
+    error.paymentDetails = json;
+    throw error;
+  }
 
   if (!json.success) {
     throw new Error(json.error || 'Failed to create evaluation');
@@ -233,6 +253,57 @@ export function useCreateEvaluation(): UseMutationResult<Evaluation, Error, Crea
   const queryClient = useQueryClient();
 
   return useMutation<Evaluation, Error, CreateEvaluationInput>({
+    mutationFn: (input) => createEvaluation(input),
+    onSuccess: (data) => {
+      // Invalidate evaluations list to include the new evaluation
+      queryClient.invalidateQueries({ queryKey: queryKeys.evaluations() });
+
+      // Invalidate agent-specific evaluations
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.agentEvaluations(data.agentId),
+      });
+    },
+  });
+}
+
+/**
+ * Hook to create a new evaluation with x402 payment support
+ *
+ * Uses usePaidMutation to handle 402 Payment Required responses.
+ * When a 402 is received, the hook captures the payment details
+ * and provides methods to confirm payment and retry.
+ *
+ * @returns Extended mutation result with payment state and confirmation methods
+ *
+ * @example
+ * ```tsx
+ * const {
+ *   mutate,
+ *   isPending,
+ *   paymentState,
+ *   confirmPayment,
+ *   clearPayment,
+ * } = usePaidCreateEvaluation();
+ *
+ * // Start evaluation (may trigger payment requirement)
+ * mutate({ agentId: '11155111:123' });
+ *
+ * // If payment is required
+ * if (paymentState.paymentRequired) {
+ *   // Show payment modal, get signature, then:
+ *   await confirmPayment(signedPaymentHeader);
+ * }
+ * ```
+ */
+export function usePaidCreateEvaluation(): UsePaidMutationResult<
+  Evaluation,
+  Error,
+  CreateEvaluationInput,
+  unknown
+> {
+  const queryClient = useQueryClient();
+
+  return usePaidMutation<Evaluation, Error, CreateEvaluationInput, unknown>({
     mutationFn: createEvaluation,
     onSuccess: (data) => {
       // Invalidate evaluations list to include the new evaluation

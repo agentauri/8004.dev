@@ -5,9 +5,11 @@ import { usePathname } from 'next/navigation';
 import type React from 'react';
 import { useCallback, useState } from 'react';
 import { EventBadge, PixelExplorer } from '@/components/atoms';
+import { ConnectWalletButton } from '@/components/molecules/connect-wallet-button';
 import { EventPanel } from '@/components/organisms/event-panel';
 import { MCPConnectModal } from '@/components/organisms/mcp-connect-modal';
-import { useRealtimeEvents } from '@/hooks';
+import { WalletModal } from '@/components/organisms/wallet-modal';
+import { useRealtimeEvents, useWallet } from '@/hooks';
 import { cn } from '@/lib/utils';
 
 export interface HeaderProps {
@@ -43,10 +45,17 @@ const NAV_LINKS: NavLink[] = [
 export function Header({ className }: HeaderProps): React.JSX.Element {
   const pathname = usePathname();
   const [showMCPModal, setShowMCPModal] = useState(false);
+  const [showWalletModal, setShowWalletModal] = useState(false);
   const [showEventPanel, setShowEventPanel] = useState(false);
   const [showMobileMenu, setShowMobileMenu] = useState(false);
 
-  const { eventCount, isConnected, recentEvents, clearEvents } = useRealtimeEvents();
+  const {
+    eventCount,
+    isConnected: isEventConnected,
+    recentEvents,
+    clearEvents,
+  } = useRealtimeEvents();
+  const wallet = useWallet();
 
   const toggleEventPanel = useCallback(() => {
     setShowEventPanel((prev) => !prev);
@@ -112,8 +121,23 @@ export function Header({ className }: HeaderProps): React.JSX.Element {
 
         {/* Event Badge (Desktop) */}
         <div className="relative" data-testid="event-badge-container">
-          <EventBadge count={eventCount} isConnected={isConnected} onClick={toggleEventPanel} />
+          <EventBadge
+            count={eventCount}
+            isConnected={isEventConnected}
+            onClick={toggleEventPanel}
+          />
         </div>
+
+        {/* Wallet Connect Button */}
+        <ConnectWalletButton
+          address={wallet.address}
+          status={wallet.status === 'error' ? 'disconnected' : wallet.status}
+          isCorrectNetwork={wallet.isCorrectNetwork}
+          onClick={() => setShowWalletModal(true)}
+          size="sm"
+          variant="outline"
+          data-testid="nav-connect-wallet"
+        />
 
         {/* MCP Connect Button */}
         <button
@@ -137,7 +161,11 @@ export function Header({ className }: HeaderProps): React.JSX.Element {
       <div className="flex md:hidden items-center gap-3">
         {/* Event Badge (Mobile) */}
         <div className="relative" data-testid="event-badge-container-mobile">
-          <EventBadge count={eventCount} isConnected={isConnected} onClick={toggleEventPanel} />
+          <EventBadge
+            count={eventCount}
+            isConnected={isEventConnected}
+            onClick={toggleEventPanel}
+          />
         </div>
 
         {/* Hamburger Menu Button */}
@@ -219,6 +247,23 @@ export function Header({ className }: HeaderProps): React.JSX.Element {
               </Link>
             ))}
 
+            {/* Wallet Connect in Mobile Menu */}
+            <div className="mx-4 my-3">
+              <ConnectWalletButton
+                address={wallet.address}
+                status={wallet.status === 'error' ? 'disconnected' : wallet.status}
+                isCorrectNetwork={wallet.isCorrectNetwork}
+                onClick={() => {
+                  closeMobileMenu();
+                  setShowWalletModal(true);
+                }}
+                size="sm"
+                variant="outline"
+                className="w-full"
+                data-testid="mobile-nav-connect-wallet"
+              />
+            </div>
+
             {/* MCP Connect in Mobile Menu */}
             <button
               type="button"
@@ -243,6 +288,18 @@ export function Header({ className }: HeaderProps): React.JSX.Element {
       )}
 
       <MCPConnectModal isOpen={showMCPModal} onClose={() => setShowMCPModal(false)} />
+
+      <WalletModal
+        open={showWalletModal}
+        onOpenChange={setShowWalletModal}
+        connectors={wallet.connectors}
+        address={wallet.address}
+        status={wallet.status === 'error' ? 'disconnected' : wallet.status}
+        isCorrectNetwork={wallet.isCorrectNetwork}
+        onConnect={wallet.connect}
+        onDisconnect={wallet.disconnect}
+        onSwitchNetwork={wallet.switchToBase}
+      />
     </header>
   );
 }

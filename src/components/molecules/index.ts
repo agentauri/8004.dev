@@ -12,6 +12,11 @@ export type { CodeBlockProps } from './code-block';
 export { CodeBlock } from './code-block';
 export type { CompareBarAgent, CompareBarProps } from './compare-bar';
 export { CompareBar } from './compare-bar';
+export type {
+  ConnectWalletButtonProps,
+  DisconnectButtonProps,
+} from './connect-wallet-button';
+export { ConnectWalletButton, DisconnectButton } from './connect-wallet-button';
 export type { EndpointItemProps, EndpointType } from './endpoint-item';
 export { EndpointItem } from './endpoint-item';
 export type { EvaluationScoresProps } from './evaluation-scores';
@@ -38,6 +43,8 @@ export type { PageHeaderAlign, PageHeaderGlow, PageHeaderProps } from './page-he
 export { PageHeader } from './page-header';
 export type { PaginationProps } from './pagination';
 export { Pagination } from './pagination';
+export type { PaymentCostProps } from './payment-cost';
+export { PaymentCost } from './payment-cost';
 export type { PresetSelectorProps } from './preset-selector';
 export { PresetSelector } from './preset-selector';
 export type { ReputationDistributionProps } from './reputation-distribution';

@@ -86,16 +86,7 @@ export function serializeToUrl(state: UrlSearchState): URLSearchParams {
     params.set('maxTrust', String(state.filters.maxTrustScore));
   }
 
-  // Gap 1: Version filters (only if set)
-  if (state.filters.erc8004Version) {
-    params.set('erc8004Version', state.filters.erc8004Version);
-  }
-  if (state.filters.mcpVersion) {
-    params.set('mcpVersion', state.filters.mcpVersion);
-  }
-  if (state.filters.a2aVersion) {
-    params.set('a2aVersion', state.filters.a2aVersion);
-  }
+  // Gap 1: Version filters removed from UI
 
   // Gap 3: Curation filters (only if set)
   if (state.filters.isCurated) {

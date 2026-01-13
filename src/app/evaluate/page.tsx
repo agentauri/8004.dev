@@ -5,9 +5,9 @@ import Link from 'next/link';
 import { Suspense, useCallback, useMemo, useState } from 'react';
 import { PixelExplorer } from '@/components/atoms';
 import { PageHeader } from '@/components/molecules';
-import { EvaluationCard } from '@/components/organisms';
+import { EvaluationCard, PaymentModal } from '@/components/organisms';
 import { MainLayout } from '@/components/templates';
-import { useCreateEvaluation, useEvaluations } from '@/hooks';
+import { useEvaluations, usePaidCreateEvaluation, useWallet } from '@/hooks';
 import { cn } from '@/lib/utils';
 import type { EvaluationStatus } from '@/types';
 
@@ -59,7 +59,7 @@ function StatCard({
 }
 
 /**
- * Create Evaluation Modal
+ * Create Evaluation Modal with payment support
  */
 function CreateEvaluationModal({
   isOpen,
@@ -69,7 +69,17 @@ function CreateEvaluationModal({
   onClose: () => void;
 }): React.JSX.Element | null {
   const [agentId, setAgentId] = useState('');
-  const { mutate: createEvaluation, isPending, error } = useCreateEvaluation();
+  const [showPaymentModal, setShowPaymentModal] = useState(false);
+  const wallet = useWallet();
+
+  const {
+    mutate: createEvaluation,
+    isPending,
+    error,
+    paymentState,
+    confirmPayment,
+    clearPayment,
+  } = usePaidCreateEvaluation();
 
   const handleSubmit = useCallback(
     (e: React.FormEvent) => {
@@ -81,6 +91,7 @@ function CreateEvaluationModal({
         {
           onSuccess: () => {
             setAgentId('');
+            setShowPaymentModal(false);
             onClose();
           },
         },
@@ -89,97 +100,151 @@ function CreateEvaluationModal({
     [agentId, createEvaluation, onClose],
   );
 
+  const handleClose = useCallback(() => {
+    clearPayment();
+    setShowPaymentModal(false);
+    onClose();
+  }, [clearPayment, onClose]);
+
+  const handlePaymentModalOpen = useCallback(
+    (open: boolean) => {
+      setShowPaymentModal(open);
+      if (!open) {
+        clearPayment();
+      }
+    },
+    [clearPayment],
+  );
+
+  const handleConfirmPayment = useCallback(async () => {
+    // For now, simulate a signed payment header
+    // In production, this would involve signing with the wallet
+    // TODO: Implement actual wallet signing with @x402/fetch
+    try {
+      await confirmPayment('signed-payment-header');
+    } catch {
+      // Error is already handled in paymentState.paymentError
+    }
+  }, [confirmPayment]);
+
+  // Open payment modal when payment is required
+  if (paymentState.paymentRequired && !showPaymentModal && isOpen) {
+    setShowPaymentModal(true);
+  }
+
   if (!isOpen) return null;
 
+  // Show loading state while processing payment
+  const isProcessing = isPending || paymentState.isPaying;
+
   return (
-    <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/80"
-      onClick={onClose}
-      onKeyDown={(e) => e.key === 'Escape' && onClose()}
-      role="button"
-      tabIndex={0}
-      data-testid="create-evaluation-modal-overlay"
-    >
+    <>
       <div
-        className="bg-[var(--pixel-gray-dark)] border-2 border-[var(--pixel-gray-700)] p-6 max-w-md w-full mx-4"
-        onClick={(e) => e.stopPropagation()}
-        onKeyDown={(e) => e.stopPropagation()}
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="modal-title"
-        data-testid="create-evaluation-modal"
+        className="fixed inset-0 z-50 flex items-center justify-center bg-black/80"
+        onClick={handleClose}
+        onKeyDown={(e) => e.key === 'Escape' && !isProcessing && handleClose()}
+        role="button"
+        tabIndex={0}
+        data-testid="create-evaluation-modal-overlay"
       >
-        <div className="flex items-center justify-between mb-6">
-          <h2
-            id="modal-title"
-            className="font-[family-name:var(--font-pixel-heading)] text-lg text-[var(--pixel-gray-100)]"
-          >
-            Create Evaluation
-          </h2>
-          <button
-            type="button"
-            onClick={onClose}
-            className="w-8 h-8 flex items-center justify-center text-[var(--pixel-gray-400)] hover:text-[var(--pixel-white)] border border-[var(--pixel-gray-700)] hover:border-[var(--pixel-gray-600)] transition-colors"
-            aria-label="Close modal"
-          >
-            X
-          </button>
-        </div>
-
-        <form onSubmit={handleSubmit}>
-          <div className="mb-4">
-            <label
-              htmlFor="agent-id"
-              className="font-[family-name:var(--font-pixel-body)] text-xs uppercase tracking-wider text-[var(--pixel-gray-400)] block mb-2"
+        <div
+          className="bg-[var(--pixel-gray-dark)] border-2 border-[var(--pixel-gray-700)] p-6 max-w-md w-full mx-4"
+          onClick={(e) => e.stopPropagation()}
+          onKeyDown={(e) => e.stopPropagation()}
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="modal-title"
+          data-testid="create-evaluation-modal"
+        >
+          <div className="flex items-center justify-between mb-6">
+            <h2
+              id="modal-title"
+              className="font-[family-name:var(--font-pixel-heading)] text-lg text-[var(--pixel-gray-100)]"
             >
-              Agent ID
-            </label>
-            <input
-              id="agent-id"
-              type="text"
-              value={agentId}
-              onChange={(e) => setAgentId(e.target.value)}
-              placeholder="e.g., 11155111:123"
-              className="w-full bg-[var(--pixel-black)] border-2 border-[var(--pixel-gray-700)] px-3 py-2 font-mono text-sm text-[var(--pixel-gray-100)] placeholder:text-[var(--pixel-gray-500)] focus:border-[var(--pixel-blue-sky)] focus:outline-none focus:shadow-[0_0_8px_var(--glow-blue)]"
-              disabled={isPending}
-            />
-            <p className="font-mono text-[0.625rem] text-[var(--pixel-gray-500)] mt-1">
-              Format: chainId:tokenId
-            </p>
-          </div>
-
-          {error && (
-            <div className="mb-4 p-2 bg-[rgba(252,84,84,0.1)] border border-[var(--pixel-red-fire)] text-[var(--pixel-red-fire)] font-mono text-xs">
-              {error.message}
-            </div>
-          )}
-
-          <div className="flex gap-3">
+              Create Evaluation
+            </h2>
             <button
               type="button"
-              onClick={onClose}
-              className="flex-1 font-[family-name:var(--font-pixel-body)] text-xs uppercase tracking-wider px-4 py-2 border-2 border-[var(--pixel-gray-600)] text-[var(--pixel-gray-400)] hover:border-[var(--pixel-gray-400)] hover:text-[var(--pixel-gray-200)] transition-all"
-              disabled={isPending}
+              onClick={handleClose}
+              className="w-8 h-8 flex items-center justify-center text-[var(--pixel-gray-400)] hover:text-[var(--pixel-white)] border border-[var(--pixel-gray-700)] hover:border-[var(--pixel-gray-600)] transition-colors"
+              aria-label="Close modal"
+              disabled={isProcessing}
             >
-              Cancel
-            </button>
-            <button
-              type="submit"
-              className={cn(
-                'flex-1 font-[family-name:var(--font-pixel-body)] text-xs uppercase tracking-wider px-4 py-2 border-2',
-                'border-[var(--pixel-green-pipe)] text-[var(--pixel-green-pipe)]',
-                'hover:bg-[var(--pixel-green-pipe)] hover:text-[var(--pixel-black)]',
-                'hover:shadow-[0_0_12px_var(--glow-green)] transition-all',
-                'disabled:opacity-50 disabled:cursor-not-allowed',
-              )}
-              disabled={isPending || !agentId.trim()}
-            >
-              {isPending ? 'Creating...' : 'Create'}
+              X
             </button>
           </div>
-        </form>
+
+          <form onSubmit={handleSubmit}>
+            <div className="mb-4">
+              <label
+                htmlFor="agent-id"
+                className="font-[family-name:var(--font-pixel-body)] text-xs uppercase tracking-wider text-[var(--pixel-gray-400)] block mb-2"
+              >
+                Agent ID
+              </label>
+              <input
+                id="agent-id"
+                type="text"
+                value={agentId}
+                onChange={(e) => setAgentId(e.target.value)}
+                placeholder="e.g., 11155111:123"
+                className="w-full bg-[var(--pixel-black)] border-2 border-[var(--pixel-gray-700)] px-3 py-2 font-mono text-sm text-[var(--pixel-gray-100)] placeholder:text-[var(--pixel-gray-500)] focus:border-[var(--pixel-blue-sky)] focus:outline-none focus:shadow-[0_0_8px_var(--glow-blue)]"
+                disabled={isProcessing}
+              />
+              <p className="font-mono text-[0.625rem] text-[var(--pixel-gray-500)] mt-1">
+                Format: chainId:tokenId
+              </p>
+            </div>
+
+            {error && !paymentState.paymentRequired && (
+              <div className="mb-4 p-2 bg-[rgba(252,84,84,0.1)] border border-[var(--pixel-red-fire)] text-[var(--pixel-red-fire)] font-mono text-xs">
+                {error.message}
+              </div>
+            )}
+
+            <div className="flex gap-3">
+              <button
+                type="button"
+                onClick={handleClose}
+                className="flex-1 font-[family-name:var(--font-pixel-body)] text-xs uppercase tracking-wider px-4 py-2 border-2 border-[var(--pixel-gray-600)] text-[var(--pixel-gray-400)] hover:border-[var(--pixel-gray-400)] hover:text-[var(--pixel-gray-200)] transition-all"
+                disabled={isProcessing}
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                className={cn(
+                  'flex-1 font-[family-name:var(--font-pixel-body)] text-xs uppercase tracking-wider px-4 py-2 border-2',
+                  'border-[var(--pixel-green-pipe)] text-[var(--pixel-green-pipe)]',
+                  'hover:bg-[var(--pixel-green-pipe)] hover:text-[var(--pixel-black)]',
+                  'hover:shadow-[0_0_12px_var(--glow-green)] transition-all',
+                  'disabled:opacity-50 disabled:cursor-not-allowed',
+                )}
+                disabled={isProcessing || !agentId.trim()}
+              >
+                {isProcessing ? 'Creating...' : 'Create'}
+              </button>
+            </div>
+          </form>
+        </div>
       </div>
-    </div>
+
+      {/* Payment Modal */}
+      <PaymentModal
+        open={showPaymentModal}
+        onOpenChange={handlePaymentModalOpen}
+        paymentDetails={paymentState.paymentDetails}
+        operationName="Create Evaluation"
+        usdcBalance={wallet.usdcBalance}
+        isWalletConnected={wallet.status === 'connected'}
+        isCorrectNetwork={wallet.isCorrectNetwork}
+        isProcessing={paymentState.isPaying}
+        error={paymentState.paymentError}
+        onConfirm={handleConfirmPayment}
+        onSwitchNetwork={wallet.switchToBase}
+        onConnectWallet={wallet.connect}
+      />
+    </>
   );
 }
 

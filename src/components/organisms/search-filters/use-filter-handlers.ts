@@ -11,7 +11,6 @@
 import { useCallback, useEffect, useMemo, useRef } from 'react';
 import type { ChainId } from '@/components/atoms';
 import type { CapabilityType, FilterMode } from '@/components/molecules';
-import type { Erc8004Version } from '@/types/search';
 import { EMPTY_FILTERS, STATUS_OPTIONS } from './filter-constants';
 import type { SearchFiltersState } from './search-filters';
 
@@ -32,18 +31,15 @@ interface UseFilterHandlersReturn {
   handleSkillsChange: (skills: string[]) => void;
   handleDomainsChange: (domains: string[]) => void;
   handleShowAllAgentsChange: (showAllAgents: boolean) => void;
-  // Gap 1: Trust Score & Version Filters
+  // Trust Score Filters
   handleTrustScoreChange: (minTrustScore: number, maxTrustScore: number) => void;
-  handleErc8004VersionChange: (version: Erc8004Version | '') => void;
-  handleMcpVersionChange: (version: string) => void;
-  handleA2aVersionChange: (version: string) => void;
-  // Gap 3: Curation Filters
+  // Curation Filters
   handleIsCuratedChange: (isCurated: boolean) => void;
   handleCuratedByChange: (curatedBy: string) => void;
-  // Gap 5: Endpoint Filters
+  // Endpoint Filters
   handleHasEmailChange: (hasEmail: boolean) => void;
   handleHasOasfEndpointChange: (hasOasfEndpoint: boolean) => void;
-  // Gap 6: Reachability Filters
+  // Reachability Filters
   handleHasRecentReachabilityChange: (hasRecentReachability: boolean) => void;
   handleClearAll: () => void;
   statusOptionsWithCounts: Array<{ value: string; label: string; count?: number }>;
@@ -125,7 +121,7 @@ export function useFilterHandlers(
     [onFiltersChange],
   );
 
-  // Gap 1: Trust Score & Version Filters
+  // Trust Score Filters
   const handleTrustScoreChange = useCallback(
     (minTrustScore: number, maxTrustScore: number) => {
       onFiltersChange({ ...filtersRef.current, minTrustScore, maxTrustScore });
@@ -133,28 +129,7 @@ export function useFilterHandlers(
     [onFiltersChange],
   );
 
-  const handleErc8004VersionChange = useCallback(
-    (erc8004Version: Erc8004Version | '') => {
-      onFiltersChange({ ...filtersRef.current, erc8004Version });
-    },
-    [onFiltersChange],
-  );
-
-  const handleMcpVersionChange = useCallback(
-    (mcpVersion: string) => {
-      onFiltersChange({ ...filtersRef.current, mcpVersion });
-    },
-    [onFiltersChange],
-  );
-
-  const handleA2aVersionChange = useCallback(
-    (a2aVersion: string) => {
-      onFiltersChange({ ...filtersRef.current, a2aVersion });
-    },
-    [onFiltersChange],
-  );
-
-  // Gap 3: Curation Filters
+  // Curation Filters
   const handleIsCuratedChange = useCallback(
     (isCurated: boolean) => {
       onFiltersChange({ ...filtersRef.current, isCurated });
@@ -215,19 +190,16 @@ export function useFilterHandlers(
       filters.skills.length > 0 ||
       filters.domains.length > 0 ||
       filters.showAllAgents ||
-      // Gap 1: Trust Score & Version Filters
+      // Trust Score Filters
       filters.minTrustScore > 0 ||
       filters.maxTrustScore < 100 ||
-      filters.erc8004Version !== '' ||
-      filters.mcpVersion !== '' ||
-      filters.a2aVersion !== '' ||
-      // Gap 3: Curation Filters
+      // Curation Filters
       filters.isCurated ||
       filters.curatedBy !== '' ||
-      // Gap 5: Endpoint Filters
+      // Endpoint Filters
       filters.hasEmail ||
       filters.hasOasfEndpoint ||
-      // Gap 6: Reachability Filters
+      // Reachability Filters
       filters.hasRecentReachability,
     [filters],
   );
@@ -242,9 +214,6 @@ export function useFilterHandlers(
     handleDomainsChange,
     handleShowAllAgentsChange,
     handleTrustScoreChange,
-    handleErc8004VersionChange,
-    handleMcpVersionChange,
-    handleA2aVersionChange,
     handleIsCuratedChange,
     handleCuratedByChange,
     handleHasEmailChange,

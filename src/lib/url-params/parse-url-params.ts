@@ -6,7 +6,6 @@ import type { ChainId } from '@/components/atoms';
 import { DEFAULT_PAGE_SIZE, DEFAULT_PAGE_SIZE_OPTIONS } from '@/components/atoms';
 import type { CapabilityType, SortField, SortOrder } from '@/components/molecules';
 import type { SearchFiltersState } from '@/components/organisms/search-filters';
-import type { Erc8004Version } from '@/types/search';
 import { SUPPORTED_CHAIN_IDS, VALID_SORT_FIELDS, VALID_SORT_ORDERS } from './constants';
 
 export interface UrlSearchState {
@@ -116,13 +115,7 @@ export function parseUrlParams(searchParams: URLSearchParams): UrlSearchState {
   const minTrustScore = Math.min(clampedMinTrust, clampedMaxTrust);
   const maxTrustScore = Math.max(clampedMinTrust, clampedMaxTrust);
 
-  // Gap 1: Parse version filters
-  const erc8004VersionParam = searchParams.get('erc8004Version');
-  const erc8004Version: Erc8004Version | '' =
-    erc8004VersionParam === 'v0.4' || erc8004VersionParam === 'v1.0' ? erc8004VersionParam : '';
-
-  const mcpVersion = searchParams.get('mcpVersion') ?? '';
-  const a2aVersion = searchParams.get('a2aVersion') ?? '';
+  // Gap 1: Parse version filters (removed from UI)
 
   // Gap 3: Parse curation filters
   const isCurated = searchParams.get('isCurated') === 'true';
@@ -154,9 +147,6 @@ export function parseUrlParams(searchParams: URLSearchParams): UrlSearchState {
       // Gap 1: Trust Score & Version Filters
       minTrustScore,
       maxTrustScore,
-      erc8004Version,
-      mcpVersion,
-      a2aVersion,
       // Gap 3: Curation Filters
       isCurated,
       curatedBy,

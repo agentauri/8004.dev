@@ -6,6 +6,24 @@ import type { StreamingSearchResult } from '@/hooks';
 import { RealtimeEventsProvider } from '@/providers/realtime-events-provider';
 import ExplorePage from './page';
 
+// Mock the useWallet hook
+vi.mock('@/hooks/use-wallet', () => ({
+  useWallet: () => ({
+    status: 'disconnected',
+    address: null,
+    chainId: null,
+    isCorrectNetwork: false,
+    usdcBalance: null,
+    error: null,
+    connect: vi.fn(),
+    disconnect: vi.fn(),
+    switchToBase: vi.fn(),
+    isReadyForPayment: false,
+    connectors: [],
+  }),
+  truncateAddress: (address: string) => `${address.slice(0, 6)}...${address.slice(-4)}`,
+}));
+
 // Mock fetch
 const mockFetch = vi.fn();
 

@@ -1,5 +1,12 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { BackendError, backendFetch, getBackendUrl, isBackendHealthy } from './backend';
+import {
+  BackendError,
+  backendFetch,
+  getBackendUrl,
+  isBackendHealthy,
+  isPaymentRequiredError,
+  PaymentRequiredError,
+} from './backend';
 
 // Mock environment variables
 const mockEnv = {
@@ -384,6 +391,152 @@ describe('backend client', () => {
       expect(error.name).toBe('BackendError');
       expect(error).toBeInstanceOf(Error);
       expect(error).toBeInstanceOf(BackendError);
+    });
+  });
+
+  describe('PaymentRequiredError', () => {
+    it('should create error with correct properties', () => {
+      const paymentDetails = {
+        x402Version: 1,
+        accepts: [
+          {
+            scheme: 'exact',
+            network: 'eip155:8453',
+            maxAmountRequired: '50000',
+            asset: 'eip155:8453/erc20:0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913',
+            payTo: '0x0FF5A2766Aad32ee5AeEFbDa903e8dC3F6A64B7D',
+          },
+        ],
+      };
+
+      const error = new PaymentRequiredError('Payment required', paymentDetails);
+
+      expect(error.message).toBe('Payment required');
+      expect(error.name).toBe('PaymentRequiredError');
+      expect(error.paymentDetails).toEqual(paymentDetails);
+      expect(error).toBeInstanceOf(Error);
+      expect(error).toBeInstanceOf(PaymentRequiredError);
+    });
+  });
+
+  describe('isPaymentRequiredError', () => {
+    it('should return true for PaymentRequiredError', () => {
+      const error = new PaymentRequiredError('Payment required', {
+        x402Version: 1,
+        accepts: [],
+      });
+      expect(isPaymentRequiredError(error)).toBe(true);
+    });
+
+    it('should return false for BackendError', () => {
+      const error = new BackendError('Not found', 'NOT_FOUND', 404);
+      expect(isPaymentRequiredError(error)).toBe(false);
+    });
+
+    it('should return false for regular Error', () => {
+      const error = new Error('Generic error');
+      expect(isPaymentRequiredError(error)).toBe(false);
+    });
+
+    it('should return false for non-error values', () => {
+      expect(isPaymentRequiredError(null)).toBe(false);
+      expect(isPaymentRequiredError(undefined)).toBe(false);
+      expect(isPaymentRequiredError('string')).toBe(false);
+      expect(isPaymentRequiredError({})).toBe(false);
+    });
+  });
+
+  describe('backendFetch - 402 handling', () => {
+    it('should throw PaymentRequiredError on 402 with valid x402 response', async () => {
+      const x402Response = {
+        x402Version: 1,
+        accepts: [
+          {
+            scheme: 'exact',
+            network: 'eip155:8453',
+            maxAmountRequired: '50000',
+            asset: 'eip155:8453/erc20:0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913',
+            payTo: '0x0FF5A2766Aad32ee5AeEFbDa903e8dC3F6A64B7D',
+          },
+        ],
+      };
+
+      mockFetch.mockResolvedValueOnce({
+        ok: false,
+        status: 402,
+        json: () => Promise.resolve(x402Response),
+      });
+
+      try {
+        await backendFetch('/api/v1/compose', { method: 'POST', body: { task: 'test' } });
+        expect.fail('Should have thrown PaymentRequiredError');
+      } catch (error) {
+        expect(error).toBeInstanceOf(PaymentRequiredError);
+        expect((error as PaymentRequiredError).message).toBe('Payment required for this operation');
+        expect((error as PaymentRequiredError).paymentDetails).toEqual(x402Response);
+      }
+    });
+
+    it('should throw BackendError on 402 with invalid x402 response (missing version)', async () => {
+      const invalidResponse = {
+        accepts: [{ scheme: 'exact' }],
+      };
+
+      mockFetch.mockResolvedValueOnce({
+        ok: false,
+        status: 402,
+        json: () => Promise.resolve(invalidResponse),
+      });
+
+      try {
+        await backendFetch('/api/v1/compose', { method: 'POST', body: { task: 'test' } });
+        expect.fail('Should have thrown BackendError');
+      } catch (error) {
+        expect(error).toBeInstanceOf(BackendError);
+        expect((error as BackendError).code).toBe('INVALID_402_RESPONSE');
+        expect((error as BackendError).status).toBe(402);
+      }
+    });
+
+    it('should throw BackendError on 402 with invalid x402 response (missing accepts)', async () => {
+      const invalidResponse = {
+        x402Version: 1,
+      };
+
+      mockFetch.mockResolvedValueOnce({
+        ok: false,
+        status: 402,
+        json: () => Promise.resolve(invalidResponse),
+      });
+
+      try {
+        await backendFetch('/api/v1/compose', { method: 'POST', body: { task: 'test' } });
+        expect.fail('Should have thrown BackendError');
+      } catch (error) {
+        expect(error).toBeInstanceOf(BackendError);
+        expect((error as BackendError).code).toBe('INVALID_402_RESPONSE');
+      }
+    });
+
+    it('should throw BackendError on 402 with non-array accepts', async () => {
+      const invalidResponse = {
+        x402Version: 1,
+        accepts: 'not-an-array',
+      };
+
+      mockFetch.mockResolvedValueOnce({
+        ok: false,
+        status: 402,
+        json: () => Promise.resolve(invalidResponse),
+      });
+
+      try {
+        await backendFetch('/api/v1/compose', { method: 'POST', body: { task: 'test' } });
+        expect.fail('Should have thrown BackendError');
+      } catch (error) {
+        expect(error).toBeInstanceOf(BackendError);
+        expect((error as BackendError).code).toBe('INVALID_402_RESPONSE');
+      }
     });
   });
 });

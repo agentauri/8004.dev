@@ -8,6 +8,8 @@
  * Never import this in client components as it exposes the API key.
  */
 
+import type { X402PaymentDetails } from '@/types/x402';
+
 /**
  * Get environment variables at runtime (not at module load time)
  * This is important for testing where env vars are set after module import
@@ -32,6 +34,27 @@ export class BackendError extends Error {
     super(message);
     this.name = 'BackendError';
   }
+}
+
+/**
+ * Error thrown when a 402 Payment Required response is received.
+ * Contains the x402 payment details for the client to process.
+ */
+export class PaymentRequiredError extends Error {
+  constructor(
+    message: string,
+    public paymentDetails: X402PaymentDetails,
+  ) {
+    super(message);
+    this.name = 'PaymentRequiredError';
+  }
+}
+
+/**
+ * Check if an error is a PaymentRequiredError
+ */
+export function isPaymentRequiredError(error: unknown): error is PaymentRequiredError {
+  return error instanceof PaymentRequiredError;
 }
 
 /** Default request timeout in milliseconds (30 seconds) */
@@ -203,7 +226,7 @@ export async function backendFetch<T>(
 
   if (timeoutId) clearTimeout(timeoutId);
 
-  let data: BackendResponse<T> | BackendErrorResponse;
+  let data: BackendResponse<T> | BackendErrorResponse | X402PaymentDetails;
 
   try {
     data = await response.json();
@@ -212,7 +235,17 @@ export async function backendFetch<T>(
     throw new BackendError('Invalid JSON response from backend', 'PARSE_ERROR', response.status);
   }
 
-  if (!response.ok || !data.success) {
+  // Handle 402 Payment Required response
+  if (response.status === 402) {
+    const paymentDetails = data as X402PaymentDetails;
+    if (paymentDetails.x402Version && Array.isArray(paymentDetails.accepts)) {
+      throw new PaymentRequiredError('Payment required for this operation', paymentDetails);
+    }
+    // Invalid 402 response format
+    throw new BackendError('Invalid payment required response', 'INVALID_402_RESPONSE', 402);
+  }
+
+  if (!response.ok || !(data as BackendResponse<T>).success) {
     const errorData = data as BackendErrorResponse;
     throw new BackendError(
       errorData.error || `Request failed (status ${response.status})`,

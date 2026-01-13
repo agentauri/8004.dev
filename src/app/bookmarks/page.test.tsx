@@ -1,7 +1,17 @@
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import type { BookmarkedAgent, UseBookmarksResult } from '@/hooks/use-bookmarks';
+import { RealtimeEventsProvider } from '@/providers/realtime-events-provider';
 import BookmarksPage from './page';
+
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: false,
+    },
+  },
+});
 
 // Mock next/link
 vi.mock('next/link', () => ({
@@ -22,12 +32,50 @@ vi.mock('next/link', () => ({
   ),
 }));
 
+// Mock the useWallet hook
+vi.mock('@/hooks/use-wallet', () => ({
+  useWallet: () => ({
+    status: 'disconnected',
+    address: null,
+    chainId: null,
+    isCorrectNetwork: false,
+    usdcBalance: null,
+    error: null,
+    connect: vi.fn(),
+    disconnect: vi.fn(),
+    switchToBase: vi.fn(),
+    isReadyForPayment: false,
+    connectors: [],
+  }),
+  truncateAddress: (address: string) => `${address.slice(0, 6)}...${address.slice(-4)}`,
+}));
+
 // Mock useBookmarks hook
 const mockUseBookmarks = vi.fn<() => UseBookmarksResult>();
 
-vi.mock('@/hooks', () => ({
-  useBookmarks: () => mockUseBookmarks(),
-}));
+vi.mock('@/hooks', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('@/hooks')>();
+  return {
+    ...actual,
+    useBookmarks: () => mockUseBookmarks(),
+    useRealtimeEvents: () => ({
+      eventCount: 0,
+      isConnected: false,
+      recentEvents: [],
+      clearEvents: vi.fn(),
+    }),
+  };
+});
+
+function renderBookmarksPage() {
+  return render(
+    <QueryClientProvider client={queryClient}>
+      <RealtimeEventsProvider enabled={false}>
+        <BookmarksPage />
+      </RealtimeEventsProvider>
+    </QueryClientProvider>,
+  );
+}
 
 describe('BookmarksPage', () => {
   const mockBookmarks: BookmarkedAgent[] = [
@@ -75,14 +123,14 @@ describe('BookmarksPage', () => {
   });
 
   it('renders page header', () => {
-    render(<BookmarksPage />);
+    renderBookmarksPage();
 
     expect(screen.getByRole('heading', { name: 'Bookmarks' })).toBeInTheDocument();
     expect(screen.getByText(/Your saved agents/)).toBeInTheDocument();
   });
 
   it('displays bookmarked agents', () => {
-    render(<BookmarksPage />);
+    renderBookmarksPage();
 
     expect(screen.getByText('Trading Bot')).toBeInTheDocument();
     expect(screen.getByText('Code Assistant')).toBeInTheDocument();
@@ -95,14 +143,14 @@ describe('BookmarksPage', () => {
       bookmarks: [],
     });
 
-    render(<BookmarksPage />);
+    renderBookmarksPage();
 
     expect(screen.getByText('No bookmarks yet')).toBeInTheDocument();
     expect(screen.getByText('Explore agents')).toBeInTheDocument();
   });
 
   it('filters bookmarks by search query', () => {
-    render(<BookmarksPage />);
+    renderBookmarksPage();
 
     const searchInput = screen.getByTestId('search-input');
     fireEvent.change(searchInput, { target: { value: 'trading' } });
@@ -113,7 +161,7 @@ describe('BookmarksPage', () => {
   });
 
   it('filters bookmarks by chain', () => {
-    render(<BookmarksPage />);
+    renderBookmarksPage();
 
     const chainFilter = screen.getByTestId('chain-filter');
     fireEvent.change(chainFilter, { target: { value: '11155111' } });
@@ -124,7 +172,7 @@ describe('BookmarksPage', () => {
   });
 
   it('sorts bookmarks by name', () => {
-    render(<BookmarksPage />);
+    renderBookmarksPage();
 
     const sortSelect = screen.getByTestId('sort-select');
     fireEvent.change(sortSelect, { target: { value: 'name' } });
@@ -142,7 +190,7 @@ describe('BookmarksPage', () => {
       removeBookmark,
     });
 
-    render(<BookmarksPage />);
+    renderBookmarksPage();
 
     const removeButton = screen.getByLabelText('Remove Trading Bot from bookmarks');
     fireEvent.click(removeButton);
@@ -157,7 +205,7 @@ describe('BookmarksPage', () => {
       clearBookmarks,
     });
 
-    render(<BookmarksPage />);
+    renderBookmarksPage();
 
     const clearButton = screen.getByLabelText('Clear all bookmarks');
     fireEvent.click(clearButton);
@@ -166,13 +214,13 @@ describe('BookmarksPage', () => {
   });
 
   it('displays bookmark count', () => {
-    render(<BookmarksPage />);
+    renderBookmarksPage();
 
     expect(screen.getByText('3 bookmarks')).toBeInTheDocument();
   });
 
   it('displays filtered count when searching', () => {
-    render(<BookmarksPage />);
+    renderBookmarksPage();
 
     const searchInput = screen.getByTestId('search-input');
     fireEvent.change(searchInput, { target: { value: 'trading' } });
@@ -181,7 +229,7 @@ describe('BookmarksPage', () => {
   });
 
   it('displays no matching bookmarks message', () => {
-    render(<BookmarksPage />);
+    renderBookmarksPage();
 
     const searchInput = screen.getByTestId('search-input');
     fireEvent.change(searchInput, { target: { value: 'nonexistent' } });
@@ -202,7 +250,7 @@ describe('BookmarksPage', () => {
     global.URL.createObjectURL = mockCreateObjectURL;
     global.URL.revokeObjectURL = mockRevokeObjectURL;
 
-    render(<BookmarksPage />);
+    renderBookmarksPage();
 
     const exportButton = screen.getByLabelText('Export bookmarks');
     fireEvent.click(exportButton);
@@ -218,7 +266,7 @@ describe('BookmarksPage', () => {
       importBookmarks,
     });
 
-    render(<BookmarksPage />);
+    renderBookmarksPage();
 
     // Create a mock file with text() method
     const mockFile = {
@@ -244,7 +292,7 @@ describe('BookmarksPage', () => {
       importBookmarks,
     });
 
-    render(<BookmarksPage />);
+    renderBookmarksPage();
 
     // Create a mock file with text() method
     const mockFile = {
@@ -265,14 +313,14 @@ describe('BookmarksPage', () => {
       bookmarks: [],
     });
 
-    render(<BookmarksPage />);
+    renderBookmarksPage();
 
     const exportButton = screen.getByLabelText('Export bookmarks');
     expect(exportButton).toBeDisabled();
   });
 
   it('links to agent detail page', () => {
-    render(<BookmarksPage />);
+    renderBookmarksPage();
 
     const card = screen.getByTestId('bookmark-card-11155111:123');
     expect(card).toHaveAttribute('href', '/agent/11155111:123');

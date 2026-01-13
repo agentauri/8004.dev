@@ -1,11 +1,14 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { BackendError } from './backend';
+import type { X402PaymentDetails } from '@/types/x402';
+import { BackendError, PaymentRequiredError } from './backend';
 import {
   errorResponse,
+  getPaymentHeader,
   handleRouteError,
   parseBoolParam,
   parseIntArrayParam,
   parseIntParam,
+  paymentRequiredResponse,
   successResponse,
 } from './route-helpers';
 
@@ -202,5 +205,93 @@ describe('parseBoolParam', () => {
     expect(parseBoolParam('yes')).toBeUndefined();
     expect(parseBoolParam('no')).toBeUndefined();
     expect(parseBoolParam('TRUE')).toBeUndefined();
+  });
+});
+
+describe('getPaymentHeader', () => {
+  it('should extract X-PAYMENT header when present', () => {
+    const request = new Request('https://example.com', {
+      headers: { 'X-PAYMENT': 'signed-payment-token' },
+    });
+    expect(getPaymentHeader(request)).toBe('signed-payment-token');
+  });
+
+  it('should return undefined when X-PAYMENT header is not present', () => {
+    const request = new Request('https://example.com');
+    expect(getPaymentHeader(request)).toBeUndefined();
+  });
+
+  it('should return undefined for null header value', () => {
+    const request = new Request('https://example.com', {
+      headers: {},
+    });
+    expect(getPaymentHeader(request)).toBeUndefined();
+  });
+});
+
+describe('paymentRequiredResponse', () => {
+  const mockPaymentDetails: X402PaymentDetails = {
+    x402Version: 1,
+    accepts: [
+      {
+        scheme: 'exact',
+        network: 'base-mainnet',
+        maxAmountRequired: '50000',
+        resource: 'https://api.8004.dev/api/v1/compose',
+        description: 'Compose team operation',
+        mimeType: 'application/json',
+        payTo: '0x0FF5A2766Aad32ee5AeEFbDa903e8dC3F6A64B7D',
+        maxTimeoutSeconds: 300,
+        asset: '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913',
+      },
+    ],
+    error: {
+      code: 'PAYMENT_REQUIRED',
+      message: 'Payment required to access this resource',
+    },
+  };
+
+  it('should create 402 response with payment details', async () => {
+    const response = paymentRequiredResponse(mockPaymentDetails);
+
+    expect(response.status).toBe(402);
+    const body = await response.json();
+    expect(body.x402Version).toBe(1);
+    expect(body.accepts).toHaveLength(1);
+    expect(body.accepts[0].maxAmountRequired).toBe('50000');
+    expect(body.error.code).toBe('PAYMENT_REQUIRED');
+  });
+});
+
+describe('handleRouteError with PaymentRequiredError', () => {
+  const mockPaymentDetails: X402PaymentDetails = {
+    x402Version: 1,
+    accepts: [
+      {
+        scheme: 'exact',
+        network: 'base-mainnet',
+        maxAmountRequired: '50000',
+        resource: 'https://api.8004.dev/api/v1/compose',
+        description: 'Compose team operation',
+        mimeType: 'application/json',
+        payTo: '0x0FF5A2766Aad32ee5AeEFbDa903e8dC3F6A64B7D',
+        maxTimeoutSeconds: 300,
+        asset: '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913',
+      },
+    ],
+    error: {
+      code: 'PAYMENT_REQUIRED',
+      message: 'Payment required',
+    },
+  };
+
+  it('should return 402 response for PaymentRequiredError', async () => {
+    const error = new PaymentRequiredError('Payment required', mockPaymentDetails);
+    const response = handleRouteError(error, 'Fallback', 'FALLBACK_CODE');
+
+    expect(response.status).toBe(402);
+    const body = await response.json();
+    expect(body.x402Version).toBe(1);
+    expect(body.accepts).toHaveLength(1);
   });
 });

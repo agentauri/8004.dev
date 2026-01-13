@@ -4,9 +4,9 @@ import { Users } from 'lucide-react';
 import { Suspense, useCallback, useState } from 'react';
 import { PixelExplorer } from '@/components/atoms';
 import { PageHeader } from '@/components/molecules';
-import { TeamComposer, TeamResult } from '@/components/organisms';
+import { PaymentModal, TeamComposer, TeamResult } from '@/components/organisms';
 import { MainLayout } from '@/components/templates';
-import { useComposeTeam } from '@/hooks/use-team-composition';
+import { usePaidComposeTeam, useWallet } from '@/hooks';
 import { cn } from '@/lib/utils';
 import type { TeamComposition } from '@/types';
 
@@ -79,13 +79,25 @@ function ErrorDisplay({
  */
 function ComposePageContent(): React.JSX.Element {
   const [composition, setComposition] = useState<TeamComposition | null>(null);
-  const { mutate: composeTeam, isPending, error, reset } = useComposeTeam();
+  const [showPaymentModal, setShowPaymentModal] = useState(false);
+  const wallet = useWallet();
+
+  const {
+    mutate: composeTeam,
+    isPending,
+    error,
+    reset,
+    paymentState,
+    confirmPayment,
+    clearPayment,
+  } = usePaidComposeTeam();
 
   const handleCompose = useCallback(
     (input: Parameters<typeof composeTeam>[0]) => {
       composeTeam(input, {
         onSuccess: (data) => {
           setComposition(data);
+          setShowPaymentModal(false);
         },
       });
     },
@@ -94,16 +106,44 @@ function ComposePageContent(): React.JSX.Element {
 
   const handleReset = useCallback(() => {
     setComposition(null);
+    clearPayment();
     reset();
-  }, [reset]);
+  }, [reset, clearPayment]);
 
-  // Show loading animation while composing
-  if (isPending) {
+  // Show payment modal when payment is required
+  const handlePaymentModalOpen = useCallback(
+    (open: boolean) => {
+      setShowPaymentModal(open);
+      if (!open) {
+        clearPayment();
+      }
+    },
+    [clearPayment],
+  );
+
+  const handleConfirmPayment = useCallback(async () => {
+    // For now, simulate a signed payment header
+    // In production, this would involve signing with the wallet
+    // TODO: Implement actual wallet signing with @x402/fetch
+    try {
+      await confirmPayment('signed-payment-header');
+    } catch {
+      // Error is already handled in paymentState.paymentError
+    }
+  }, [confirmPayment]);
+
+  // Open payment modal when payment is required
+  if (paymentState.paymentRequired && !showPaymentModal) {
+    setShowPaymentModal(true);
+  }
+
+  // Show loading animation while composing or paying
+  if (isPending || paymentState.isPaying) {
     return <BuildingAnimation />;
   }
 
-  // Show error if composition failed
-  if (error && !composition) {
+  // Show error if composition failed (but not payment errors)
+  if (error && !composition && !paymentState.paymentRequired) {
     return <ErrorDisplay error={error} onRetry={handleReset} />;
   }
 
@@ -112,21 +152,39 @@ function ComposePageContent(): React.JSX.Element {
     return <TeamResult composition={composition} onReset={handleReset} />;
   }
 
-  // Show composer form
+  // Show composer form with payment modal
   return (
-    <div className="max-w-2xl mx-auto">
-      <div className="bg-[var(--pixel-gray-dark)] border-2 border-[var(--pixel-gray-700)] p-6">
-        <div className="text-center mb-8">
-          <h2 className="font-[family-name:var(--font-pixel-heading)] text-lg text-[var(--pixel-gray-100)] mb-2">
-            Describe Your Task
-          </h2>
-          <p className="font-mono text-sm text-[var(--pixel-gray-400)]">
-            Tell us what you need, and we will find the optimal team of AI agents
-          </p>
+    <>
+      <div className="max-w-2xl mx-auto">
+        <div className="bg-[var(--pixel-gray-dark)] border-2 border-[var(--pixel-gray-700)] p-6">
+          <div className="text-center mb-8">
+            <h2 className="font-[family-name:var(--font-pixel-heading)] text-lg text-[var(--pixel-gray-100)] mb-2">
+              Describe Your Task
+            </h2>
+            <p className="font-mono text-sm text-[var(--pixel-gray-400)]">
+              Tell us what you need, and we will find the optimal team of AI agents
+            </p>
+          </div>
+          <TeamComposer onCompose={handleCompose} isLoading={isPending} />
         </div>
-        <TeamComposer onCompose={handleCompose} isLoading={isPending} />
       </div>
-    </div>
+
+      {/* Payment Modal */}
+      <PaymentModal
+        open={showPaymentModal}
+        onOpenChange={handlePaymentModalOpen}
+        paymentDetails={paymentState.paymentDetails}
+        operationName="Compose Team"
+        usdcBalance={wallet.usdcBalance}
+        isWalletConnected={wallet.status === 'connected'}
+        isCorrectNetwork={wallet.isCorrectNetwork}
+        isProcessing={paymentState.isPaying}
+        error={paymentState.paymentError}
+        onConfirm={handleConfirmPayment}
+        onSwitchNetwork={wallet.switchToBase}
+        onConnectWallet={wallet.connect}
+      />
+    </>
   );
 }
 

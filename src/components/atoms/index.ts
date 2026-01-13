@@ -60,11 +60,15 @@ export type { TrendDirection, TrendIndicatorProps } from './trend-indicator/tren
 export { TrendIndicator } from './trend-indicator/trend-indicator';
 export type { TrustLevel, TrustScoreProps } from './trust-score';
 export { getTrustLevel, TrustScore } from './trust-score';
+export type { UsdcAmountProps } from './usdc-amount';
+export { UsdcAmount } from './usdc-amount';
 export type {
   ValidationBadgeProps,
   ValidationStatus,
   ValidationType,
 } from './validation-badge/validation-badge';
 export { ValidationBadge } from './validation-badge/validation-badge';
+export type { WalletStatusProps } from './wallet-status';
+export { WalletStatus } from './wallet-status';
 export type { WatchButtonProps } from './watch-button';
 export { WatchButton } from './watch-button';

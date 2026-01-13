@@ -13,14 +13,7 @@ import {
 import { CHAINS } from '@/lib/constants/chains';
 import { cn } from '@/lib/utils';
 import type { FilterPreset } from '@/types/filter-preset';
-import type { Erc8004Version } from '@/types/search';
-
-import {
-  CHAIN_SELECTED_STYLES,
-  ERC8004_VERSION_OPTIONS,
-  PROTOCOLS,
-  SUPPORTED_CHAINS,
-} from './filter-constants';
+import { CHAIN_SELECTED_STYLES, PROTOCOLS, SUPPORTED_CHAINS } from './filter-constants';
 import { useFilterHandlers } from './use-filter-handlers';
 
 /**
@@ -47,18 +40,12 @@ export interface SearchFiltersState {
   domains: string[];
   /** Show all agents including inactive and without registration file */
   showAllAgents: boolean;
-  // Gap 1: Trust Score & Version Filters
+  // Trust Score Filters
   /** Minimum trust score (0-100) */
   minTrustScore: number;
   /** Maximum trust score (0-100) */
   maxTrustScore: number;
-  /** ERC-8004 spec version filter */
-  erc8004Version: Erc8004Version | '';
-  /** MCP protocol version filter */
-  mcpVersion: string;
-  /** A2A protocol version filter */
-  a2aVersion: string;
-  // Gap 3: Curation Filters
+  // Curation Filters
   /** Whether to show only curated agents */
   isCurated: boolean;
   /** Curator wallet address filter */
@@ -138,9 +125,6 @@ export function SearchFilters({
     handleDomainsChange,
     handleShowAllAgentsChange,
     handleTrustScoreChange,
-    handleErc8004VersionChange,
-    handleMcpVersionChange,
-    handleA2aVersionChange,
     handleIsCuratedChange,
     handleCuratedByChange,
     handleHasEmailChange,
@@ -325,77 +309,6 @@ export function SearchFilters({
           <span>0</span>
           <span>50</span>
           <span>100</span>
-        </div>
-      </div>
-
-      {/* Version Filters Section */}
-      <div className="space-y-3 pt-4 border-t border-[var(--pixel-gray-700)]">
-        <span className="text-[var(--pixel-gray-400)] font-[family-name:var(--font-pixel-body)] text-[0.625rem] uppercase tracking-wider">
-          Version Filters
-        </span>
-
-        {/* ERC-8004 Version */}
-        <div className="space-y-1.5">
-          <label
-            htmlFor="erc8004-version"
-            className="text-[0.5rem] text-[var(--pixel-gray-500)] uppercase"
-          >
-            ERC-8004 Version
-          </label>
-          <select
-            id="erc8004-version"
-            value={filters.erc8004Version}
-            onChange={(e) => handleErc8004VersionChange(e.target.value as Erc8004Version | '')}
-            className="w-full px-2 py-1.5 text-[0.625rem] bg-[var(--pixel-gray-800)] border border-[var(--pixel-gray-600)] text-[var(--pixel-gray-200)] focus:border-[var(--pixel-blue-sky)] focus:outline-none"
-            disabled={disabled}
-            data-testid="erc8004-version-select"
-          >
-            {ERC8004_VERSION_OPTIONS.map((opt) => (
-              <option key={opt.value} value={opt.value}>
-                {opt.label}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        {/* MCP Version */}
-        <div className="space-y-1.5">
-          <label
-            htmlFor="mcp-version"
-            className="text-[0.5rem] text-[var(--pixel-gray-500)] uppercase"
-          >
-            MCP Version
-          </label>
-          <input
-            id="mcp-version"
-            type="text"
-            value={filters.mcpVersion}
-            onChange={(e) => handleMcpVersionChange(e.target.value)}
-            placeholder="e.g., 1.0.0"
-            className="w-full px-2 py-1.5 text-[0.625rem] bg-[var(--pixel-gray-800)] border border-[var(--pixel-gray-600)] text-[var(--pixel-gray-200)] placeholder:text-[var(--pixel-gray-600)] focus:border-[var(--pixel-blue-sky)] focus:outline-none"
-            disabled={disabled}
-            data-testid="mcp-version-input"
-          />
-        </div>
-
-        {/* A2A Version */}
-        <div className="space-y-1.5">
-          <label
-            htmlFor="a2a-version"
-            className="text-[0.5rem] text-[var(--pixel-gray-500)] uppercase"
-          >
-            A2A Version
-          </label>
-          <input
-            id="a2a-version"
-            type="text"
-            value={filters.a2aVersion}
-            onChange={(e) => handleA2aVersionChange(e.target.value)}
-            placeholder="e.g., 1.0.0"
-            className="w-full px-2 py-1.5 text-[0.625rem] bg-[var(--pixel-gray-800)] border border-[var(--pixel-gray-600)] text-[var(--pixel-gray-200)] placeholder:text-[var(--pixel-gray-600)] focus:border-[var(--pixel-blue-sky)] focus:outline-none"
-            disabled={disabled}
-            data-testid="a2a-version-input"
-          />
         </div>
       </div>
 

@@ -30,6 +30,7 @@ export {
   useCreateEvaluation,
   useEvaluation,
   useEvaluations,
+  usePaidCreateEvaluation,
 } from './use-evaluations';
 export { useFeatureFlag, useFeatureFlagToggle } from './use-feature-flag';
 export {
@@ -62,6 +63,12 @@ export {
   useLocalStorage,
 } from './use-local-storage';
 export {
+  fetchWithPayment,
+  type UsePaidMutationOptions,
+  type UsePaidMutationResult,
+  usePaidMutation,
+} from './use-paid-mutation';
+export {
   type RealtimeEventsContextValue,
   useRealtimeEvents,
 } from './use-realtime-events';
@@ -79,6 +86,7 @@ export {
   type ComposeTeamInput,
   type UseTeamCompositionOptions,
   useComposeTeam,
+  usePaidComposeTeam,
   useTeamComposition,
 } from './use-team-composition';
 export { useTrending } from './use-trending';
@@ -87,6 +95,7 @@ export {
   type UseUrlSearchParamsReturn,
   useUrlSearchParams,
 } from './use-url-search-params';
+export { truncateAddress, useWallet, type WalletContextValue } from './use-wallet';
 export {
   MAX_WATCHED_AGENTS,
   type UseWatchlistResult,

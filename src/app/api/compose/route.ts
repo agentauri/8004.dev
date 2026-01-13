@@ -4,7 +4,12 @@
  */
 
 import { BackendError, backendFetch } from '@/lib/api/backend';
-import { errorResponse, handleRouteError, successResponse } from '@/lib/api/route-helpers';
+import {
+  errorResponse,
+  getPaymentHeader,
+  handleRouteError,
+  successResponse,
+} from '@/lib/api/route-helpers';
 import type { BackendTeamComposition } from '@/types/backend';
 
 /** Request body for composing a team */
@@ -83,6 +88,9 @@ function mapTeamComposition(backend: BackendTeamComposition): {
  */
 export async function POST(request: Request) {
   try {
+    // Extract payment header if present (for x402 protocol)
+    const paymentHeader = getPaymentHeader(request);
+
     // Parse request body
     const body = (await request.json()) as ComposeTeamRequest;
 
@@ -154,10 +162,11 @@ export async function POST(request: Request) {
       payload.requiredCapabilities = requiredCapabilities;
     }
 
-    // Call backend API
+    // Call backend API (forward X-PAYMENT header if present)
     const response = await backendFetch<BackendTeamComposition>('/api/v1/compose', {
       method: 'POST',
       body: payload,
+      headers: paymentHeader ? { 'X-PAYMENT': paymentHeader } : undefined,
       cache: 'no-store',
     });
 
